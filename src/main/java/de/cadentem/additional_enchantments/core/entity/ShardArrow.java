@@ -77,7 +77,7 @@ public class ShardArrow extends Arrow {
                         }
                     }
 
-                    livingEntity.hurt(DamageSource.arrow(this, getOwner()), enchantmentLevel);
+                    livingEntity.hurt(DamageSource.arrow(this, getOwner()).setMagic(), enchantmentLevel);
 
                     return false;
                 });

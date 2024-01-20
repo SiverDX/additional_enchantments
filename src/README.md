@@ -29,7 +29,7 @@
 ## Shatter (Ranged)
 - Default max. level: 4
 - Allows the usage of `Amethyst Shards` as projectiles
-  - There is a high chance for them to break on impact which will deal damage in an aoe radius
+  - There is a high chance for them to break on impact which will deal damage in an aoe radius (the projectile and aoe deal magic damage)
     - Targets can be blacklisted with `additional_enchantments:shatter_aoe_blacklist` (`minecraft:villager` is added by default)
 - Enchantment level increases the shatter aoe radius and damage
 
