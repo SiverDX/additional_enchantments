@@ -1,0 +1,8 @@
+{
+  "additional_enchantments.keybind.category": "Additional Enchantments",
+  "additional_enchantments.keybind.cycle_tipped": "Cycle [Tipped] configuration",
+  "additional_enchantments.keybind.cycle_homing": "Cycle [Homing] configuration",
+  "additional_enchantments.keybind.cycle_explosive_tip": "Cycle [Explosive Tip] configuration",
+
+  "additional_enchantments.msg.cycled_configuration": "Enchantment [%1$s] configuration changed to [%2$s]"
+}
