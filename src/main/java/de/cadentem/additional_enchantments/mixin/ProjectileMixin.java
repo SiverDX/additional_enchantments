@@ -36,6 +36,9 @@ public abstract class ProjectileMixin extends Entity implements ProjectileAccess
     @Unique
     public int additional_enchantments$explosiveTipEnchantmentLevel;
 
+    @Unique
+    public int additional_enchantments$straightShotEnchantmentLevel;
+
     public ProjectileMixin(final EntityType<?> type, final Level level) {
         super(type, level);
     }
@@ -58,6 +61,16 @@ public abstract class ProjectileMixin extends Entity implements ProjectileAccess
     @Override
     public void additional_enchantments$setExplosiveTipEnchantmentLevel(int explosiveTipEnchantmentLevel) {
         this.additional_enchantments$explosiveTipEnchantmentLevel = explosiveTipEnchantmentLevel;
+    }
+
+    @Override
+    public int additional_enchantments$getStraightShotEnchantmentLevel() {
+        return additional_enchantments$straightShotEnchantmentLevel;
+    }
+
+    @Override
+    public void additional_enchantments$setStraightShotEnchantmentLevel(int straightShotEnchantmentLevel) {
+        this.additional_enchantments$straightShotEnchantmentLevel = straightShotEnchantmentLevel;
     }
 
     /**

@@ -1,5 +1,6 @@
 package de.cadentem.additional_enchantments.enchantments;
 
+import de.cadentem.additional_enchantments.core.interfaces.ProjectileAccess;
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.enchantments.base.EnchantmentCategories;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
@@ -16,11 +17,6 @@ public class StraightShotEnchantment extends ConfigurableEnchantment {
         super(Rarity.UNCOMMON, EnchantmentCategories.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.STRAIGHT_SHOT_ID);
     }
 
-    @Override
-    public int getMaxLevel() {
-        return 1;
-    }
-
     @SubscribeEvent
     public static void updateGravity(final EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide()) {
@@ -33,6 +29,7 @@ public class StraightShotEnchantment extends ConfigurableEnchantment {
 
                 if (level > 0) {
                     projectile.setNoGravity(true);
+                    ((ProjectileAccess) projectile).additional_enchantments$setStraightShotEnchantmentLevel(level);
                 }
             }
         }

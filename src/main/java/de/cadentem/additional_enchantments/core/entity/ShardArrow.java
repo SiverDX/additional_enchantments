@@ -64,23 +64,20 @@ public class ShardArrow extends Arrow {
             if (serverLevel.getRandom().nextDouble() > 0.3) {
                 sendParticles();
 
+                // Cannot handle the damage in the first iteration due to possible `ConcurrentModificationException`
                 serverLevel.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(2 + enchantmentLevel), livingEntity -> {
                     Entity owner = getOwner();
 
-                    if (owner != null) {
-                        if (livingEntity == owner || livingEntity.isAlliedTo(owner)) {
-                            return false;
-                        }
-
-                        if (owner instanceof LivingEntity livingOwner && livingEntity instanceof TamableAnimal tamable && tamable.isOwnedBy(livingOwner)) {
-                            return false;
-                        }
+                    if (owner == null) {
+                        return true;
                     }
 
-                    livingEntity.hurt(DamageSource.arrow(this, getOwner()).setMagic(), enchantmentLevel);
+                    if (livingEntity == owner || livingEntity.isAlliedTo(owner)) {
+                        return false;
+                    }
 
-                    return false;
-                });
+                    return !(owner instanceof LivingEntity livingOwner) || !(livingEntity instanceof TamableAnimal tamable) || !tamable.isOwnedBy(livingOwner);
+                }).forEach(livingEntity -> livingEntity.hurt(DamageSource.arrow(this, getOwner()).setMagic(), enchantmentLevel));
 
                 discard();
             }
@@ -89,10 +86,10 @@ public class ShardArrow extends Arrow {
 
     private void sendParticles() {
         if (getLevel() instanceof ServerLevel serverLevel) {
-            double xzOffset = getBbWidth() / 2;
-            double yOffset = getBbHeight() / 2;
+            double xzOffset = getBbWidth() * enchantmentLevel;
+            double yOffset = getBbHeight() * enchantmentLevel;
 
-            serverLevel.sendParticles(PARTICLES, getX(), getY(), getZ(), 8, xzOffset, yOffset, xzOffset, 0);
+            serverLevel.sendParticles(PARTICLES, getX(), getY(), getZ(), (int) (8 * Math.pow(enchantmentLevel, 1.3)), xzOffset, yOffset, xzOffset, 0);
         }
     }
 }

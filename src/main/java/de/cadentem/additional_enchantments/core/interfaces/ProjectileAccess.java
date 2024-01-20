@@ -7,4 +7,6 @@ public interface ProjectileAccess {
     void additional_enchantments$setHomingContext(final HomingEnchantment.HomingContext homingContext);
     int additional_enchantments$getExplosiveTipEnchantmentLevel();
     void additional_enchantments$setExplosiveTipEnchantmentLevel(int explosiveTipEnchantmentLevel);
+    int additional_enchantments$getStraightShotEnchantmentLevel();
+    void additional_enchantments$setStraightShotEnchantmentLevel(int straightShotEnchantmentLevel);
 }

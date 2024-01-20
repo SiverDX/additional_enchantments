@@ -35,8 +35,8 @@
 
 ## Straight Shot (Ranged)
 - Default max. level: 1
-- Disables gravity for shot projectiles
-- Enchantment level has no effect
+- Disables gravity for shot projectiles and has a chance to damage `Enderman`
+- Enchantment level increases the chance to damage `Enderman`
 
 ## Tipped (Ranged)
 - Default max. level: 4
