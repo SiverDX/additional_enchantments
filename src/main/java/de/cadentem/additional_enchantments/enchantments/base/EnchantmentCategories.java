@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.enchantments.config;
+package de.cadentem.additional_enchantments.enchantments.base;
 
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;

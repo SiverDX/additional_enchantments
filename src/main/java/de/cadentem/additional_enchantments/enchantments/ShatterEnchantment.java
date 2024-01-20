@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.enchantments;
 
-import de.cadentem.additional_enchantments.enchantments.config.ConfigurableEnchantment;
-import de.cadentem.additional_enchantments.enchantments.config.EnchantmentCategories;
+import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
+import de.cadentem.additional_enchantments.enchantments.base.EnchantmentCategories;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import de.cadentem.additional_enchantments.registry.AEItems;
 import net.minecraft.world.entity.EquipmentSlot;

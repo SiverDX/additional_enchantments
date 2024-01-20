@@ -3,8 +3,8 @@ package de.cadentem.additional_enchantments.enchantments;
 import de.cadentem.additional_enchantments.capability.CapabilityProvider;
 import de.cadentem.additional_enchantments.core.interfaces.ExplosionAccess;
 import de.cadentem.additional_enchantments.core.interfaces.ProjectileAccess;
-import de.cadentem.additional_enchantments.enchantments.config.ConfigurableEnchantment;
-import de.cadentem.additional_enchantments.enchantments.config.EnchantmentCategories;
+import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
+import de.cadentem.additional_enchantments.enchantments.base.EnchantmentCategories;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.server.level.ServerLevel;
@@ -15,6 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Explosion;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
@@ -61,7 +62,7 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
                 Explosion explosion = new Explosion(serverLevel, projectile, null, null, projectile.getX(), projectile.getY(), projectile.getZ(), enchantmentLevel, false, configuration.explosionType);
                 ((ExplosionAccess) explosion).additional_enchantments$setWasTriggeredByEnchantment(true);
 
-                if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(projectile.getLevel(), explosion)) {
+                if (ForgeEventFactory.onExplosionStart(projectile.getLevel(), explosion)) {
                     return;
                 }
 

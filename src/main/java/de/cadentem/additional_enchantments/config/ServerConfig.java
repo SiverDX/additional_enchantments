@@ -13,6 +13,8 @@ public class ServerConfig {
 
     public static final Map<String, EnchantmentConfiguration> enchantmentConfigurations = new HashMap<>();
 
+    public static int DEFAULT_MAX_LEVEL = 4;
+
     static {
         List<String> enchantments = List.of(
                 AEEnchantments.EXPLOSIVE_TIP_ID,
@@ -27,8 +29,9 @@ public class ServerConfig {
             BUILDER.push(enchantment);
 
             EnchantmentConfiguration enchantmentConfiguration = new EnchantmentConfiguration();
-            enchantmentConfiguration.maxLevel = BUILDER.comment("Maximum acquirable level of the enchantment").defineInRange("min_level", 3, 1, 10);
-            enchantmentConfiguration.isEnabled = BUILDER.comment("Enable or disable the enchantment").define("is_enabled", true);
+            enchantmentConfiguration.maxLevel = BUILDER.comment("Maximum acquirable level of the enchantment").defineInRange("min_level", DEFAULT_MAX_LEVEL, 1, 10);
+            enchantmentConfiguration.isEnabled = BUILDER.comment("Enable or disable the enchantment completely").define("is_enabled", true);
+            enchantmentConfiguration.isDiscoverable = BUILDER.comment("Determines if this enchantment can appear in loot / the enchantment table etc.").define("is_discoverable", true);
             enchantmentConfiguration.isAllowedOnBooks = BUILDER.comment("Allow the enchantment to be applied to books").define("is_allowed_on_books", true);
             enchantmentConfiguration.isTradeable = BUILDER.comment("Determines if the enchantment appears in trades").define("is_tradeable", true);
             enchantmentConfiguration.isTreasure = BUILDER.comment("Treasure enchantments usually do not appear in the enchantment table").define("is_treasure", true);

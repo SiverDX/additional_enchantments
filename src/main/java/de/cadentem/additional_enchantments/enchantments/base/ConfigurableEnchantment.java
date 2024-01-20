@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.enchantments.config;
+package de.cadentem.additional_enchantments.enchantments.base;
 
 import de.cadentem.additional_enchantments.config.EnchantmentConfiguration;
 import de.cadentem.additional_enchantments.config.ServerConfig;
@@ -22,7 +22,7 @@ public abstract class ConfigurableEnchantment extends Enchantment {
 
     @Override
     public int getMaxLevel() {
-        return ServerConfig.SPEC.isLoaded() ? ServerConfig.enchantmentConfigurations.get(id).maxLevel.get() : 3;
+        return ServerConfig.SPEC.isLoaded() ? ServerConfig.enchantmentConfigurations.get(id).maxLevel.get() : ServerConfig.DEFAULT_MAX_LEVEL;
     }
 
     @Override
@@ -36,13 +36,23 @@ public abstract class ConfigurableEnchantment extends Enchantment {
     }
 
     @Override
+    public boolean isDiscoverable() {
+        if (ServerConfig.SPEC.isLoaded()) {
+            EnchantmentConfiguration enchantmentConfiguration = ServerConfig.enchantmentConfigurations.get(id);
+            return enchantmentConfiguration.isEnabled.get() && enchantmentConfiguration.isDiscoverable.get();
+        }
+
+        return super.isDiscoverable();
+    }
+
+    @Override
     public boolean isAllowedOnBooks() {
         if (ServerConfig.SPEC.isLoaded()) {
             EnchantmentConfiguration enchantmentConfiguration = ServerConfig.enchantmentConfigurations.get(id);
             return enchantmentConfiguration.isEnabled.get() && enchantmentConfiguration.isAllowedOnBooks.get();
         }
 
-        return true;
+        return super.isAllowedOnBooks();
     }
 
     @Override
@@ -52,11 +62,11 @@ public abstract class ConfigurableEnchantment extends Enchantment {
             return enchantmentConfiguration.isEnabled.get() && enchantmentConfiguration.isTradeable.get();
         }
 
-        return true;
+        return super.isTradeable();
     }
 
     @Override
     public boolean isTreasureOnly() {
-        return ServerConfig.SPEC.isLoaded() ? ServerConfig.enchantmentConfigurations.get(id).isTreasure.get() : true;
+        return ServerConfig.SPEC.isLoaded() ? ServerConfig.enchantmentConfigurations.get(id).isTreasure.get() : super.isTreasureOnly();
     }
 }

@@ -6,6 +6,7 @@ public class EnchantmentConfiguration {
     public ForgeConfigSpec.IntValue maxLevel;
 
     public ForgeConfigSpec.BooleanValue isEnabled;
+    public ForgeConfigSpec.BooleanValue isDiscoverable;
     public ForgeConfigSpec.BooleanValue isAllowedOnBooks;
     public ForgeConfigSpec.BooleanValue isTradeable;
     public ForgeConfigSpec.BooleanValue isTreasure;

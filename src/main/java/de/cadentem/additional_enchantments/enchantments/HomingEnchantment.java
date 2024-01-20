@@ -2,8 +2,8 @@ package de.cadentem.additional_enchantments.enchantments;
 
 import de.cadentem.additional_enchantments.core.interfaces.LivingEntityAccess;
 import de.cadentem.additional_enchantments.core.interfaces.ProjectileAccess;
-import de.cadentem.additional_enchantments.enchantments.config.ConfigurableEnchantment;
-import de.cadentem.additional_enchantments.enchantments.config.EnchantmentCategories;
+import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
+import de.cadentem.additional_enchantments.enchantments.base.EnchantmentCategories;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
