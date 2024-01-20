@@ -2,17 +2,19 @@ package de.cadentem.additional_enchantments;
 
 import com.mojang.logging.LogUtils;
 import de.cadentem.additional_enchantments.capability.Configuration;
-import de.cadentem.additional_enchantments.client.KeyHandler;
+import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.network.NetworkHandler;
-import de.cadentem.additional_enchantments.registry.Enchantments;
-import net.minecraftforge.api.distmarker.Dist;
+import de.cadentem.additional_enchantments.registry.AEEnchantments;
+import de.cadentem.additional_enchantments.registry.AEEntityTypes;
+import de.cadentem.additional_enchantments.registry.AEItems;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.slf4j.Logger;
 
 @Mod(AE.MODID)
@@ -23,11 +25,12 @@ public class AE {
     public AE() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.register(this);
-        Enchantments.ENCHANTMENTS.register(modEventBus);
 
-        if (FMLEnvironment.dist == Dist.CLIENT) {
-            modEventBus.addListener(KeyHandler::registerKeys);
-        }
+        AEEnchantments.ENCHANTMENTS.register(modEventBus);
+        AEEntityTypes.ENTITY_TYPES.register(modEventBus);
+        AEItems.ITEMS.register(modEventBus);
+
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
     }
 
     @SubscribeEvent

@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.core;
+package de.cadentem.additional_enchantments.core.interfaces;
 
 public interface ExplosionAccess {
     boolean additional_enchantments$wasTriggeredByEnchantment();

@@ -2,7 +2,7 @@ package de.cadentem.additional_enchantments.enchantments;
 
 import de.cadentem.additional_enchantments.enchantments.config.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.enchantments.config.EnchantmentCategories;
-import de.cadentem.additional_enchantments.registry.Enchantments;
+import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -18,7 +18,7 @@ public class FasterAttacksEnchantment extends ConfigurableEnchantment {
     private static final String ATTRIBUTE_UUID = "578e84b7-327d-4a19-87f1-cb5de98a977d";
 
     public FasterAttacksEnchantment() {
-        super(Rarity.VERY_RARE, EnchantmentCategories.MELEE, EquipmentSlot.MAINHAND);
+        super(Rarity.VERY_RARE, EnchantmentCategories.MELEE, EquipmentSlot.MAINHAND, AEEnchantments.FASTER_ATTACKS_ID);
     }
 
     @SubscribeEvent
@@ -30,7 +30,7 @@ public class FasterAttacksEnchantment extends ConfigurableEnchantment {
         AttributeInstance attribute = event.player.getAttribute(Attributes.ATTACK_SPEED);
 
         if (attribute != null) {
-            int level = event.player.getMainHandItem().getEnchantmentLevel(Enchantments.FASTER_ATTACKS.get());
+            int level = event.player.getMainHandItem().getEnchantmentLevel(AEEnchantments.FASTER_ATTACKS.get());
             AttributeModifier modifier = attribute.getModifier(UUID.fromString(ATTRIBUTE_UUID));
 
             if (modifier != null) {

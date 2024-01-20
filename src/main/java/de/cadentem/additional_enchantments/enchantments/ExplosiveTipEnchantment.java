@@ -1,11 +1,11 @@
 package de.cadentem.additional_enchantments.enchantments;
 
 import de.cadentem.additional_enchantments.capability.CapabilityProvider;
-import de.cadentem.additional_enchantments.core.ExplosionAccess;
-import de.cadentem.additional_enchantments.core.ProjectileAccess;
+import de.cadentem.additional_enchantments.core.interfaces.ExplosionAccess;
+import de.cadentem.additional_enchantments.core.interfaces.ProjectileAccess;
 import de.cadentem.additional_enchantments.enchantments.config.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.enchantments.config.EnchantmentCategories;
-import de.cadentem.additional_enchantments.registry.Enchantments;
+import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber
 public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
     public ExplosiveTipEnchantment() {
-        super(Rarity.RARE, EnchantmentCategories.RANGED, EquipmentSlot.MAINHAND);
+        super(Rarity.RARE, EnchantmentCategories.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.EXPLOSIVE_TIP_ID);
     }
 
     @SubscribeEvent
@@ -36,13 +36,13 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
 
         if (event.getEntity() instanceof Projectile projectile) {
             if (projectile.getOwner() instanceof LivingEntity livingOwner) {
-                int level = livingOwner.getMainHandItem().getEnchantmentLevel(Enchantments.EXPLOSIVE_TIP.get());
+                int level = livingOwner.getMainHandItem().getEnchantmentLevel(AEEnchantments.EXPLOSIVE_TIP.get());
                 ((ProjectileAccess) projectile).additional_enchantments$setExplosiveTipEnchantmentLevel(level);
             }
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent(priority = EventPriority.LOW)
     public static void triggerExplosion(final ProjectileImpactEvent event) {
         Projectile projectile = event.getProjectile();
 
@@ -78,8 +78,7 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
                     }
                 }
 
-                // TODO :: Keep?
-//                projectile.discard();
+                projectile.discard();
             });
         }
     }

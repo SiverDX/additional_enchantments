@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.core;
+package de.cadentem.additional_enchantments.core.interfaces;
 
 public interface ArrowAccess {
     boolean additional_enchantments$hasEffect();

@@ -1,8 +1,17 @@
 {
-  "additional_enchantments.keybind.category": "Additional Enchantments",
-  "additional_enchantments.keybind.cycle_tipped": "Cycle [Tipped] configuration",
-  "additional_enchantments.keybind.cycle_homing": "Cycle [Homing] configuration",
-  "additional_enchantments.keybind.cycle_explosive_tip": "Cycle [Explosive Tip] configuration",
+  "keybind.additional_enchantments.category": "Additional Enchantments",
+  "keybind.additional_enchantments.cycle_tipped": "Cycle [Tipped] configuration",
+  "keybind.additional_enchantments.cycle_homing": "Cycle [Homing] configuration",
+  "keybind.additional_enchantments.cycle_explosive_tip": "Cycle [Explosive Tip] configuration",
 
-  "additional_enchantments.msg.cycled_configuration": "Enchantment [%1$s] configuration changed to [%2$s]"
+  "message.additional_enchantments.cycled_configuration": "Enchantment [%1$s] configuration changed to [%2$s]",
+
+  "item.additional_enchantments.shard_arrow": "Shard Arrow",
+
+  "enchantment.additional_enchantments.explosive_tip": "Explosive Tip",
+  "enchantment.additional_enchantments.faster_attacks": "Faster Attacks",
+  "enchantment.additional_enchantments.homing": "Homing",
+  "enchantment.additional_enchantments.shatter": "Shatter",
+  "enchantment.additional_enchantments.straight_shot": "Straight Shot",
+  "enchantment.additional_enchantments.tipped": "Tipped"
 }

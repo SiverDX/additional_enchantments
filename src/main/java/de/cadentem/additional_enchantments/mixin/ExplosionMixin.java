@@ -1,6 +1,6 @@
 package de.cadentem.additional_enchantments.mixin;
 
-import de.cadentem.additional_enchantments.core.ExplosionAccess;
+import de.cadentem.additional_enchantments.core.interfaces.ExplosionAccess;
 import net.minecraft.world.level.Explosion;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

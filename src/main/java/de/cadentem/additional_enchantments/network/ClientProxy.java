@@ -2,12 +2,11 @@ package de.cadentem.additional_enchantments.network;
 
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.capability.CapabilityProvider;
-import de.cadentem.additional_enchantments.core.ProjectileAccess;
+import de.cadentem.additional_enchantments.core.interfaces.ProjectileAccess;
 import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 

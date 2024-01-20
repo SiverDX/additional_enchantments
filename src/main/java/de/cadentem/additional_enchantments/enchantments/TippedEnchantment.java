@@ -1,11 +1,11 @@
 package de.cadentem.additional_enchantments.enchantments;
 
 import de.cadentem.additional_enchantments.capability.CapabilityProvider;
-import de.cadentem.additional_enchantments.core.ArrowAccess;
+import de.cadentem.additional_enchantments.core.interfaces.ArrowAccess;
 import de.cadentem.additional_enchantments.data.EffectTags;
 import de.cadentem.additional_enchantments.enchantments.config.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.enchantments.config.EnchantmentCategories;
-import de.cadentem.additional_enchantments.registry.Enchantments;
+import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Mod.EventBusSubscriber
 public class TippedEnchantment extends ConfigurableEnchantment {
     public TippedEnchantment() {
-        super(Rarity.RARE, EnchantmentCategories.RANGED, EquipmentSlot.MAINHAND);
+        super(Rarity.RARE, EnchantmentCategories.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.TIPPED_ID);
     }
 
     @SubscribeEvent
@@ -36,7 +36,7 @@ public class TippedEnchantment extends ConfigurableEnchantment {
 
         if (event.getEntity() instanceof Arrow arrow && arrow.getOwner() instanceof LivingEntity livingOwner) {
             if (!((ArrowAccess) arrow).additional_enchantments$hasEffect()) {
-                int level = livingOwner.getMainHandItem().getEnchantmentLevel(Enchantments.TIPPED.get());
+                int level = livingOwner.getMainHandItem().getEnchantmentLevel(AEEnchantments.TIPPED.get());
 
                 if (level > 0) {
                     CapabilityProvider.getCapability(livingOwner).ifPresent(configuration -> {

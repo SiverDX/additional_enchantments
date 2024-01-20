@@ -1,6 +1,6 @@
 package de.cadentem.additional_enchantments.mixin;
 
-import de.cadentem.additional_enchantments.core.ArrowAccess;
+import de.cadentem.additional_enchantments.core.interfaces.ArrowAccess;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
@@ -34,6 +34,7 @@ public abstract class ArrowMixin implements ArrowAccess {
 
     @Inject(method = "getPickupItem", at = @At("HEAD"), cancellable = true)
     private void additional_enchantments$returnNormalArrow(final CallbackInfoReturnable<ItemStack> callback) {
+        // TODO :: alternative -> set pickup to creative only
         if (additional_enchantments$hasModifiedEffects) {
             callback.setReturnValue(new ItemStack(Items.ARROW));
         }

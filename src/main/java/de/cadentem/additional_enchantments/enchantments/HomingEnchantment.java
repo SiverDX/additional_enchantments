@@ -1,10 +1,10 @@
 package de.cadentem.additional_enchantments.enchantments;
 
-import de.cadentem.additional_enchantments.core.LivingEntityAccess;
-import de.cadentem.additional_enchantments.core.ProjectileAccess;
+import de.cadentem.additional_enchantments.core.interfaces.LivingEntityAccess;
+import de.cadentem.additional_enchantments.core.interfaces.ProjectileAccess;
 import de.cadentem.additional_enchantments.enchantments.config.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.enchantments.config.EnchantmentCategories;
-import de.cadentem.additional_enchantments.registry.Enchantments;
+import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,7 +21,8 @@ public class HomingEnchantment extends ConfigurableEnchantment {
         MONSTER,
         ANIMAL,
         BOSSES,
-        ANY
+        ANY,
+        NONE
     }
 
     public enum Priority {
@@ -32,7 +33,7 @@ public class HomingEnchantment extends ConfigurableEnchantment {
     }
 
     public HomingEnchantment() {
-        super(Rarity.RARE, EnchantmentCategories.RANGED, EquipmentSlot.MAINHAND);
+        super(Rarity.RARE, EnchantmentCategories.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.HOMING_ID);
     }
 
     @SubscribeEvent
@@ -43,7 +44,7 @@ public class HomingEnchantment extends ConfigurableEnchantment {
 
         if (event.getEntity() instanceof Projectile projectile) {
             if (projectile.getOwner() instanceof LivingEntity livingOwner) {
-                int level = livingOwner.getMainHandItem().getEnchantmentLevel(Enchantments.HOMING.get());
+                int level = livingOwner.getMainHandItem().getEnchantmentLevel(AEEnchantments.HOMING.get());
 
                 if (level > 0) {
                     ((ProjectileAccess) projectile).additional_enchantments$setHomingContext(new HomingContext(null, level));

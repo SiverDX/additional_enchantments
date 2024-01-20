@@ -1,13 +1,13 @@
 package de.cadentem.additional_enchantments.mixin;
 
 import de.cadentem.additional_enchantments.capability.CapabilityProvider;
-import de.cadentem.additional_enchantments.core.LivingEntityAccess;
-import de.cadentem.additional_enchantments.core.ProjectileAccess;
+import de.cadentem.additional_enchantments.core.interfaces.LivingEntityAccess;
+import de.cadentem.additional_enchantments.core.interfaces.ProjectileAccess;
 import de.cadentem.additional_enchantments.data.EntityTags;
 import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
 import de.cadentem.additional_enchantments.network.NetworkHandler;
 import de.cadentem.additional_enchantments.network.SyncHomingData;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,19 +20,16 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 @Mixin(Projectile.class)
 public abstract class ProjectileMixin extends Entity implements ProjectileAccess {
-    @Shadow @Nullable public abstract Entity getOwner();
-
+    // TODO :: re-set context on change owner call?
     @Unique
     public HomingEnchantment.HomingContext additional_enchantments$homingContext;
 
@@ -96,16 +93,16 @@ public abstract class ProjectileMixin extends Entity implements ProjectileAccess
             return;
         }
 
-        if (!(getLevel() instanceof ServerLevel serverLevel)) {
+        if (!(instance.getOwner() instanceof ServerPlayer serverPlayer)) {
             return;
         }
 
-        if (!(getOwner() instanceof LivingEntity livingOwner)) {
-            return;
-        }
+        CapabilityProvider.getCapability(serverPlayer).ifPresent(configuration -> {
+            if (configuration.homingTypeFilter == HomingEnchantment.TypeFilter.NONE) {
+                return;
+            }
 
-        CapabilityProvider.getCapability(livingOwner).ifPresent(configuration -> {
-            List<LivingEntity> entities = serverLevel.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(5 + additional_enchantments$homingContext.enchantmentLevel * 2), entity -> {
+            List<LivingEntity> entities = serverPlayer.getLevel().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(5 + additional_enchantments$homingContext.enchantmentLevel * 2), entity -> {
                 if (entity.getType().is(EntityTags.HOMING_BLACKLIST)) {
                     return false;
                 }
@@ -123,7 +120,7 @@ public abstract class ProjectileMixin extends Entity implements ProjectileAccess
                 }
 
                 // Don't target owner or allies
-                return livingOwner != entity && !entity.isAlliedTo(livingOwner) && (!(entity instanceof TamableAnimal tamable) || !tamable.isOwnedBy(livingOwner));
+                return serverPlayer != entity && !entity.isAlliedTo(serverPlayer) && (!(entity instanceof TamableAnimal tamable) || !tamable.isOwnedBy(serverPlayer));
             });
 
             if (entities.isEmpty()) {
@@ -133,7 +130,7 @@ public abstract class ProjectileMixin extends Entity implements ProjectileAccess
             LivingEntity target;
 
             if (configuration.homingPriority == HomingEnchantment.Priority.RANDOM) {
-                target = entities.get(livingOwner.getRandom().nextInt(entities.size()));
+                target = entities.get(serverPlayer.getRandom().nextInt(entities.size()));
             } else {
                 entities.sort((a, b) -> {
                     if (configuration.homingPriority == HomingEnchantment.Priority.CLOSEST) {
@@ -158,7 +155,7 @@ public abstract class ProjectileMixin extends Entity implements ProjectileAccess
             additional_enchantments$homingContext.target = target;
 
             // Sync target to client for accurate movement of the projectile
-            serverLevel.getPlayers(player -> player.distanceToSqr(instance) <= 32 * 32).forEach(player -> NetworkHandler.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new SyncHomingData(instance.getId(), target.getId(), additional_enchantments$homingContext.enchantmentLevel)));
+            serverPlayer.getLevel().getPlayers(player -> player.distanceToSqr(instance) <= 32 * 32).forEach(player -> NetworkHandler.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new SyncHomingData(instance.getId(), target.getId(), additional_enchantments$homingContext.enchantmentLevel)));
         });
     }
 }
