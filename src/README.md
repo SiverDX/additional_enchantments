@@ -46,9 +46,9 @@
 - Enchantment level increases the shatter aoe radius and damage
 
 ## Straight Shot (Ranged)
-- Default max. level: 1
-- Disables gravity for shot projectiles and has a chance to damage `Enderman`
-- Enchantment level increases the chance to damage `Enderman`
+- Default max. level: 4
+- Disables gravity for shot projectiles and has a chance to hit `Enderman`
+- Enchantment level increases the chance to hit `Enderman`
 
 ## Tipped (Ranged)
 - Default max. level: 4

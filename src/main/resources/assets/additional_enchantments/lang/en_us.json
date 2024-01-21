@@ -9,11 +9,24 @@
   "item.additional_enchantments.shard_arrow": "Shard Arrow",
 
   "enchantment.additional_enchantments.explosive_tip": "Explosive Tip",
+  "enchantment.additional_enchantments.explosive_tip.desc": "Causes an explosion on projectile impact",
   "enchantment.additional_enchantments.faster_attacks": "Faster Attacks",
+  "enchantment.additional_enchantments.faster_attacks.desc": "Increases the attack speed of weapons",
   "enchantment.additional_enchantments.homing": "Homing",
+  "enchantment.additional_enchantments.homing.desc": "Projectiles home in to their target",
   "enchantment.additional_enchantments.poison": "Poison",
+  "enchantment.additional_enchantments.poison.desc": "Attacks inflict their target with Poison",
   "enchantment.additional_enchantments.shatter": "Shatter",
+  "enchantment.additional_enchantments.shatter.desc": "Allows the usage of Amethyst Shard as arrows which may explode on impact, dealing area damage",
   "enchantment.additional_enchantments.straight_shot": "Straight Shot",
+  "enchantment.additional_enchantments.straight_shot.desc": "Projectiles are not affected by gravity and have a chance to hit Enderman",
   "enchantment.additional_enchantments.tipped": "Tipped",
-  "enchantment.additional_enchantments.wither": "Wither"
+  "enchantment.additional_enchantments.tipped.desc": "Projectiles gain random effects",
+  "enchantment.additional_enchantments.wither": "Wither",
+  "enchantment.additional_enchantments.wither.desc": "Attacks inflict their target with Wither",
+
+  "effect.additional_enchantments.poison": "Poison",
+  "effect.additional_enchantments.poison.description": "Deals Magic damage - damage and tick rate scale with level",
+  "effect.additional_enchantments.wither": "Wither",
+  "effect.additional_enchantments.wither.description": "Deals Wither damage - damage and tick rate scale with level"
 }

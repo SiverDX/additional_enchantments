@@ -1,7 +1,13 @@
 package de.cadentem.additional_enchantments.client;
 
+import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.registry.AEEntityTypes;
+import de.cadentem.additional_enchantments.registry.AEItems;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -30,5 +36,9 @@ public class ClientRegistry {
     @SubscribeEvent
     public static void registerEntityRenderer(final EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(AEEntityTypes.SHARD_ARROW.get(), ShardArrowRenderer::new);
+    }
+
+    public static void registerItemProperties() {
+        ItemProperties.register(Items.CROSSBOW, new ResourceLocation(AE.MODID, "shard"), (stack, level, livingEntity, seed) -> livingEntity != null && CrossbowItem.isCharged(stack) && CrossbowItem.containsChargedProjectile(stack, AEItems.SHARD_ARROW.get()) ? 1 :0);
     }
 }
