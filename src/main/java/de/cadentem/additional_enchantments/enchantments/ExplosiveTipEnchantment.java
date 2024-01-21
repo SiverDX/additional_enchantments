@@ -4,7 +4,7 @@ import de.cadentem.additional_enchantments.capability.CapabilityProvider;
 import de.cadentem.additional_enchantments.core.interfaces.ExplosionAccess;
 import de.cadentem.additional_enchantments.core.interfaces.ProjectileAccess;
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
-import de.cadentem.additional_enchantments.enchantments.base.EnchantmentCategories;
+import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.server.level.ServerLevel;
@@ -26,7 +26,7 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber
 public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
     public ExplosiveTipEnchantment() {
-        super(Rarity.RARE, EnchantmentCategories.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.EXPLOSIVE_TIP_ID);
+        super(Rarity.RARE, AEEnchantmentCategory.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.EXPLOSIVE_TIP_ID);
     }
 
     @SubscribeEvent

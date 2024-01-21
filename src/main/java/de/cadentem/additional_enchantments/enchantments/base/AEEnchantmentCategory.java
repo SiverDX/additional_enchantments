@@ -4,7 +4,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraftforge.common.Tags;
 
-public class EnchantmentCategories {
+public class AEEnchantmentCategory {
     public static final EnchantmentCategory RANGED = EnchantmentCategory.create("ranged", item -> {
         if (item instanceof BowItem || item instanceof CrossbowItem) {
             return true;

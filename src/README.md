@@ -11,6 +11,18 @@
 - Increases attack speed
 - Enchantment level increases the amount
 
+## Poison (Melee)
+- Default max. level: 6
+- Applies a poison effect to entities which deals magic damage
+- Enchantment level increases the duration and damage while also reducing the duration between damage ticks
+- Not compatible with the `Wither` enchantment
+
+## Wither (Melee)
+- Default max. level: 6
+- Applies a wither effect to entities which deals wither damage
+- Enchantment level increases the duration and damage while also reducing the duration between damage ticks
+- Not compatible with the `Poison` enchantment
+
 ## Explosive Tip (Ranged)
 - Default max. level: 4
 - Causes an explosion on impact (which does not damage the shooter or their allies, experience orbs or items)

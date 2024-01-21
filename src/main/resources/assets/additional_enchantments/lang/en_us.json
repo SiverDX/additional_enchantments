@@ -11,7 +11,9 @@
   "enchantment.additional_enchantments.explosive_tip": "Explosive Tip",
   "enchantment.additional_enchantments.faster_attacks": "Faster Attacks",
   "enchantment.additional_enchantments.homing": "Homing",
+  "enchantment.additional_enchantments.poison": "Poison",
   "enchantment.additional_enchantments.shatter": "Shatter",
   "enchantment.additional_enchantments.straight_shot": "Straight Shot",
-  "enchantment.additional_enchantments.tipped": "Tipped"
+  "enchantment.additional_enchantments.tipped": "Tipped",
+  "enchantment.additional_enchantments.wither": "Wither"
 }

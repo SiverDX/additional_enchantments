@@ -2,7 +2,7 @@ package de.cadentem.additional_enchantments.enchantments;
 
 import de.cadentem.additional_enchantments.core.interfaces.ProjectileAccess;
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
-import de.cadentem.additional_enchantments.enchantments.base.EnchantmentCategories;
+import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber
 public class StraightShotEnchantment extends ConfigurableEnchantment {
     public StraightShotEnchantment() {
-        super(Rarity.UNCOMMON, EnchantmentCategories.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.STRAIGHT_SHOT_ID);
+        super(Rarity.UNCOMMON, AEEnchantmentCategory.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.STRAIGHT_SHOT_ID);
     }
 
     @SubscribeEvent

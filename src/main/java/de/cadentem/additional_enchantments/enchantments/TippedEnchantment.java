@@ -4,7 +4,7 @@ import de.cadentem.additional_enchantments.capability.CapabilityProvider;
 import de.cadentem.additional_enchantments.core.interfaces.ArrowAccess;
 import de.cadentem.additional_enchantments.data.EffectTags;
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
-import de.cadentem.additional_enchantments.enchantments.base.EnchantmentCategories;
+import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Mod.EventBusSubscriber
 public class TippedEnchantment extends ConfigurableEnchantment {
     public TippedEnchantment() {
-        super(Rarity.RARE, EnchantmentCategories.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.TIPPED_ID);
+        super(Rarity.RARE, AEEnchantmentCategory.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.TIPPED_ID);
     }
 
     @SubscribeEvent

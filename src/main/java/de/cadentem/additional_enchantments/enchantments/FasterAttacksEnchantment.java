@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.enchantments;
 
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
-import de.cadentem.additional_enchantments.enchantments.base.EnchantmentCategories;
+import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -18,7 +18,7 @@ public class FasterAttacksEnchantment extends ConfigurableEnchantment {
     private static final String ATTRIBUTE_UUID = "578e84b7-327d-4a19-87f1-cb5de98a977d";
 
     public FasterAttacksEnchantment() {
-        super(Rarity.VERY_RARE, EnchantmentCategories.MELEE, EquipmentSlot.MAINHAND, AEEnchantments.FASTER_ATTACKS_ID);
+        super(Rarity.VERY_RARE, AEEnchantmentCategory.MELEE, EquipmentSlot.MAINHAND, AEEnchantments.FASTER_ATTACKS_ID);
     }
 
     @SubscribeEvent

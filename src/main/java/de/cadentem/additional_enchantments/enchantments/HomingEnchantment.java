@@ -3,7 +3,7 @@ package de.cadentem.additional_enchantments.enchantments;
 import de.cadentem.additional_enchantments.core.interfaces.LivingEntityAccess;
 import de.cadentem.additional_enchantments.core.interfaces.ProjectileAccess;
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
-import de.cadentem.additional_enchantments.enchantments.base.EnchantmentCategories;
+import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -33,7 +33,7 @@ public class HomingEnchantment extends ConfigurableEnchantment {
     }
 
     public HomingEnchantment() {
-        super(Rarity.RARE, EnchantmentCategories.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.HOMING_ID);
+        super(Rarity.RARE, AEEnchantmentCategory.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.HOMING_ID);
     }
 
     @SubscribeEvent

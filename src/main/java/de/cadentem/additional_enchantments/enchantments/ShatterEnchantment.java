@@ -2,7 +2,7 @@ package de.cadentem.additional_enchantments.enchantments;
 
 import de.cadentem.additional_enchantments.core.entity.ShardArrow;
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
-import de.cadentem.additional_enchantments.enchantments.base.EnchantmentCategories;
+import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import de.cadentem.additional_enchantments.registry.AEItems;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber
 public class ShatterEnchantment extends ConfigurableEnchantment {
     public ShatterEnchantment() {
-        super(Rarity.RARE, EnchantmentCategories.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.SHATTER_ID);
+        super(Rarity.RARE, AEEnchantmentCategory.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.SHATTER_ID);
     }
 
     @SubscribeEvent
