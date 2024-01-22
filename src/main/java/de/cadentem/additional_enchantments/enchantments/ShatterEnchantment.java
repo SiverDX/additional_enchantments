@@ -1,8 +1,8 @@
 package de.cadentem.additional_enchantments.enchantments;
 
 import de.cadentem.additional_enchantments.core.entity.ShardArrow;
-import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
+import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import de.cadentem.additional_enchantments.registry.AEItems;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -31,7 +31,7 @@ public class ShatterEnchantment extends ConfigurableEnchantment {
     @SubscribeEvent // TODO :: check for improvements - what if the arrow gets spawned by sth. else (alternative would be to mixin into the items -> less compatible)
     public static void applyAmmoCost(final EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof ShardArrow shardArrow) {
-            if (shardArrow.getOwner() instanceof Player player) {
+            if (shardArrow.getOwner() instanceof Player player && !player.isCreative()) {
                 int slot = player.getInventory().findSlotMatchingItem(Items.AMETHYST_SHARD.getDefaultInstance());
 
                 if (slot != -1) {
@@ -46,7 +46,7 @@ public class ShatterEnchantment extends ConfigurableEnchantment {
         int level = event.getProjectileWeaponItemStack().getEnchantmentLevel(AEEnchantments.SHATTER.get());
 
         if (level > 0) {
-            if (event.getEntity() instanceof Player player && !player.isCreative()) {
+            if (event.getEntity() instanceof Player player) {
                 int slot = player.getInventory().findSlotMatchingItem(Items.AMETHYST_SHARD.getDefaultInstance());
 
                 if (slot == -1) {
@@ -54,10 +54,9 @@ public class ShatterEnchantment extends ConfigurableEnchantment {
                 }
 
                 event.setProjectileItemStack(createAmmo());
-                return;
+            } else {
+                event.setProjectileItemStack(createAmmo());
             }
-
-            event.setProjectileItemStack(createAmmo());
         }
     }
 

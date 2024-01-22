@@ -13,6 +13,8 @@
     "ProjectileMixin"
   ],
   "client": [
+    "MinecraftMixin",
+    "ModelBakeryMixin",
     "LevelRendererMixin"
   ],
   "injectors": {

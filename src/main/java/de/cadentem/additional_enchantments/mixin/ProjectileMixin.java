@@ -118,6 +118,10 @@ public abstract class ProjectileMixin extends Entity implements ProjectileAccess
                     return false;
                 }
 
+                if (entity.isInvulnerable() || (entity.isInvisible() && !entity.isCurrentlyGlowing())) {
+                    return false;
+                }
+
                 if (configuration.homingTypeFilter == HomingEnchantment.TypeFilter.MONSTER && !(entity instanceof Monster)) {
                     return false;
                 }

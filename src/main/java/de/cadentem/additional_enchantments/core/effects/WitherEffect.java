@@ -19,6 +19,6 @@ public class WitherEffect extends MobEffect {
 
     @Override
     public boolean isDurationEffectTick(int duration, int amplifier) {
-        return duration % (Math.min(1, 20 - amplifier / 2)) == 0;
+        return duration % (Math.max(1, 20 - amplifier / 2)) == 0;
     }
 }

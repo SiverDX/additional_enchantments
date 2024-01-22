@@ -25,14 +25,15 @@
 
 ## Explosive Tip (Ranged)
 - Default max. level: 4
-- Causes an explosion on impact (which does not damage the shooter or their allies, experience orbs or items)
+- Causes an explosion on impact (which does not damage the shooter, their allies, experience orbs or items)
 - Enchantment level increases explosion radius
 - It's possible to switch between two modes (NONE and BREAK (which breaks blocks)) with the keybind (default being `J`)
 
 ## Homing (Ranged)
 - Default max. level: 4
 - Projectiles fly towards a chosen target
-  - Targets can be blacklisted with `additional_enchantments:homing_blacklist` (`minecraft:villager` is added by default)
+  - Targets can be blacklisted with `additional_enchantments:homing_blacklist` (`minecraft:villager` and `minecraft:iron_golem` are added by default)
+  - Invisible entities are only targeted if they're glowing (server-side (`Perception` is client-only))
 - Enchantment level increases the radius in which a target gets picked (+ it slightly increases velocity of the arrow)
 - It's possible to switch between various modes with the keybind (default being `H`)
     - **Type**: MONSTER, ANIMAL, BOSSES (`forge:bosses`), ANY and NONE (homing effect is not being applied)
@@ -41,9 +42,9 @@
 ## Shatter (Ranged)
 - Default max. level: 4
 - Allows the usage of `Amethyst Shards` as projectiles
-  - There is a high chance for them to break on impact which will deal damage in an aoe radius (the projectile and aoe deal magic damage)
-    - Targets can be blacklisted with `additional_enchantments:shatter_aoe_blacklist` (`minecraft:villager` is added by default)
-- Enchantment level increases the shatter aoe radius and damage
+  - There is a high chance for them to break on impact which will deal damage in an area (the projectile and area damage are `Magic`)
+    - Targets can be blacklisted with `additional_enchantments:shatter_aoe_blacklist` (`minecraft:villager` and `minecraft:iron_golem` are added by default)
+- Enchantment level increases the shatter area of effect and damage
 
 ## Straight Shot (Ranged)
 - Default max. level: 4

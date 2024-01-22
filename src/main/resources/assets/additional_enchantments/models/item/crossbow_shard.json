@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:item/crossbow",
   "textures": {
-    "layer0": "additional_enchantments:item/crossbow_shard"
+    "layer0": "minecraft:item/crossbow_pulling_2",
+    "layer1": "additional_enchantments:item/crossbow_shard"
   }
 }
