@@ -1,8 +1,10 @@
 package de.cadentem.additional_enchantments.capability;
 
 import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
+import de.cadentem.additional_enchantments.enchantments.PerceptionEnchantment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Explosion;
 
 public class Configuration {
@@ -10,6 +12,8 @@ public class Configuration {
     public Explosion.BlockInteraction explosionType = Explosion.BlockInteraction.BREAK;
     public HomingEnchantment.TypeFilter homingTypeFilter = HomingEnchantment.TypeFilter.ANY;
     public HomingEnchantment.Priority homingPriority = HomingEnchantment.Priority.CLOSEST;
+    public PerceptionEnchantment.DisplayType displayType = PerceptionEnchantment.DisplayType.ALL;
+    public Rarity itemFilter = Rarity.COMMON;
 
     public void cycleEffectFilter() {
         effectFilter = (MobEffectCategory) cycle(effectFilter);
@@ -30,6 +34,14 @@ public class Configuration {
 
     public void cycleHomingPriority() {
         homingPriority = (HomingEnchantment.Priority) cycle(homingPriority);
+    }
+
+    public void cycleDisplayType() {
+        displayType = (PerceptionEnchantment.DisplayType) cycle(displayType);
+    }
+
+    public void cycleItemFilter() {
+        itemFilter = (Rarity) cycle(itemFilter);
     }
 
     private Enum<?> cycle(final Enum<?> type) {

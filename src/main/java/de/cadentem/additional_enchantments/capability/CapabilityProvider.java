@@ -10,7 +10,13 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CapabilityProvider implements ICapabilitySerializable<CompoundTag> {
+    public static final Map<String, LazyOptional<Configuration>> SERVER_CACHE = new HashMap<>();
+    public static final Map<String, LazyOptional<Configuration>> CLIENT_CACHE = new HashMap<>();
+
     private final Configuration handler;
     private final LazyOptional<Configuration> instance;
 
@@ -36,7 +42,13 @@ public class CapabilityProvider implements ICapabilitySerializable<CompoundTag> 
 
     public static LazyOptional<Configuration> getCapability(final Entity entity) {
         if (entity instanceof Player) {
-            return entity.getCapability(CapabilityHandler.CAPABILITY);
+            Map<String, LazyOptional<Configuration>> sidedCache = entity.getLevel().isClientSide() ? CLIENT_CACHE : SERVER_CACHE;
+
+            return sidedCache.computeIfAbsent(entity.getStringUUID(), key -> {
+                LazyOptional<Configuration> capability = entity.getCapability(CapabilityHandler.CAPABILITY);
+                capability.addListener(ignored -> sidedCache.remove(entity.getStringUUID()));
+                return capability;
+            });
         }
 
         return LazyOptional.empty();

@@ -31,6 +31,10 @@ public class ClientRegistry {
         KeyHandler.CYCLE_EXPLOSIVE_TIP = new KeyMapping("keybind.additional_enchantments.cycle_explosive_tip", GLFW.GLFW_KEY_J, "keybind.additional_enchantments.category");
         KeyHandler.CYCLE_EXPLOSIVE_TIP.setKeyConflictContext(KeyConflictContext.IN_GAME);
         event.register(KeyHandler.CYCLE_EXPLOSIVE_TIP);
+
+        KeyHandler.CYCLE_PERCEPTION = new KeyMapping("keybind.additional_enchantments.cycle_perception", GLFW.GLFW_KEY_U, "keybind.additional_enchantments.category");
+        KeyHandler.CYCLE_PERCEPTION.setKeyConflictContext(KeyConflictContext.IN_GAME);
+        event.register(KeyHandler.CYCLE_PERCEPTION);
     }
 
     @SubscribeEvent

@@ -1,9 +1,9 @@
 # Enchantments
-**Enchantment Categories**
-- Melee: Sword, Axe and Trident
-- Ranged: Bow and Crossbow
+### Enchantment Categories
+- **Melee**: Sword, Axe and Trident
+- **Ranged**: Bow and Crossbow
 
-**Configuration**
+### Configuration
 - All enchantments are configurable
 
 ## Faster Attacks (Melee)
@@ -56,3 +56,14 @@
 - Enchantment level increases the amount, amplifier and duration of the effects
 - It's possible to switch between effect categories (HARMFUL, BENEFICIAL and NEUTRAL (can apply all)) with the keybind (default being `G`)
   - Effects can be blacklisted with `additional_enchantmetns:tipped_blacklist`
+
+## Perception (Helmet)
+- Default max. level: 4
+- Outlines nearby entities and distinguishes them by color
+  - DARK_PURPLE: `forge:bosses`, RED: Monsters, DARK_GREEN: Tamable Animals, GREEN: Animals, BLUE: Other
+  - Items are colored depending on the color of their display name (GOLD if none is available)
+- Enchantment level increases the range
+- It's possible to switch between different modes (ALL, NO_ITEMS and NONE) with the keybind (default being `U`)
+  - If `Shift` is pressed it will cycle through options for items, filtering them by rarity (COMMON, UNCOMMON, RARE, EPIC)
+  - Entities can be blacklisted with `additional_enchantments:perception_blacklist`
+  - It's configurable whether invisible entities are outlined or not (`true` by default)

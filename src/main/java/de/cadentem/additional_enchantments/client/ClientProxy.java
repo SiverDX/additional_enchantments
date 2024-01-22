@@ -1,14 +1,17 @@
-package de.cadentem.additional_enchantments.network;
+package de.cadentem.additional_enchantments.client;
 
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.capability.CapabilityProvider;
 import de.cadentem.additional_enchantments.core.interfaces.ProjectileAccess;
 import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import org.jetbrains.annotations.Nullable;
 
 public class ClientProxy {
     public static void handleSyncHomingData(int projectileId, int targetId, int enchantmentLevel) {
@@ -33,10 +36,14 @@ public class ClientProxy {
     }
 
     public static void handleSyncCapability(final CompoundTag tag) {
-        LocalPlayer localPlayer = Minecraft.getInstance().player;
+        CapabilityProvider.getCapability(Minecraft.getInstance().player).ifPresent(configuration -> configuration.deserializeNBT(tag));
+    }
 
-        CapabilityProvider.getCapability(localPlayer).ifPresent(configuration -> {
-            configuration.deserializeNBT(tag);
-        });
+    public static @Nullable Player getLocalPlayer() {
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            return Minecraft.getInstance().player;
+        }
+
+        return null;
     }
 }

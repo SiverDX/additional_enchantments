@@ -18,6 +18,7 @@ public class AEEnchantments {
     public static final String SHATTER_ID = "shatter";
     public static final String POISON_ID = "poison";
     public static final String WITHER_ID = "wither";
+    public static final String PERCEPTION_ID = "perception";
 
     public static final RegistryObject<HomingEnchantment> HOMING = ENCHANTMENTS.register(HOMING_ID, HomingEnchantment::new);
     public static final RegistryObject<TippedEnchantment> TIPPED = ENCHANTMENTS.register(TIPPED_ID, TippedEnchantment::new);
@@ -27,4 +28,5 @@ public class AEEnchantments {
     public static final RegistryObject<ShatterEnchantment> SHATTER = ENCHANTMENTS.register(SHATTER_ID, ShatterEnchantment::new);
     public static final RegistryObject<PoisonEnchantment> POISON = ENCHANTMENTS.register(POISON_ID, PoisonEnchantment::new);
     public static final RegistryObject<WitherEnchantment> WITHER = ENCHANTMENTS.register(WITHER_ID, WitherEnchantment::new);
+    public static final RegistryObject<PerceptionEnchantment> PERCEPTION = ENCHANTMENTS.register(PERCEPTION_ID, PerceptionEnchantment::new);
 }

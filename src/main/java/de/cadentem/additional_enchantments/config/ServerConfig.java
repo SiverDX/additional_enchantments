@@ -11,6 +11,8 @@ public class ServerConfig {
     public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec SPEC;
 
+    public static ForgeConfigSpec.BooleanValue PERCEPTION_SHOW_INVISIBLE;
+
     public static final Map<String, EnchantmentConfiguration> enchantmentConfigurations = new HashMap<>();
 
     public static int DEFAULT_MAX_LEVEL = 4;
@@ -24,7 +26,8 @@ public class ServerConfig {
                 AEEnchantments.SHATTER_ID,
                 AEEnchantments.STRAIGHT_SHOT_ID,
                 AEEnchantments.TIPPED_ID,
-                AEEnchantments.WITHER_ID
+                AEEnchantments.WITHER_ID,
+                AEEnchantments.PERCEPTION_ID
         );
 
         for (String enchantment : enchantments) {
@@ -43,6 +46,10 @@ public class ServerConfig {
             enchantmentConfiguration.isAllowedOnBooks = BUILDER.comment("Allow the enchantment to be applied to books").define("is_allowed_on_books", true);
             enchantmentConfiguration.isTradeable = BUILDER.comment("Determines if the enchantment appears in trades").define("is_tradeable", true);
             enchantmentConfiguration.isTreasure = BUILDER.comment("Treasure enchantments usually do not appear in the enchantment table").define("is_treasure", false);
+
+            switch (enchantment) {
+                case AEEnchantments.PERCEPTION_ID -> PERCEPTION_SHOW_INVISIBLE = BUILDER.comment("Enable / Disable outlines on invisible entities").define("perception_show_invisible", true);
+            }
 
             enchantmentConfigurations.put(enchantment, enchantmentConfiguration);
 

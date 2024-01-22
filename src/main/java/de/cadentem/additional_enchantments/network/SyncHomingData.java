@@ -1,5 +1,6 @@
 package de.cadentem.additional_enchantments.network;
 
+import de.cadentem.additional_enchantments.client.ClientProxy;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 

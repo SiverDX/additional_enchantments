@@ -97,9 +97,7 @@ public abstract class ProjectileMixin extends Entity implements ProjectileAccess
 
             motion = motion.normalize();
             // Adjust it to the original velocity
-            motion = motion.scale(velocity.length() * 0.95);
-            // Causes the arrow to get faster per tick
-            motion = motion.scale(1 + additional_enchantments$homingContext.enchantmentLevel * 0.1);
+            motion = motion.scale(velocity.length() * (0.95 + additional_enchantments$homingContext.enchantmentLevel * 0.01));
 
             instance.setDeltaMovement(motion);
 

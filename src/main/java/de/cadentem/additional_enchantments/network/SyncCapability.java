@@ -1,6 +1,7 @@
 package de.cadentem.additional_enchantments.network;
 
 import de.cadentem.additional_enchantments.capability.CapabilityProvider;
+import de.cadentem.additional_enchantments.client.ClientProxy;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkDirection;

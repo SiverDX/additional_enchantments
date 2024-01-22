@@ -3,6 +3,7 @@
   "keybind.additional_enchantments.cycle_tipped": "Cycle [Tipped] configuration",
   "keybind.additional_enchantments.cycle_homing": "Cycle [Homing] configuration",
   "keybind.additional_enchantments.cycle_explosive_tip": "Cycle [Explosive Tip] configuration",
+  "keybind.additional_enchantments.cycle_perception": "Cycle [Perception] configuration",
 
   "message.additional_enchantments.cycled_configuration": "Enchantment [%1$s] configuration changed to [%2$s]",
 
@@ -24,6 +25,8 @@
   "enchantment.additional_enchantments.tipped.desc": "Projectiles gain random effects",
   "enchantment.additional_enchantments.wither": "Wither",
   "enchantment.additional_enchantments.wither.desc": "Attacks inflict their target with Wither",
+  "enchantment.additional_enchantments.perception": "Perception",
+  "enchantment.additional_enchantments.perception.desc": "Outlines nearby entities and distinguishes them by color",
 
   "effect.additional_enchantments.poison": "Poison",
   "effect.additional_enchantments.poison.description": "Deals Magic damage - damage and tick rate scale with level",
