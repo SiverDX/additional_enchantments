@@ -27,6 +27,8 @@
   "enchantment.additional_enchantments.wither.desc": "Attacks inflict their target with Wither",
   "enchantment.additional_enchantments.perception": "Perception",
   "enchantment.additional_enchantments.perception.desc": "Outlines nearby entities and distinguishes them by color",
+  "enchantment.additional_enchantments.confusion": "Confusion",
+  "enchantment.additional_enchantments.confusion.desc": "Has a chance to cause the attacked target to retaliate against a nearby entity, dropping you as a target",
 
   "effect.additional_enchantments.poison": "Poison",
   "effect.additional_enchantments.poison.description": "Deals Magic damage - damage and tick rate scale with level",

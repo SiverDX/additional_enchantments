@@ -23,6 +23,12 @@
 - Enchantment level increases the duration and damage while also reducing the duration between damage ticks
 - Not compatible with the `Poison` enchantment
 
+## Confusion (Melee)
+- Default max. level: 5
+- Has a chance to cause the attacked target to retaliate against a randomly chosen nearby entity, dropping the attacker as a target
+  - Targets can be blacklisted with `additional_enchantments:confusion_blacklist`
+- Enchantment level increases the chance of this effect to occur and also the range to check against possible retaliation targets
+
 ## Explosive Tip (Ranged)
 - Default max. level: 4
 - Causes an explosion on impact (which does not damage the shooter, their allies, experience orbs or items)

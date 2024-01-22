@@ -14,6 +14,7 @@ public class EntityTags extends EntityTypeTagsProvider {
     public static final TagKey<EntityType<?>> HOMING_BLACKLIST = new TagKey<>(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "homing_blacklist"));
     public static final TagKey<EntityType<?>> SHATTER_AOE_BLACKLIST = new TagKey<>(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "shatter_aoe_blacklist"));
     public static final TagKey<EntityType<?>> PERCEPTION_BLACKLIST = new TagKey<>(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "perception_blacklist"));
+    public static final TagKey<EntityType<?>> CONFUSION_BLACKLIST = new TagKey<>(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "confusion_blacklist"));
 
     public EntityTags(final DataGenerator generator, @Nullable final ExistingFileHelper existingFileHelper) {
         super(generator, AE.MODID, existingFileHelper);
@@ -30,5 +31,7 @@ public class EntityTags extends EntityTypeTagsProvider {
                 .add(EntityType.IRON_GOLEM);
 
         tag(PERCEPTION_BLACKLIST);
+
+        tag(CONFUSION_BLACKLIST);
     }
 }
