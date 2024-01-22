@@ -19,7 +19,7 @@ public abstract class ModelBakeryMixin {
     private static final ResourceLocation additional_enchantments$CROSSBOW = new ResourceLocation("item/crossbow");
 
     @Inject(method = "loadBlockModel", at = @At("RETURN"))
-    private void addOverride(final ResourceLocation location, final CallbackInfoReturnable<BlockModel> callback) {
+    private void additional_enchantments$addOverride(final ResourceLocation location, final CallbackInfoReturnable<BlockModel> callback) {
         if (location.equals(additional_enchantments$CROSSBOW)) {
             callback.getReturnValue().getOverrides().add(new ItemOverride(new ResourceLocation(AE.MODID, "item/crossbow_shard"), List.of(
                 new ItemOverride.Predicate(new ResourceLocation("charged"), 1),

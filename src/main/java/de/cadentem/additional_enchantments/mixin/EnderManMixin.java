@@ -18,7 +18,7 @@ public abstract class EnderManMixin extends Monster {
     }
 
     @Inject(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/damagesource/DamageSource;getDirectEntity()Lnet/minecraft/world/entity/Entity;", shift = At.Shift.AFTER), cancellable = true)
-    private void damageByArrow(final DamageSource source, float amount, final CallbackInfoReturnable<Boolean> callback) {
+    private void additional_enchantments$damageByArrow(final DamageSource source, float amount, final CallbackInfoReturnable<Boolean> callback) {
         if (source.getDirectEntity() instanceof ProjectileAccess access) {
             int level = access.additional_enchantments$getStraightShotEnchantmentLevel();
 

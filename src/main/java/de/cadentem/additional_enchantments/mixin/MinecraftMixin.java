@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin {
     @Inject(method = "shouldEntityAppearGlowing", at = @At("HEAD"), cancellable = true)
-    private void handlePerceptionEnchantment(final Entity entity, final CallbackInfoReturnable<Boolean> callback) {
+    private void additional_enchantments$handlePerceptionEnchantment(final Entity entity, final CallbackInfoReturnable<Boolean> callback) {
         Player localPlayer = ClientProxy.getLocalPlayer();
 
         if (localPlayer == entity || entity.getType().is(EntityTags.PERCEPTION_BLACKLIST) || entity.isInvisible() && ServerConfig.SPEC.isLoaded() && !ServerConfig.PERCEPTION_SHOW_INVISIBLE.get()) {

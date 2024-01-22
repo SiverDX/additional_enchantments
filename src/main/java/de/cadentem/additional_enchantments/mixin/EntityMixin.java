@@ -13,7 +13,7 @@ public abstract class EntityMixin {
      * Clean up references to other objects
      */
     @Inject(method = "remove", at = @At("HEAD"))
-    private void clearReferences(final Entity.RemovalReason reason, final CallbackInfo callback) {
+    private void additional_enchantments$clearReferences(final Entity.RemovalReason reason, final CallbackInfo callback) {
         HomingEnchantment.clearHomingContext((Entity) (Object) this);
     }
 }
