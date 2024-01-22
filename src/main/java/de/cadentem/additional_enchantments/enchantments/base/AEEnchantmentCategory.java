@@ -1,5 +1,6 @@
 package de.cadentem.additional_enchantments.enchantments.base;
 
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraftforge.common.Tags;
@@ -18,6 +19,6 @@ public class AEEnchantmentCategory {
             return true;
         }
 
-        return item.builtInRegistryHolder().is(Tags.Items.TOOLS_SWORDS) || item.builtInRegistryHolder().is(Tags.Items.TOOLS_AXES) || item.builtInRegistryHolder().is(Tags.Items.TOOLS_TRIDENTS);
+        return item.builtInRegistryHolder().is(ItemTags.SWORDS) || item.builtInRegistryHolder().is(ItemTags.AXES) || item.builtInRegistryHolder().is(Tags.Items.TOOLS_TRIDENTS);
     });
 }

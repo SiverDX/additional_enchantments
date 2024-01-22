@@ -9,7 +9,7 @@ import net.minecraft.world.level.Explosion;
 
 public class Configuration {
     public MobEffectCategory effectFilter = MobEffectCategory.HARMFUL;
-    public Explosion.BlockInteraction explosionType = Explosion.BlockInteraction.BREAK;
+    public Explosion.BlockInteraction explosionType = Explosion.BlockInteraction.DESTROY;
     public HomingEnchantment.TypeFilter homingTypeFilter = HomingEnchantment.TypeFilter.ANY;
     public HomingEnchantment.Priority homingPriority = HomingEnchantment.Priority.CLOSEST;
     public PerceptionEnchantment.DisplayType displayType = PerceptionEnchantment.DisplayType.ALL;
@@ -21,10 +21,10 @@ public class Configuration {
 
     public void cycleExplosionType() {
         // DESTROY decays the loot (reduces the stack size of dropped items)
-        if (explosionType == Explosion.BlockInteraction.BREAK) {
-            explosionType = Explosion.BlockInteraction.NONE;
+        if (explosionType == Explosion.BlockInteraction.DESTROY) {
+            explosionType = Explosion.BlockInteraction.KEEP;
         } else {
-            explosionType = Explosion.BlockInteraction.BREAK;
+            explosionType = Explosion.BlockInteraction.DESTROY;
         }
     }
 

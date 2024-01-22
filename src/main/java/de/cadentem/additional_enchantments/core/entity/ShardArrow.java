@@ -60,7 +60,7 @@ public class ShardArrow extends Arrow {
     }
 
     private void handleHit() {
-        if (getLevel() instanceof ServerLevel serverLevel) {
+        if (level() instanceof ServerLevel serverLevel) {
             if (serverLevel.getRandom().nextDouble() > 0.3) {
                 sendParticles();
 
@@ -77,7 +77,7 @@ public class ShardArrow extends Arrow {
                     }
 
                     return !(owner instanceof LivingEntity livingOwner) || !(livingEntity instanceof TamableAnimal tamable) || !tamable.isOwnedBy(livingOwner);
-                }).forEach(livingEntity -> livingEntity.hurt(DamageSource.arrow(this, getOwner()).setMagic(), enchantmentLevel));
+                }).forEach(livingEntity -> livingEntity.hurt(livingEntity.damageSources().indirectMagic(this, getOwner()), enchantmentLevel)); // FIXME :: Somewhat 1.20.1 bandaid solution
 
                 discard();
             }
@@ -85,7 +85,7 @@ public class ShardArrow extends Arrow {
     }
 
     private void sendParticles() {
-        if (getLevel() instanceof ServerLevel serverLevel) {
+        if (level() instanceof ServerLevel serverLevel) {
             double xzOffset = getBbWidth() * enchantmentLevel;
             double yOffset = getBbHeight() * enchantmentLevel;
 

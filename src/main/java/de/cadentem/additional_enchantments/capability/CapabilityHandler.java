@@ -63,7 +63,7 @@ public class CapabilityHandler {
     public static void syncCapability(final Entity entity) {
         if (entity instanceof ServerPlayer) {
             CapabilityProvider.getCapability(entity).ifPresent(configuration -> syncCapability(entity, configuration.serializeNBT()));
-        } else if (entity instanceof Player && entity.getLevel().isClientSide()) {
+        } else if (entity instanceof Player && entity.level().isClientSide()) {
             CapabilityProvider.getCapability(entity).ifPresent(configuration -> syncCapability(entity, configuration.serializeNBT()));
         }
     }
@@ -71,7 +71,7 @@ public class CapabilityHandler {
     public static void syncCapability(final Entity entity, final CompoundTag tag) {
         if (entity instanceof ServerPlayer serverPlayer) {
             NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new SyncCapability(tag));
-        } else if (entity instanceof Player && entity.getLevel().isClientSide()) {
+        } else if (entity instanceof Player && entity.level().isClientSide()) {
             NetworkHandler.CHANNEL.sendToServer(new SyncCapability(tag));
         }
     }

@@ -14,7 +14,7 @@ public class WitherEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(final LivingEntity livingEntity, int amplifier) {
-        livingEntity.hurt(DamageSource.WITHER, (1 + amplifier) * 0.5f);
+        livingEntity.hurt(livingEntity.damageSources().wither(), (1 + amplifier) * 0.5f);
     }
 
     @Override

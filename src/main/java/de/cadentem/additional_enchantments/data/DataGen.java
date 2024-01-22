@@ -1,7 +1,6 @@
 package de.cadentem.additional_enchantments.data;
 
 import net.minecraft.data.DataGenerator;
-import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -11,9 +10,7 @@ public class DataGen {
     @SubscribeEvent
     public static void configureDataGen(final GatherDataEvent event){
         DataGenerator generator = event.getGenerator();
-        ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
-
-        generator.addProvider(event.includeServer(), new EntityTags(generator, existingFileHelper));
-        generator.addProvider(event.includeServer(), new EffectTags(generator, existingFileHelper));
+        generator.addProvider(event.includeServer(), new EntityTags(generator.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
+        generator.addProvider(event.includeServer(), new EffectTags(generator.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
     }
 }

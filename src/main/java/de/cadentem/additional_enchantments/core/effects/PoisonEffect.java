@@ -14,7 +14,7 @@ public class PoisonEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(final LivingEntity livingEntity, int amplifier) {
-        livingEntity.hurt(DamageSource.MAGIC, (1 + amplifier) * 0.5f);
+        livingEntity.hurt(livingEntity.damageSources().magic(), (1 + amplifier) * 0.5f);
     }
 
     @Override

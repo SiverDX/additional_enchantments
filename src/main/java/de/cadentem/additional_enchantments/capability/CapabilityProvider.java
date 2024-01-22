@@ -42,7 +42,7 @@ public class CapabilityProvider implements ICapabilitySerializable<CompoundTag> 
 
     public static LazyOptional<Configuration> getCapability(final Entity entity) {
         if (entity instanceof Player) {
-            Map<String, LazyOptional<Configuration>> sidedCache = entity.getLevel().isClientSide() ? CLIENT_CACHE : SERVER_CACHE;
+            Map<String, LazyOptional<Configuration>> sidedCache = entity.level().isClientSide() ? CLIENT_CACHE : SERVER_CACHE;
 
             return sidedCache.computeIfAbsent(entity.getStringUUID(), key -> {
                 LazyOptional<Configuration> capability = entity.getCapability(CapabilityHandler.CAPABILITY);

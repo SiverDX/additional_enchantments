@@ -3,8 +3,8 @@ package de.cadentem.additional_enchantments.enchantments;
 import de.cadentem.additional_enchantments.capability.CapabilityProvider;
 import de.cadentem.additional_enchantments.core.interfaces.ExplosionAccess;
 import de.cadentem.additional_enchantments.core.interfaces.ProjectileAccess;
-import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
+import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.server.level.ServerLevel;
@@ -47,7 +47,7 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
     public static void triggerExplosion(final ProjectileImpactEvent event) {
         Projectile projectile = event.getProjectile();
 
-        if (event.isCanceled() || !(projectile.getLevel() instanceof ServerLevel serverLevel)) {
+        if (event.isCanceled() || !(projectile.level() instanceof ServerLevel serverLevel)) {
             return;
         }
 
@@ -62,14 +62,14 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
                 Explosion explosion = new Explosion(serverLevel, projectile, null, null, projectile.getX(), projectile.getY(), projectile.getZ(), enchantmentLevel, false, configuration.explosionType);
                 ((ExplosionAccess) explosion).additional_enchantments$setWasTriggeredByEnchantment(true);
 
-                if (ForgeEventFactory.onExplosionStart(projectile.getLevel(), explosion)) {
+                if (ForgeEventFactory.onExplosionStart(projectile.level(), explosion)) {
                     return;
                 }
 
                 explosion.explode();
                 explosion.finalizeExplosion(true);
 
-                if (configuration.explosionType == Explosion.BlockInteraction.NONE) {
+                if (configuration.explosionType == Explosion.BlockInteraction.KEEP) {
                     explosion.clearToBlow();
                 }
 
@@ -87,7 +87,7 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
     @SubscribeEvent
     public static void handleExplosion(final ExplosionEvent.Detonate event) {
         if (((ExplosionAccess) event.getExplosion()).additional_enchantments$wasTriggeredByEnchantment()) {
-            event.getAffectedEntities().removeIf(entity -> entity instanceof ExperienceOrb || entity instanceof ItemEntity || entity == event.getExplosion().getSourceMob());
+            event.getAffectedEntities().removeIf(entity -> entity instanceof ExperienceOrb || entity instanceof ItemEntity || entity == event.getExplosion().getDirectSourceEntity());
         }
     }
 }

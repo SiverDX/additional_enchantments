@@ -113,7 +113,7 @@ public abstract class ProjectileMixin extends Entity implements ProjectileAccess
                 return;
             }
 
-            List<LivingEntity> entities = serverPlayer.getLevel().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(5 + additional_enchantments$homingContext.enchantmentLevel * 2), entity -> {
+            List<LivingEntity> entities = serverPlayer.level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(5 + additional_enchantments$homingContext.enchantmentLevel * 2), entity -> {
                 if (entity.getType().is(EntityTags.HOMING_BLACKLIST)) {
                     return false;
                 }
@@ -170,7 +170,7 @@ public abstract class ProjectileMixin extends Entity implements ProjectileAccess
             additional_enchantments$homingContext.target = target;
 
             // Sync target to client for accurate movement of the projectile
-            serverPlayer.getLevel().getPlayers(player -> player.distanceToSqr(instance) <= 32 * 32).forEach(player -> NetworkHandler.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new SyncHomingData(instance.getId(), target.getId(), additional_enchantments$homingContext.enchantmentLevel)));
+            serverPlayer.level().players().stream().filter(player -> player.distanceToSqr(instance) <= 32 * 32).forEach(player -> NetworkHandler.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new SyncHomingData(instance.getId(), target.getId(), additional_enchantments$homingContext.enchantmentLevel)));
         });
     }
 }

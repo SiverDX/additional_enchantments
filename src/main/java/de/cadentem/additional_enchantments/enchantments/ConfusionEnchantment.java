@@ -20,7 +20,7 @@ public class ConfusionEnchantment extends ConfigurableEnchantment {
     @Override
     public void doPostAttack(@NotNull final LivingEntity attacker, @NotNull final Entity target, int level) {
         if (target instanceof Mob mob && level / 10d > attacker.getRandom().nextDouble()) {
-            List<LivingEntity> entities = mob.getLevel().getEntitiesOfClass(LivingEntity.class, mob.getBoundingBox().inflate(5 + level * 2), livingEntity -> {
+            List<LivingEntity> entities = mob.level().getEntitiesOfClass(LivingEntity.class, mob.getBoundingBox().inflate(5 + level * 2), livingEntity -> {
                 if (livingEntity == attacker || livingEntity == mob || livingEntity.getType().is(EntityTags.CONFUSION_BLACKLIST)) {
                     return false;
                 }
