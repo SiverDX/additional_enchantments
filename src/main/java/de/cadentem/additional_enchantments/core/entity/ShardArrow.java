@@ -70,7 +70,7 @@ public class ShardArrow extends AbstractArrow {
             if (serverLevel.getRandom().nextDouble() > 0.3) {
                 sendParticles();
 
-                // Cannot handle the damage in the first iteration due to possible `ConcurrentModificationException`
+                // Cannot handle the damage while gathering entities due to possible `ConcurrentModificationException`
                 serverLevel.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(2 + enchantmentLevel), livingEntity -> {
                     Entity owner = getOwner();
 
@@ -83,7 +83,7 @@ public class ShardArrow extends AbstractArrow {
                     }
 
                     return !(owner instanceof LivingEntity livingOwner) || !(livingEntity instanceof TamableAnimal tamable) || !tamable.isOwnedBy(livingOwner);
-                }).forEach(livingEntity -> livingEntity.hurt(DamageSource.arrow(this, getOwner()).setMagic(), enchantmentLevel));
+                }).forEach(livingEntity -> livingEntity.hurt(DamageSource.arrow(this, getOwner()).setMagic(), enchantmentLevel / 2f));
 
                 discard();
             }
