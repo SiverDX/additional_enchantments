@@ -11,9 +11,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.Enchantment;
 import org.jetbrains.annotations.NotNull;
 
-public class PoisonEnchantment extends ConfigurableEnchantment {
-    public PoisonEnchantment() {
-        super(Rarity.COMMON, AEEnchantmentCategory.MELEE, EquipmentSlot.MAINHAND, AEEnchantments.POISON_ID);
+public class PlagueEnchantment extends ConfigurableEnchantment {
+    public PlagueEnchantment() {
+        super(Rarity.COMMON, AEEnchantmentCategory.MELEE, EquipmentSlot.MAINHAND, AEEnchantments.PLAGUE_ID);
     }
 
     @Override
@@ -24,7 +24,7 @@ public class PoisonEnchantment extends ConfigurableEnchantment {
     @Override
     public void doPostAttack(@NotNull final LivingEntity attacker, @NotNull final Entity target, int level) {
         if (target instanceof LivingEntity livingTarget) {
-            livingTarget.addEffect(new MobEffectInstance(AEMobEffects.POISON.get(), 20 * (3 + (level * 2)), level - 1));
+            livingTarget.addEffect(new MobEffectInstance(AEMobEffects.PLAGUE.get(), 20 * (3 + (level * 2)), level - 1));
         }
     }
 }

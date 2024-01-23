@@ -62,7 +62,7 @@ public class TippedEnchantment extends ConfigurableEnchantment {
                         }
 
                         for (MobEffect effect : appliedEffects) {
-                            arrow.addEffect(new MobEffectInstance(effect, 20 * (3 + (level * 2)), level - 1));
+                            arrow.addEffect(new MobEffectInstance(effect, effect.isInstantenous() ? 1 : 20 * (3 + (level * 2)), level - 1));
                         }
 
                         ((ArrowAccess) arrow).additional_enchantments$setHasModifiedEffect(true);

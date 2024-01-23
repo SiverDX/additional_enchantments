@@ -16,7 +16,7 @@ public class AEEnchantments {
     public static final String FASTER_ATTACKS_ID = "faster_attacks";
     public static final String EXPLOSIVE_TIP_ID = "explosive_tip";
     public static final String SHATTER_ID = "shatter";
-    public static final String POISON_ID = "poison";
+    public static final String PLAGUE_ID = "plague";
     public static final String WITHER_ID = "wither";
     public static final String PERCEPTION_ID = "perception";
     public static final String CONFUSION_ID = "confusion";
@@ -27,7 +27,7 @@ public class AEEnchantments {
     public static final RegistryObject<FasterAttacksEnchantment> FASTER_ATTACKS = ENCHANTMENTS.register(FASTER_ATTACKS_ID, FasterAttacksEnchantment::new);
     public static final RegistryObject<ExplosiveTipEnchantment> EXPLOSIVE_TIP = ENCHANTMENTS.register(EXPLOSIVE_TIP_ID, ExplosiveTipEnchantment::new);
     public static final RegistryObject<ShatterEnchantment> SHATTER = ENCHANTMENTS.register(SHATTER_ID, ShatterEnchantment::new);
-    public static final RegistryObject<PoisonEnchantment> POISON = ENCHANTMENTS.register(POISON_ID, PoisonEnchantment::new);
+    public static final RegistryObject<PlagueEnchantment> PLAGUE = ENCHANTMENTS.register(PLAGUE_ID, PlagueEnchantment::new);
     public static final RegistryObject<WitherEnchantment> WITHER = ENCHANTMENTS.register(WITHER_ID, WitherEnchantment::new);
     public static final RegistryObject<PerceptionEnchantment> PERCEPTION = ENCHANTMENTS.register(PERCEPTION_ID, PerceptionEnchantment::new);
     public static final RegistryObject<ConfusionEnchantment> CONFUSION = ENCHANTMENTS.register(CONFUSION_ID, ConfusionEnchantment::new);

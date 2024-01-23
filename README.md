@@ -11,16 +11,20 @@
 - Increases attack speed
 - Enchantment level increases the amount
 
-## Poison (Melee)
+## Plague (Melee)
 - Default max. level: 6
 - Applies a poison effect to entities which deals magic damage
-- Enchantment level increases the duration and damage while also reducing the duration between damage ticks
+  - Also has a chance to spread to nearby targets (does not affect players or Tamable Animals owned by players)
+  - Targets can be blacklisted with `additional_enchantments:plague_blacklist`
+- Enchantment level increases the duration, damage while reducing the time between damage ticks
+  - In addition, it also increases the chance and range for the spread
 - Not compatible with the `Wither` enchantment
 
 ## Wither (Melee)
 - Default max. level: 6
 - Applies a wither effect to entities which deals wither damage
-- Enchantment level increases the duration and damage while also reducing the duration between damage ticks
+  - Damage and tick rate is higher than `Plague`
+- Enchantment level increases the duration and damage while also reducing the time between damage ticks
 - Not compatible with the `Poison` enchantment
 
 ## Confusion (Melee)

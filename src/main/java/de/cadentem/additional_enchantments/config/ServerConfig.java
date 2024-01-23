@@ -18,7 +18,7 @@ public class ServerConfig {
             AEEnchantments.EXPLOSIVE_TIP_ID, 4,
             AEEnchantments.FASTER_ATTACKS_ID, 4,
             AEEnchantments.HOMING_ID, 4,
-            AEEnchantments.POISON_ID, 6,
+            AEEnchantments.PLAGUE_ID, 6,
             AEEnchantments.SHATTER_ID, 4,
             AEEnchantments.STRAIGHT_SHOT_ID, 4,
             AEEnchantments.TIPPED_ID, 4,

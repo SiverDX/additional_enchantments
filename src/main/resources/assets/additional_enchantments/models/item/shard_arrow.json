@@ -1,6 +1,3 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "additional_enchantments:item/shard_arrow"
-  }
+  "parent": "minecraft:item/amethyst_shard"
 }

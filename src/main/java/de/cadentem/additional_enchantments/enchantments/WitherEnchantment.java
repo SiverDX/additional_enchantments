@@ -18,7 +18,7 @@ public class WitherEnchantment extends ConfigurableEnchantment {
 
     @Override
     protected boolean checkCompatibility(@NotNull final Enchantment other) {
-        return other != AEEnchantments.POISON.get() && super.checkCompatibility(other);
+        return other != AEEnchantments.PLAGUE.get() && super.checkCompatibility(other);
     }
 
     @Override

@@ -8,6 +8,7 @@
   "message.additional_enchantments.cycled_configuration": "Enchantment [%1$s] configuration changed to [%2$s]",
 
   "item.additional_enchantments.shard_arrow": "Shard Arrow",
+  "item.additional_enchantments.shard_arrow.description": "This is a dummy item with no use, which should not be obtainable",
 
   "enchantment.additional_enchantments.explosive_tip": "Explosive Tip",
   "enchantment.additional_enchantments.explosive_tip.desc": "Causes an explosion on projectile impact",
