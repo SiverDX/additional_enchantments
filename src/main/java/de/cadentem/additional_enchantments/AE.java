@@ -2,6 +2,7 @@ package de.cadentem.additional_enchantments;
 
 import com.mojang.logging.LogUtils;
 import de.cadentem.additional_enchantments.capability.Configuration;
+import de.cadentem.additional_enchantments.capability.ProjectileData;
 import de.cadentem.additional_enchantments.client.ClientRegistry;
 import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.network.NetworkHandler;
@@ -50,5 +51,6 @@ public class AE {
     @SubscribeEvent
     public void registerCapability(final RegisterCapabilitiesEvent event) {
         event.register(Configuration.class);
+        event.register(ProjectileData.class);
     }
 }

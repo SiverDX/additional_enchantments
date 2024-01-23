@@ -2,7 +2,6 @@ package de.cadentem.additional_enchantments.core.item;
 
 import de.cadentem.additional_enchantments.core.entity.ShardArrow;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
-import de.cadentem.additional_enchantments.registry.AEEntityTypes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,11 +22,8 @@ public class ShardArrowItem extends ArrowItem {
 
     @Override
     public @NotNull AbstractArrow createArrow(@NotNull final Level level, @NotNull final ItemStack stack, @NotNull final LivingEntity shooter) {
-        ShardArrow shardArrow = new ShardArrow(AEEntityTypes.SHARD_ARROW.get(), level);
+        ShardArrow shardArrow = new ShardArrow(level, shooter);
         shardArrow.enchantmentLevel = shooter.getMainHandItem().getEnchantmentLevel(AEEnchantments.SHATTER.get());
-        shardArrow.setEffectsFromItem(stack);
-        shardArrow.setOwner(shooter);
-        shardArrow.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
         return shardArrow;
     }
 

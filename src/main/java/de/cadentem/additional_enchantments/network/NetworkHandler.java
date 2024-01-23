@@ -10,7 +10,7 @@ public class NetworkHandler {
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation(AE.MODID, "main"), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
 
     public static void register() {
-        CHANNEL.registerMessage(0, SyncCapability.class, SyncCapability::encode, SyncCapability::decode, SyncCapability::handle);
-        CHANNEL.registerMessage(1, SyncHomingData.class, SyncHomingData::encode, SyncHomingData::decode, SyncHomingData::handle);
+        CHANNEL.registerMessage(0, SyncConfiguration.class, SyncConfiguration::encode, SyncConfiguration::decode, SyncConfiguration::handle);
+        CHANNEL.registerMessage(1, SyncProjectileData.class, SyncProjectileData::encode, SyncProjectileData::decode, SyncProjectileData::handle);
     }
 }

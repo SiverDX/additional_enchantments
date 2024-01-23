@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.client;
 
 import de.cadentem.additional_enchantments.capability.CapabilityHandler;
-import de.cadentem.additional_enchantments.capability.CapabilityProvider;
+import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
 import de.cadentem.additional_enchantments.enchantments.PerceptionEnchantment;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.client.KeyMapping;
@@ -35,7 +35,7 @@ public class KeyHandler {
         if (event.getKey() == CYCLE_TIPPED.getKey().getValue()) {
             if (localPlayer.getMainHandItem().getEnchantmentLevel(AEEnchantments.TIPPED.get()) > 0) {
                 if (CYCLE_TIPPED.consumeClick()) {
-                    CapabilityProvider.getCapability(localPlayer).ifPresent(configuration -> {
+                    ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
                         configuration.cycleEffectFilter();
                         localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Tipped", configuration.effectFilter.name()));
                         changedConfiguration.set(true);
@@ -45,7 +45,7 @@ public class KeyHandler {
         } else if (event.getKey() == CYCLE_EXPLOSIVE_TIP.getKey().getValue()) {
             if (localPlayer.getMainHandItem().getEnchantmentLevel(AEEnchantments.EXPLOSIVE_TIP.get()) > 0) {
                 if (CYCLE_EXPLOSIVE_TIP.consumeClick()) {
-                    CapabilityProvider.getCapability(localPlayer).ifPresent(configuration -> {
+                    ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
                         configuration.cycleExplosionType();
                         localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Explosive Tip", configuration.explosionType.name()));
                         changedConfiguration.set(true);
@@ -56,13 +56,13 @@ public class KeyHandler {
             if (localPlayer.getMainHandItem().getEnchantmentLevel(AEEnchantments.HOMING.get()) > 0) {
                 if (CYCLE_HOMING.consumeClick()) {
                     if (localPlayer.isShiftKeyDown()) {
-                        CapabilityProvider.getCapability(localPlayer).ifPresent(configuration -> {
+                        ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
                             configuration.cycleHomingPriority();
                             localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Homing (priority)", configuration.homingPriority.name()));
                             changedConfiguration.set(true);
                         });
                     } else {
-                        CapabilityProvider.getCapability(localPlayer).ifPresent(configuration -> {
+                        ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
                             configuration.cycleHomingFilter();
                             localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Homing (type)", configuration.homingTypeFilter.name()));
                             changedConfiguration.set(true);
@@ -74,13 +74,13 @@ public class KeyHandler {
             if (PerceptionEnchantment.getClientEnchantmentLevel() > 0) {
                 if (CYCLE_PERCEPTION.consumeClick()) {
                     if (localPlayer.isShiftKeyDown()) {
-                        CapabilityProvider.getCapability(localPlayer).ifPresent(configuration -> {
+                        ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
                             configuration.cycleItemFilter();
                             localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Perception (item filter)", configuration.itemFilter.name()));
                             changedConfiguration.set(true);
                         });
                     } else {
-                        CapabilityProvider.getCapability(localPlayer).ifPresent(configuration -> {
+                        ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
                             configuration.cycleDisplayType();
                             localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Perception (display type)", configuration.displayType.name()));
                             changedConfiguration.set(true);
@@ -91,7 +91,7 @@ public class KeyHandler {
         }
 
         if (changedConfiguration.get()) {
-            CapabilityHandler.syncCapability(localPlayer);
+            CapabilityHandler.syncConfiguration(localPlayer);
         }
     }
 }

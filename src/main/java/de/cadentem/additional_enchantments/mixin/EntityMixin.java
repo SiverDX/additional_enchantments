@@ -14,6 +14,6 @@ public abstract class EntityMixin {
      */
     @Inject(method = "remove", at = @At("HEAD"))
     private void additional_enchantments$clearReferences(final Entity.RemovalReason reason, final CallbackInfo callback) {
-        HomingEnchantment.clearHomingContext((Entity) (Object) this);
+        HomingEnchantment.clearHomingTarget((Entity) (Object) this);
     }
 }

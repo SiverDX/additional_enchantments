@@ -1,5 +1,6 @@
 package de.cadentem.additional_enchantments.core.entity;
 
+import de.cadentem.additional_enchantments.registry.AEEntityTypes;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -11,6 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -19,13 +21,17 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.jetbrains.annotations.NotNull;
 
-public class ShardArrow extends Arrow {
+public class ShardArrow extends AbstractArrow {
     private static final ParticleOptions PARTICLES = new ItemParticleOption(ParticleTypes.ITEM, Items.AMETHYST_SHARD.getDefaultInstance());
 
     public int enchantmentLevel;
 
     public ShardArrow(final EntityType<ShardArrow> type, final Level level) {
         super(type, level);
+    }
+
+    public ShardArrow(final Level level, final LivingEntity shooter) {
+        super(AEEntityTypes.SHARD_ARROW.get(), shooter, level);
     }
 
     @Override
@@ -89,7 +95,7 @@ public class ShardArrow extends Arrow {
             double xzOffset = getBbWidth() * enchantmentLevel;
             double yOffset = getBbHeight() * enchantmentLevel;
 
-            serverLevel.sendParticles(PARTICLES, getX(), getY(), getZ(), (int) (8 * Math.pow(enchantmentLevel, 1.3)), xzOffset, yOffset, xzOffset, 0);
+            serverLevel.sendParticles(PARTICLES, getX(), getY(), getZ(), (int) (8 * Math.pow(enchantmentLevel, 1.5)), xzOffset, yOffset, xzOffset, 0);
         }
     }
 }

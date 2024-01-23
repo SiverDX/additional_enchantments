@@ -1,6 +1,6 @@
 package de.cadentem.additional_enchantments.mixin;
 
-import de.cadentem.additional_enchantments.capability.CapabilityProvider;
+import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
 import de.cadentem.additional_enchantments.client.ClientProxy;
 import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.data.EntityTags;
@@ -25,7 +25,7 @@ public abstract class MinecraftMixin {
             return;
         }
 
-        CapabilityProvider.getCapability(localPlayer).ifPresent(configuration -> {
+        ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
             if (configuration.displayType == PerceptionEnchantment.DisplayType.NONE) {
                 return;
             }
