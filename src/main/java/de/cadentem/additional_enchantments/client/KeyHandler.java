@@ -2,6 +2,7 @@ package de.cadentem.additional_enchantments.client;
 
 import de.cadentem.additional_enchantments.capability.CapabilityHandler;
 import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
+import de.cadentem.additional_enchantments.enchantments.OreSightEnchantment;
 import de.cadentem.additional_enchantments.enchantments.PerceptionEnchantment;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.client.KeyMapping;
@@ -21,12 +22,13 @@ public class KeyHandler {
     public static KeyMapping CYCLE_HOMING;
     public static KeyMapping CYCLE_EXPLOSIVE_TIP;
     public static KeyMapping CYCLE_PERCEPTION;
+    public static KeyMapping CYCLE_ORE_SIGHT;
 
     @SubscribeEvent
     public static void handleKey(final InputEvent.Key event) {
         LocalPlayer localPlayer = Minecraft.getInstance().player;
 
-        if (localPlayer == null) {
+        if (localPlayer == null || Minecraft.getInstance().screen != null) {
             return;
         }
 
@@ -42,7 +44,9 @@ public class KeyHandler {
                     });
                 }
             }
-        } else if (event.getKey() == CYCLE_EXPLOSIVE_TIP.getKey().getValue()) {
+        }
+
+        if (event.getKey() == CYCLE_EXPLOSIVE_TIP.getKey().getValue()) {
             if (localPlayer.getMainHandItem().getEnchantmentLevel(AEEnchantments.EXPLOSIVE_TIP.get()) > 0) {
                 if (CYCLE_EXPLOSIVE_TIP.consumeClick()) {
                     ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
@@ -52,7 +56,9 @@ public class KeyHandler {
                     });
                 }
             }
-        } else if (event.getKey() == CYCLE_HOMING.getKey().getValue()) {
+        }
+
+        if (event.getKey() == CYCLE_HOMING.getKey().getValue()) {
             if (localPlayer.getMainHandItem().getEnchantmentLevel(AEEnchantments.HOMING.get()) > 0) {
                 if (CYCLE_HOMING.consumeClick()) {
                     if (localPlayer.isShiftKeyDown()) {
@@ -70,7 +76,9 @@ public class KeyHandler {
                     }
                 }
             }
-        } else if (event.getKey() == CYCLE_PERCEPTION.getKey().getValue()) {
+        }
+
+        if (event.getKey() == CYCLE_PERCEPTION.getKey().getValue()) {
             if (PerceptionEnchantment.getClientEnchantmentLevel() > 0) {
                 if (CYCLE_PERCEPTION.consumeClick()) {
                     if (localPlayer.isShiftKeyDown()) {
@@ -86,6 +94,18 @@ public class KeyHandler {
                             changedConfiguration.set(true);
                         });
                     }
+                }
+            }
+        }
+
+        if (event.getKey() == CYCLE_ORE_SIGHT.getKey().getValue()) {
+            if (OreSightEnchantment.getClientEnchantmentLevel() > 0) {
+                if (CYCLE_ORE_SIGHT.consumeClick()) {
+                    ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
+                        configuration.cycleOreRarity();
+                        localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Ore Sight", configuration.oreRarity.name()));
+                        changedConfiguration.set(true);
+                    });
                 }
             }
         }

@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.core.effects;
 
 import com.mojang.math.Vector3f;
-import de.cadentem.additional_enchantments.data.EntityTags;
+import de.cadentem.additional_enchantments.data.AEEntityTags;
 import de.cadentem.additional_enchantments.registry.AEMobEffects;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
@@ -43,7 +43,7 @@ public class PlagueEffect extends MobEffect {
                     return false;
                 }
 
-                if (plagueTarget.getType().is(EntityTags.PLAGUE_BLACKLIST)) {
+                if (plagueTarget.getType().is(AEEntityTags.PLAGUE_BLACKLIST)) {
                     return false;
                 }
 

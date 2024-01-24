@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.capability;
 
 import com.google.common.collect.Sets;
-import de.cadentem.additional_enchantments.data.EntityTags;
+import de.cadentem.additional_enchantments.data.AEEntityTags;
 import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -72,7 +72,7 @@ public class ProjectileData {
             }
 
             List<LivingEntity> entities = serverPlayer.getLevel().getEntitiesOfClass(LivingEntity.class, instance.getBoundingBox().inflate(5 + homingEnchantmentLevel * 2), entity -> {
-                if (entity.getType().is(EntityTags.HOMING_BLACKLIST)) {
+                if (entity.getType().is(AEEntityTags.HOMING_BLACKLIST)) {
                     return false;
                 }
 

@@ -15,22 +15,24 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PerceptionEnchantment extends ConfigurableEnchantment {
-    public static final Map<String, Pair<Integer, Integer>> CLIENT_CACHE = new HashMap<>();
-
-    public enum DisplayType {
+public class OreSightEnchantment extends ConfigurableEnchantment {
+    public enum OreRarity {
         ALL,
-        NO_ITEMS,
+        COMMON,
+        UNCOMMON,
+        RARE,
         NONE
     }
 
-    public PerceptionEnchantment() {
-        super(Rarity.UNCOMMON, EnchantmentCategory.ARMOR_HEAD, EquipmentSlot.HEAD, AEEnchantments.PERCEPTION_ID);
+    private static final Map<String, Pair<Integer, Integer>> CLIENT_CACHE = new HashMap<>();
+
+    public OreSightEnchantment() {
+        super(Rarity.RARE, EnchantmentCategory.ARMOR_HEAD, EquipmentSlot.HEAD, AEEnchantments.ORE_SIGHT_ID);
     }
 
     @Override
     protected boolean checkCompatibility(@NotNull final Enchantment other) {
-        return other != AEEnchantments.ORE_SIGHT.get() && super.checkCompatibility(other);
+        return other != AEEnchantments.PERCEPTION.get() && super.checkCompatibility(other);
     }
 
     public static int getClientEnchantmentLevel() {
@@ -44,7 +46,7 @@ public class PerceptionEnchantment extends ConfigurableEnchantment {
 
         // Cache is being kept even when the player leaves
         if (data == null || Mth.abs(localPlayer.tickCount - data.getFirst()) > 20) {
-            data = Pair.of(localPlayer.tickCount, EnchantmentHelper.getEnchantmentLevel(AEEnchantments.PERCEPTION.get(), localPlayer));
+            data = Pair.of(localPlayer.tickCount, EnchantmentHelper.getEnchantmentLevel(AEEnchantments.ORE_SIGHT.get(), localPlayer));
             CLIENT_CACHE.put(localPlayer.getStringUUID(), data);
         }
 

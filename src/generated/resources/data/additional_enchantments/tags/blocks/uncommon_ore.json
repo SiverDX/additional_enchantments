@@ -1,0 +1,78 @@
+{
+  "values": [
+    "minecraft:gold_ore",
+    "minecraft:deepslate_gold_ore",
+    {
+      "id": "spelunkery:granite_gold_ore",
+      "required": false
+    },
+    {
+      "id": "spelunkery:andesite_gold_ore",
+      "required": false
+    },
+    {
+      "id": "spelunkery:andesite_gold_ore",
+      "required": false
+    },
+    {
+      "id": "spelunkery:diorite_gold_ore",
+      "required": false
+    },
+    {
+      "id": "spelunkery:tuff_gold_ore",
+      "required": false
+    },
+    "minecraft:lapis_ore",
+    "minecraft:deepslate_lapis_ore",
+    {
+      "id": "spelunkery:granite_lapis_ore",
+      "required": false
+    },
+    {
+      "id": "spelunkery:andesite_lapis_ore",
+      "required": false
+    },
+    {
+      "id": "spelunkery:andesite_lapis_ore",
+      "required": false
+    },
+    {
+      "id": "spelunkery:diorite_lapis_ore",
+      "required": false
+    },
+    {
+      "id": "spelunkery:tuff_lapis_ore",
+      "required": false
+    },
+    {
+      "id": "spelunkery:sandstone_lapis_ore",
+      "required": false
+    },
+    "minecraft:redstone_ore",
+    "minecraft:deepslate_redstone_ore",
+    {
+      "id": "spelunkery:granite_redstone_ore",
+      "required": false
+    },
+    {
+      "id": "spelunkery:andesite_redstone_ore",
+      "required": false
+    },
+    {
+      "id": "spelunkery:andesite_redstone_ore",
+      "required": false
+    },
+    {
+      "id": "spelunkery:diorite_redstone_ore",
+      "required": false
+    },
+    {
+      "id": "spelunkery:tuff_redstone_ore",
+      "required": false
+    },
+    {
+      "id": "spelunkery:calcite_redstone_ore",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+// 1.19.2	2024-01-24T19:24:20.3009216	Tags for minecraft:block
+c994cb8ab6d6c86d371d7de7d66c8456bab8ec85 data/additional_enchantments/tags/blocks/common_ore.json
+35df1bfa58397dd096f6d17d29a3af29af0a6139 data/additional_enchantments/tags/blocks/rare_ore.json
+fa0d0d7e42a8d56c6349af93b3277a56deb12704 data/additional_enchantments/tags/blocks/uncommon_ore.json

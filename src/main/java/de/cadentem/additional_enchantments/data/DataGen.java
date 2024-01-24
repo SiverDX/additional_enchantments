@@ -13,7 +13,8 @@ public class DataGen {
         DataGenerator generator = event.getGenerator();
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
 
-        generator.addProvider(event.includeServer(), new EntityTags(generator, existingFileHelper));
-        generator.addProvider(event.includeServer(), new EffectTags(generator, existingFileHelper));
+        generator.addProvider(event.includeServer(), new AEBlockTags(generator, existingFileHelper));
+        generator.addProvider(event.includeServer(), new AEEntityTags(generator, existingFileHelper));
+        generator.addProvider(event.includeServer(), new AEEffectTags(generator, existingFileHelper));
     }
 }

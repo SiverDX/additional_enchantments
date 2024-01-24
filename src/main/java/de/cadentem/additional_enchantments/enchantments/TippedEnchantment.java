@@ -3,7 +3,7 @@ package de.cadentem.additional_enchantments.enchantments;
 import com.google.common.collect.Sets;
 import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
 import de.cadentem.additional_enchantments.capability.ProjectileDataProvider;
-import de.cadentem.additional_enchantments.data.EffectTags;
+import de.cadentem.additional_enchantments.data.AEEffectTags;
 import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
@@ -56,7 +56,7 @@ public class TippedEnchantment extends ConfigurableEnchantment {
                     data.tippedEnchantmentLevel = level;
 
                     ConfigurationProvider.getCapability(livingOwner).ifPresent(configuration -> {
-                        ITag<MobEffect> blacklist = ForgeRegistries.MOB_EFFECTS.tags().getTag(EffectTags.TIPPED_BLACKLIST);
+                        ITag<MobEffect> blacklist = ForgeRegistries.MOB_EFFECTS.tags().getTag(AEEffectTags.TIPPED_BLACKLIST);
                         List<MobEffect> effects = ForgeRegistries.MOB_EFFECTS.getValues().stream().filter(effect -> !blacklist.contains(effect) && isValidEffect(configuration.effectFilter, effect)).collect(Collectors.toList());
 
                         List<MobEffect> appliedEffects;

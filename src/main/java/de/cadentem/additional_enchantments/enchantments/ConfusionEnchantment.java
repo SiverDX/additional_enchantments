@@ -1,6 +1,6 @@
 package de.cadentem.additional_enchantments.enchantments;
 
-import de.cadentem.additional_enchantments.data.EntityTags;
+import de.cadentem.additional_enchantments.data.AEEntityTags;
 import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
@@ -21,7 +21,7 @@ public class ConfusionEnchantment extends ConfigurableEnchantment {
     public void doPostAttack(@NotNull final LivingEntity attacker, @NotNull final Entity target, int level) {
         if (target instanceof Mob mob && level / 10d > attacker.getRandom().nextDouble()) {
             List<LivingEntity> entities = mob.getLevel().getEntitiesOfClass(LivingEntity.class, mob.getBoundingBox().inflate(5 + level * 2), livingEntity -> {
-                if (livingEntity == attacker || livingEntity == mob || livingEntity.getType().is(EntityTags.CONFUSION_BLACKLIST)) {
+                if (livingEntity == attacker || livingEntity == mob || livingEntity.getType().is(AEEntityTags.CONFUSION_BLACKLIST)) {
                     return false;
                 }
 

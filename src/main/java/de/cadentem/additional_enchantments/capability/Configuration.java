@@ -1,6 +1,7 @@
 package de.cadentem.additional_enchantments.capability;
 
 import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
+import de.cadentem.additional_enchantments.enchantments.OreSightEnchantment;
 import de.cadentem.additional_enchantments.enchantments.PerceptionEnchantment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -14,6 +15,7 @@ public class Configuration {
     public HomingEnchantment.Priority homingPriority = HomingEnchantment.Priority.CLOSEST;
     public PerceptionEnchantment.DisplayType displayType = PerceptionEnchantment.DisplayType.ALL;
     public Rarity itemFilter = Rarity.COMMON;
+    public OreSightEnchantment.OreRarity oreRarity = OreSightEnchantment.OreRarity.ALL;
 
     public void cycleEffectFilter() {
         effectFilter = (MobEffectCategory) cycle(effectFilter);
@@ -44,6 +46,10 @@ public class Configuration {
         itemFilter = (Rarity) cycle(itemFilter);
     }
 
+    public void cycleOreRarity() {
+        oreRarity = (OreSightEnchantment.OreRarity) cycle(oreRarity);
+    }
+
     private Enum<?> cycle(final Enum<?> type) {
         int ordinal = type.ordinal();
 
@@ -65,6 +71,8 @@ public class Configuration {
         tag.putInt("explosionType", explosionType.ordinal());
         tag.putInt("homingTypeFilter", homingTypeFilter.ordinal());
         tag.putInt("homingPriority", homingPriority.ordinal());
+        tag.putInt("itemFilter", itemFilter.ordinal());
+        tag.putInt("oreRarity", oreRarity.ordinal());
 
         return tag;
     }
@@ -74,5 +82,7 @@ public class Configuration {
         explosionType = Explosion.BlockInteraction.values()[tag.getInt("explosionType")];
         homingTypeFilter = HomingEnchantment.TypeFilter.values()[tag.getInt("homingTypeFilter")];
         homingPriority = HomingEnchantment.Priority.values()[tag.getInt("homingPriority")];
+        itemFilter = Rarity.values()[tag.getInt("itemFilter")];
+        oreRarity = OreSightEnchantment.OreRarity.values()[tag.getInt("oreRarity")];
     }
 }
