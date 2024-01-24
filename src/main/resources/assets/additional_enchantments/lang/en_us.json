@@ -4,10 +4,12 @@
   "keybind.additional_enchantments.cycle_homing": "Cycle [Homing] configuration",
   "keybind.additional_enchantments.cycle_explosive_tip": "Cycle [Explosive Tip] configuration",
   "keybind.additional_enchantments.cycle_perception": "Cycle [Perception] configuration",
+  "keybind.additional_enchantments.ore_sight": "Cycle [Ore Sight] configuration",
 
   "message.additional_enchantments.cycled_configuration": "Enchantment [%1$s] configuration changed to [%2$s]",
 
   "item.additional_enchantments.shard_arrow": "Shard Arrow",
+  "item.additional_enchantments.shard_arrow.description": "This is a dummy item with no use, which should not be obtainable",
 
   "enchantment.additional_enchantments.explosive_tip": "Explosive Tip",
   "enchantment.additional_enchantments.explosive_tip.desc": "Causes an explosion on projectile impact",
@@ -15,8 +17,8 @@
   "enchantment.additional_enchantments.faster_attacks.desc": "Increases the attack speed of weapons",
   "enchantment.additional_enchantments.homing": "Homing",
   "enchantment.additional_enchantments.homing.desc": "Projectiles home in to their target",
-  "enchantment.additional_enchantments.poison": "Poison",
-  "enchantment.additional_enchantments.poison.desc": "Attacks inflict their target with Poison",
+  "enchantment.additional_enchantments.plague": "Plague",
+  "enchantment.additional_enchantments.plague.desc": "Attacks inflict their target with Plague",
   "enchantment.additional_enchantments.shatter": "Shatter",
   "enchantment.additional_enchantments.shatter.desc": "Allows the usage of Amethyst Shard as arrows which may explode on impact, dealing area damage",
   "enchantment.additional_enchantments.straight_shot": "Straight Shot",
@@ -29,9 +31,11 @@
   "enchantment.additional_enchantments.perception.desc": "Outlines nearby entities and distinguishes them by color",
   "enchantment.additional_enchantments.confusion": "Confusion",
   "enchantment.additional_enchantments.confusion.desc": "Has a chance to cause the attacked target to retaliate against a nearby entity, dropping you as a target",
+  "enchantment.additional_enchantments.ore_sight": "Ore Sight",
+  "enchantment.additional_enchantments.ore_sight.desc": "Outlines nearby ore blocks and distinguishes them by color based on the rarity grouping",
 
-  "effect.additional_enchantments.poison": "Poison",
-  "effect.additional_enchantments.poison.description": "Deals Magic damage - damage and tick rate scale with level",
+  "effect.additional_enchantments.poison": "Plague",
+  "effect.additional_enchantments.poison.description": "Deals Magic damage and afflicted targets may spread this debuff - damage, tick rate and spread chance scale with level",
   "effect.additional_enchantments.wither": "Wither",
   "effect.additional_enchantments.wither.description": "Deals Wither damage - damage and tick rate scale with level"
 }

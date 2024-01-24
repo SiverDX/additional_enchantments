@@ -13,10 +13,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
-public class EffectTags extends TagsProvider<MobEffect> {
+public class AEEffectTags extends TagsProvider<MobEffect> {
     public static final TagKey<MobEffect> TIPPED_BLACKLIST = new TagKey<>(Registries.MOB_EFFECT, new ResourceLocation(AE.MODID, "tipped_blacklist"));
 
-    public EffectTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, final ExistingFileHelper existingFileHelper) {
+    public AEEffectTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, final ExistingFileHelper existingFileHelper) {
         super(output, Registries.MOB_EFFECT, lookupProvider, AE.MODID, existingFileHelper);
     }
 

@@ -13,13 +13,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
-public class EntityTags extends EntityTypeTagsProvider {
+public class AEEntityTags extends EntityTypeTagsProvider {
     public static final TagKey<EntityType<?>> HOMING_BLACKLIST = new TagKey<>(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "homing_blacklist"));
     public static final TagKey<EntityType<?>> SHATTER_AOE_BLACKLIST = new TagKey<>(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "shatter_aoe_blacklist"));
     public static final TagKey<EntityType<?>> PERCEPTION_BLACKLIST = new TagKey<>(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "perception_blacklist"));
     public static final TagKey<EntityType<?>> CONFUSION_BLACKLIST = new TagKey<>(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "confusion_blacklist"));
+    public static final TagKey<EntityType<?>> PLAGUE_BLACKLIST = new TagKey<>(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "plague_blacklist"));
 
-    public EntityTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, final ExistingFileHelper existingFileHelper) {
+    public AEEntityTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, final ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, AE.MODID, existingFileHelper);
     }
 
@@ -36,5 +37,7 @@ public class EntityTags extends EntityTypeTagsProvider {
         tag(PERCEPTION_BLACKLIST);
 
         tag(CONFUSION_BLACKLIST);
+
+        tag(PLAGUE_BLACKLIST).add(EntityType.VILLAGER);
     }
 }

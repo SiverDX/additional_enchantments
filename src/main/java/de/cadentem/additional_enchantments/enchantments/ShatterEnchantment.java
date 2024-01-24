@@ -5,8 +5,6 @@ import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCatego
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import de.cadentem.additional_enchantments.registry.AEItems;
-import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -24,16 +22,16 @@ public class ShatterEnchantment extends ConfigurableEnchantment {
         super(Rarity.RARE, AEEnchantmentCategory.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.SHATTER_ID);
     }
 
-    // FIXME :: This is a 1.20.1 bandaid solution
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void handleDamage(final LivingAttackEvent event) {
-        if (event.getSource().getDirectEntity() instanceof ShardArrow shardArrow && !event.getSource().is(DamageTypes.INDIRECT_MAGIC)) {
-            event.setCanceled(true);
+        if (event.getSource().getDirectEntity() instanceof ShardArrow shardArrow && !shardArrow.wasDamageChanged) {
             event.getEntity().hurt(shardArrow.damageSources().indirectMagic(shardArrow, shardArrow.getOwner()), event.getAmount());
+            shardArrow.wasDamageChanged = true;
+            event.setCanceled(true);
         }
     }
 
-    @SubscribeEvent // TODO :: check for improvements - what if the arrow gets spawned by sth. else (alternative would be to mixin into the items -> less compatible)
+    @SubscribeEvent
     public static void applyAmmoCost(final EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof ShardArrow shardArrow) {
             if (shardArrow.getOwner() instanceof Player player && !player.isCreative()) {

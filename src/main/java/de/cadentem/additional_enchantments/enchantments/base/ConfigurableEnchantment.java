@@ -21,6 +21,16 @@ public abstract class ConfigurableEnchantment extends Enchantment {
     }
 
     @Override
+    public int getMinCost(int level) {
+        return (level - 1) * 10 + 5;
+    }
+
+    @Override
+    public int getMaxCost(int level) {
+        return getMinCost(level) + 30;
+    }
+
+    @Override
     public int getMaxLevel() {
         return ServerConfig.SPEC.isLoaded() ? ServerConfig.enchantmentConfigurations.get(id).maxLevel.get() : ServerConfig.getDefaultMaxLevel(id);
     }

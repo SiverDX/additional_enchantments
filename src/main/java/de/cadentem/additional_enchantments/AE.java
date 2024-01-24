@@ -2,7 +2,9 @@ package de.cadentem.additional_enchantments;
 
 import com.mojang.logging.LogUtils;
 import de.cadentem.additional_enchantments.capability.Configuration;
+import de.cadentem.additional_enchantments.capability.ProjectileData;
 import de.cadentem.additional_enchantments.client.ClientRegistry;
+import de.cadentem.additional_enchantments.config.ClientConfig;
 import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.network.NetworkHandler;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
@@ -23,7 +25,7 @@ import org.slf4j.Logger;
 @Mod(AE.MODID)
 public class AE {
     public static final String MODID = "additional_enchantments";
-    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOG = LogUtils.getLogger();
 
     public AE() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -35,6 +37,7 @@ public class AE {
         AEItems.ITEMS.register(modEventBus);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
     }
 
     @SubscribeEvent
@@ -50,5 +53,6 @@ public class AE {
     @SubscribeEvent
     public void registerCapability(final RegisterCapabilitiesEvent event) {
         event.register(Configuration.class);
+        event.register(ProjectileData.class);
     }
 }

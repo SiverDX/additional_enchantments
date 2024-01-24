@@ -1,9 +1,9 @@
 package de.cadentem.additional_enchantments.mixin;
 
-import de.cadentem.additional_enchantments.capability.CapabilityProvider;
+import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
 import de.cadentem.additional_enchantments.client.ClientProxy;
 import de.cadentem.additional_enchantments.config.ServerConfig;
-import de.cadentem.additional_enchantments.data.EntityTags;
+import de.cadentem.additional_enchantments.data.AEEntityTags;
 import de.cadentem.additional_enchantments.enchantments.PerceptionEnchantment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
@@ -21,11 +21,11 @@ public abstract class MinecraftMixin {
     private void additional_enchantments$handlePerceptionEnchantment(final Entity entity, final CallbackInfoReturnable<Boolean> callback) {
         Player localPlayer = ClientProxy.getLocalPlayer();
 
-        if (localPlayer == entity || entity.getType().is(EntityTags.PERCEPTION_BLACKLIST) || entity.isInvisible() && ServerConfig.SPEC.isLoaded() && !ServerConfig.PERCEPTION_SHOW_INVISIBLE.get()) {
+        if (localPlayer == entity || entity.getType().is(AEEntityTags.PERCEPTION_BLACKLIST) || entity.isInvisible() && ServerConfig.SPEC.isLoaded() && !ServerConfig.PERCEPTION_SHOW_INVISIBLE.get()) {
             return;
         }
 
-        CapabilityProvider.getCapability(localPlayer).ifPresent(configuration -> {
+        ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
             if (configuration.displayType == PerceptionEnchantment.DisplayType.NONE) {
                 return;
             }

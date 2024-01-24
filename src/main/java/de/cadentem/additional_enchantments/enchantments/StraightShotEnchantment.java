@@ -1,8 +1,9 @@
 package de.cadentem.additional_enchantments.enchantments;
 
-import de.cadentem.additional_enchantments.core.interfaces.ProjectileAccess;
-import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
+import de.cadentem.additional_enchantments.capability.CapabilityHandler;
+import de.cadentem.additional_enchantments.capability.ProjectileDataProvider;
 import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
+import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,20 +18,13 @@ public class StraightShotEnchantment extends ConfigurableEnchantment {
         super(Rarity.UNCOMMON, AEEnchantmentCategory.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.STRAIGHT_SHOT_ID);
     }
 
-    @SubscribeEvent
-    public static void updateGravity(final EntityJoinLevelEvent event) {
-        if (event.getLevel().isClientSide()) {
-            return;
-        }
+    public static void updateGravity(final Projectile projectile) {
+        if (projectile.getOwner() instanceof LivingEntity livingOwner) {
+            int level = livingOwner.getMainHandItem().getEnchantmentLevel(AEEnchantments.STRAIGHT_SHOT.get());
 
-        if (event.getEntity() instanceof Projectile projectile) {
-            if (projectile.getOwner() instanceof LivingEntity livingOwner) {
-                int level = livingOwner.getMainHandItem().getEnchantmentLevel(AEEnchantments.STRAIGHT_SHOT.get());
-
-                if (level > 0) {
-                    projectile.setNoGravity(true);
-                    ((ProjectileAccess) projectile).additional_enchantments$setStraightShotEnchantmentLevel(level);
-                }
+            if (level > 0) {
+                projectile.setNoGravity(true);
+                ProjectileDataProvider.getCapability(projectile).ifPresent(data -> data.straightShotEnchantmentLevel = level);
             }
         }
     }

@@ -1,5 +1,6 @@
-// 1.20.1	2024-01-22T20:43:13.7508125	Tags for minecraft:entity_type mod id additional_enchantments
+// 1.20.1	2024-01-24T20:26:17.5542785	Tags for minecraft:entity_type mod id additional_enchantments
 35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/additional_enchantments/tags/entity_types/confusion_blacklist.json
 243c388ccd3f77483802e9989b8a8e102f56be1d data/additional_enchantments/tags/entity_types/homing_blacklist.json
 35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/additional_enchantments/tags/entity_types/perception_blacklist.json
+01c3f5cebabec10bf259b13ce1d6ce40be8bda20 data/additional_enchantments/tags/entity_types/plague_blacklist.json
 243c388ccd3f77483802e9989b8a8e102f56be1d data/additional_enchantments/tags/entity_types/shatter_aoe_blacklist.json

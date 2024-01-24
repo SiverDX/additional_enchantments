@@ -1,6 +1,6 @@
 package de.cadentem.additional_enchantments.network;
 
-import de.cadentem.additional_enchantments.capability.CapabilityProvider;
+import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
 import de.cadentem.additional_enchantments.client.ClientProxy;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -9,10 +9,10 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class SyncCapability {
+public class SyncConfiguration {
     public CompoundTag tag;
 
-    public SyncCapability(final CompoundTag tag) {
+    public SyncConfiguration(final CompoundTag tag) {
         this.tag = tag;
     }
 
@@ -20,17 +20,17 @@ public class SyncCapability {
         buffer.writeNbt(tag);
     }
 
-    public static SyncCapability decode(final FriendlyByteBuf buffer) {
-        return new SyncCapability(buffer.readNbt());
+    public static SyncConfiguration decode(final FriendlyByteBuf buffer) {
+        return new SyncConfiguration(buffer.readNbt());
     }
 
-    public static void handle(final SyncCapability packet, final Supplier<NetworkEvent.Context> contextSupplier) {
+    public static void handle(final SyncConfiguration packet, final Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
 
         if (context.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
-            context.enqueueWork(() -> CapabilityProvider.getCapability(context.getSender()).ifPresent(configuration -> configuration.deserializeNBT(packet.tag)));
+            context.enqueueWork(() -> ConfigurationProvider.getCapability(context.getSender()).ifPresent(configuration -> configuration.deserializeNBT(packet.tag)));
         } else if (context.getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-            context.enqueueWork(() -> ClientProxy.handleSyncCapability(packet.tag));
+            context.enqueueWork(() -> ClientProxy.handleSyncConfiguration(packet.tag));
         }
 
         context.setPacketHandled(true);

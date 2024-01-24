@@ -12,7 +12,7 @@ public class AEEntityTypes {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, AE.MODID);
 
     public static final RegistryObject<EntityType<ShardArrow>> SHARD_ARROW = ENTITY_TYPES.register("shard_arrow", () ->
-            EntityType.Builder.of(ShardArrow::new, MobCategory.MISC)
+            EntityType.Builder.<ShardArrow>of(ShardArrow::new, MobCategory.MISC)
                     .sized(0.5f, 0.5f)
                     .clientTrackingRange(4)
                     .updateInterval(20)
