@@ -15,7 +15,7 @@
 - Default max. level: 6
 - Applies a poison effect to entities which deals magic damage
   - Also has a chance to spread to nearby targets (does not affect players or Tamable Animals owned by players)
-  - Targets can be blacklisted with `additional_enchantments:plague_blacklist`
+  - Targets can be blacklisted with the tag `additional_enchantments:plague_blacklist`
 - Enchantment level increases the duration, damage while reducing the time between damage ticks
   - In addition, it also increases the chance and range for the spread
 - Not compatible with the `Wither` enchantment
@@ -30,7 +30,7 @@
 ## Confusion (Melee)
 - Default max. level: 5
 - Has a chance to cause the attacked target to retaliate against a randomly chosen nearby entity, dropping the attacker as a target
-  - Targets can be blacklisted with `additional_enchantments:confusion_blacklist`
+  - Targets can be blacklisted with the tag `additional_enchantments:confusion_blacklist`
 - Enchantment level increases the chance of this effect to occur and also the range to check against possible retaliation targets
 
 ## Explosive Tip (Ranged)
@@ -42,7 +42,7 @@
 ## Homing (Ranged)
 - Default max. level: 4
 - Projectiles fly towards a chosen target
-  - Targets can be blacklisted with `additional_enchantments:homing_blacklist` (`minecraft:villager` and `minecraft:iron_golem` are added by default)
+  - Targets can be blacklisted with the tag `additional_enchantments:homing_blacklist` (`minecraft:villager` and `minecraft:iron_golem` are added by default)
   - Invisible entities are only targeted if they're glowing (server-side (`Perception` is client-only))
 - Enchantment level increases the radius in which a target gets picked (+ it slightly increases velocity of the arrow)
 - It's possible to switch between various modes with the keybind (default being `H`)
@@ -53,7 +53,7 @@
 - Default max. level: 4
 - Allows the usage of `Amethyst Shards` as projectiles
   - There is a high chance for them to break on impact which will deal damage in an area (the projectile and area damage are `Magic`)
-    - Targets can be blacklisted with `additional_enchantments:shatter_aoe_blacklist` (`minecraft:villager` and `minecraft:iron_golem` are added by default)
+    - Targets can be blacklisted with the tag `additional_enchantments:shatter_aoe_blacklist` (`minecraft:villager` and `minecraft:iron_golem` are added by default)
 - Enchantment level increases the shatter area of effect and damage
 
 ## Straight Shot (Ranged)
@@ -66,7 +66,7 @@
 - Applies random effects to the arrow (and in turn to the target it hits)
 - Enchantment level increases the amount, amplifier and duration of the effects
 - It's possible to switch between effect categories (HARMFUL, BENEFICIAL and NEUTRAL (can apply all)) with the keybind (default being `G`)
-  - Effects can be blacklisted with `additional_enchantmetns:tipped_blacklist`
+  - Effects can be blacklisted with the tag `additional_enchantmetns:tipped_blacklist`
 
 ## Perception (Helmet)
 - Default max. level: 4
@@ -76,5 +76,14 @@
 - Enchantment level increases the range
 - It's possible to switch between different modes (ALL, NO_ITEMS and NONE) with the keybind (default being `U`)
   - If `Shift` is pressed it will cycle through options for items, filtering them by rarity (COMMON, UNCOMMON, RARE, EPIC)
-  - Entities can be blacklisted with `additional_enchantments:perception_blacklist`
+  - Entities can be blacklisted with the tag `additional_enchantments:perception_blacklist`
   - It's configurable whether invisible entities are outlined or not (`true` by default)
+
+## Ore Sight
+- Default max. level: 5
+- Outlines nearby ore blocks (even through walls) with different colors based on their rarity group
+  - The groups are based on three block tags: `additional_enchantments:common_ore`, `additional_enchantments:uncommon_ore` and `additional_enchantments:rare_ore`
+  - If the block is a `forge:ores` but not part of a rarity group it will be outlined with a white color
+- Enchantment level increases the range
+- It's possible to switch between the rarities (ALL, COMMON, UNCOMMON, RARE and NONE (no outlines will be displayed)) with the keybind (default being `N`)
+  - Blocks can be blacklisted with the tag `additional_enchantments:ore_sight_blacklist`
