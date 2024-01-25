@@ -7,9 +7,15 @@ public class ClientConfig {
     public static final ForgeConfigSpec SPEC;
 
     public static final ForgeConfigSpec.IntValue GROUPED_RENDER_RANGE;
+    public static final ForgeConfigSpec.IntValue CACHE_KEPT_SECONDS;
+    public static final ForgeConfigSpec.BooleanValue ACCURATE_GROUPING;
 
     static {
-        GROUPED_RENDER_RANGE = BUILDER.comment("The range (in blocks) at which the [Ore Sight] enchantment will render blocks as a group - decrease this value if you encounter performance issues").defineInRange("grouped_render_range", 20, 0, 30);
+        BUILDER.push("Ore Sight");
+        GROUPED_RENDER_RANGE = BUILDER.comment("The range (in blocks) at which the [Ore Sight] enchantment will render blocks as a group - decrease this value if you encounter performance issues").defineInRange("grouped_render_range", 20, 0, 50);
+        CACHE_KEPT_SECONDS = BUILDER.comment("Determines for how long things are cached regarding [Ore Sight] enchantment outline rendering (affects how fast blocks update their outline)").defineInRange("cache_kept_seconds", 2, 0, 15);
+        ACCURATE_GROUPING = BUILDER.comment("If enabled the grouped rendering will be more accurate (at the cost of a slight performance decrease)").define("accurate_grouping", true);
+        BUILDER.pop();
 
         SPEC = BUILDER.build();
     }

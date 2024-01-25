@@ -13,6 +13,7 @@
   "client": [
     "MinecraftMixin",
     "ModelBakeryMixin",
+    "LevelRendererAccess",
     "LevelRendererMixin"
   ],
   "injectors": {
