@@ -25,9 +25,10 @@ public class ShatterEnchantment extends ConfigurableEnchantment {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void handleDamage(final LivingAttackEvent event) {
         if (event.getSource().getDirectEntity() instanceof ShardArrow shardArrow && !shardArrow.wasDamageChanged) {
-            event.getEntity().hurt(shardArrow.damageSources().indirectMagic(shardArrow, shardArrow.getOwner()), event.getAmount());
             shardArrow.wasDamageChanged = true;
             event.setCanceled(true);
+
+            event.getEntity().hurt(shardArrow.damageSources().indirectMagic(shardArrow, shardArrow.getOwner()), event.getAmount());
         }
     }
 
