@@ -178,6 +178,7 @@ public class RenderHandler {
                     SectionData sectionData = SECTION_CACHE.get(hash);
 
                     if (sectionData != null && localPlayer.tickCount - sectionData.tickCount > 20L * ClientConfig.CACHE_KEPT_SECONDS.get()) {
+                        SECTION_CACHE.remove(hash);
                         sectionData = null;
                     }
 
@@ -245,7 +246,7 @@ public class RenderHandler {
                         SECTION_CACHE.put(hash, new SectionData(containsOres, localPlayer.tickCount));
                     }
 
-                    if (blockData == null) {
+                    if (containsOres && blockData == null) {
                         BLOCK_CACHE.put(mutablePosition.asLong(), new BlockData(rarity, localPlayer.tickCount));
                     }
 
