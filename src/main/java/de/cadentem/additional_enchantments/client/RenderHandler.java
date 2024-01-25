@@ -182,7 +182,7 @@ public class RenderHandler {
                         sectionData = null;
                     }
 
-                    boolean containsOres = sectionData != null ? sectionData.containsOres : section.maybeHas(testState -> testState.is(Tags.Blocks.ORES));
+                    boolean containsOres = sectionData != null ? sectionData.containsOres : !section.hasOnlyAir() && section.maybeHas(testState -> testState.is(Tags.Blocks.ORES));
                     boolean renderOutline = rarity != OreSightEnchantment.OreRarity.NONE || containsOres;
 
                     if (renderOutline) {
