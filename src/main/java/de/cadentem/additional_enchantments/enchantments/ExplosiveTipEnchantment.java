@@ -1,6 +1,5 @@
 package de.cadentem.additional_enchantments.enchantments;
 
-import de.cadentem.additional_enchantments.capability.CapabilityHandler;
 import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
 import de.cadentem.additional_enchantments.capability.ProjectileDataProvider;
 import de.cadentem.additional_enchantments.core.interfaces.ExplosionAccess;
@@ -18,7 +17,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Explosion;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;

@@ -87,3 +87,6 @@
 - Enchantment level increases the range
 - It's possible to switch between the rarities (ALL, COMMON, UNCOMMON, RARE and NONE (no outlines will be displayed)) with the keybind (default being `N`)
   - Blocks can be blacklisted with the tag `additional_enchantments:ore_sight_blacklist`
+- There are two client side configurations
+  - One determines how far away ore lines get rendered as group (reducing this will improve performance)
+  - The other one determines how long block data is cached (reducing this will make outline updates happen faster)

@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PerceptionEnchantment extends ConfigurableEnchantment {
-    public static final Map<String, Pair<Integer, Integer>> CLIENT_CACHE = new HashMap<>();
+    private static final Map<String, Pair<Integer, Integer>> CLIENT_CACHE = new HashMap<>();
 
     public enum DisplayType {
         ALL,
