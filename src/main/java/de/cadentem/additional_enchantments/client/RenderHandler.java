@@ -161,7 +161,8 @@ public class RenderHandler {
                 foundSection = false;
 
                 for (int y = maxChunkY; y >= minChunkY; y--) {
-                    LevelChunkSection section = currentChunk.getSection(currentChunk.getSectionIndex(y));
+                    int sectionIndex = currentChunk.getSectionIndex(y);
+                    LevelChunkSection section = currentChunk.getSection(sectionIndex);
 
                     mutablePosition.set(x, y, z);
                     BlockData blockData = BLOCK_CACHE.get(mutablePosition.asLong());
@@ -175,7 +176,7 @@ public class RenderHandler {
                         rarity = blockData.rarity;
                     }
 
-                    int hash = getSectionHash(currentChunkPosition.x, currentChunkPosition.z, section.bottomBlockY());
+                    int hash = getSectionHash(currentChunkPosition.x, currentChunkPosition.z, sectionIndex);
                     SectionData sectionData = SECTION_CACHE.get(hash);
 
                     if (sectionData != null && localPlayer.tickCount - sectionData.tickCount > 20L * ClientConfig.CACHE_KEPT_SECONDS.get()) {
@@ -292,34 +293,40 @@ public class RenderHandler {
     }
 
     private static void collectLines(final OreSightEnchantment.OreRarity rarity, float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
-        collect(rarity, new Vector3f(minX, minY, minZ), new Vector3f(maxX, minY, minZ), new Vector3f(1, 0, 0), 0);
-        collect(rarity, new Vector3f(minX, minY, minZ), new Vector3f(minX, maxY, minZ), new Vector3f(0, 1, 0), 1);
-        collect(rarity, new Vector3f(minX, minY, minZ), new Vector3f(minX, minY, maxZ), new Vector3f(0, 0, 1), 2);
-        collect(rarity, new Vector3f(maxX, minY, minZ), new Vector3f(maxX, maxY, minZ), new Vector3f(0, 1, 0), 3);
-        collect(rarity, new Vector3f(maxX, maxY, minZ), new Vector3f(minX, maxY, minZ), new Vector3f(-1, 0, 0), 4);
-        collect(rarity, new Vector3f(minX, maxY, minZ), new Vector3f(minX, maxY, maxZ), new Vector3f(0, 0, 1), 5);
-        collect(rarity, new Vector3f(minX, maxY, maxZ), new Vector3f(minX, minY, maxZ), new Vector3f(0, -1, 0), 6);
-        collect(rarity, new Vector3f(minX, minY, maxZ), new Vector3f(maxX, minY, maxZ), new Vector3f(1, 0, 0), 7);
-        collect(rarity, new Vector3f(maxX, minY, maxZ), new Vector3f(maxX, minY, minZ), new Vector3f(0, 0, -1), 8);
-        collect(rarity, new Vector3f(minX, maxY, maxZ), new Vector3f(maxX, maxY, maxZ), new Vector3f(1, 0, 0), 9);
-        collect(rarity, new Vector3f(maxX, minY, maxZ), new Vector3f(maxX, maxY, maxZ), new Vector3f(0, 1, 0), 10);
-        collect(rarity, new Vector3f(maxX, maxY, minZ), new Vector3f(maxX, maxY, maxZ), new Vector3f(0, 0, 1), 11);
+        int offset = 0;
+
+        offset += collect(rarity, new Vector3f(minX, minY, minZ), new Vector3f(maxX, minY, minZ), new Vector3f(1, 0, 0), offset);
+        offset += collect(rarity, new Vector3f(minX, minY, minZ), new Vector3f(minX, maxY, minZ), new Vector3f(0, 1, 0), offset);
+        offset += collect(rarity, new Vector3f(minX, minY, minZ), new Vector3f(minX, minY, maxZ), new Vector3f(0, 0, 1), offset);
+        offset += collect(rarity, new Vector3f(maxX, minY, minZ), new Vector3f(maxX, maxY, minZ), new Vector3f(0, 1, 0), offset);
+        offset += collect(rarity, new Vector3f(maxX, maxY, minZ), new Vector3f(minX, maxY, minZ), new Vector3f(-1, 0, 0), offset);
+        offset += collect(rarity, new Vector3f(minX, maxY, minZ), new Vector3f(minX, maxY, maxZ), new Vector3f(0, 0, 1), offset);
+        offset += collect(rarity, new Vector3f(minX, maxY, maxZ), new Vector3f(minX, minY, maxZ), new Vector3f(0, -1, 0), offset);
+        offset += collect(rarity, new Vector3f(minX, minY, maxZ), new Vector3f(maxX, minY, maxZ), new Vector3f(1, 0, 0), offset);
+        offset += collect(rarity, new Vector3f(maxX, minY, maxZ), new Vector3f(maxX, minY, minZ), new Vector3f(0, 0, -1), offset);
+        offset += collect(rarity, new Vector3f(minX, maxY, maxZ), new Vector3f(maxX, maxY, maxZ), new Vector3f(1, 0, 0), offset);
+        offset += collect(rarity, new Vector3f(maxX, minY, maxZ), new Vector3f(maxX, maxY, maxZ), new Vector3f(0, 1, 0), offset);
+        collect(rarity, new Vector3f(maxX, maxY, minZ), new Vector3f(maxX, maxY, maxZ), new Vector3f(0, 0, 1), offset);
     }
 
-    private static void collect(final OreSightEnchantment.OreRarity rarity, final Vector3f from, final Vector3f to, final Vector3f normal, int offset) {
+    private static int collect(final OreSightEnchantment.OreRarity rarity, final Vector3f from, final Vector3f to, final Vector3f normal, int offset) {
         List<LineData> rarityLines = getLines(rarity);
 
         // Last added has the highest chance of fitting
         for (int i = rarityLines.size() - 1 - offset; i >= 0; i--) {
             LineData line = rarityLines.get(i);
 
-            // Mth.abs(a.x() - b.x()) <= DERIVATION && Mth.abs(a.y() - b.y()) <= DERIVATION && Mth.abs(a.z() - b.z()) <= DERIVATION;
-            if (from.equals(line.from) && to.equals(line.to) || to.equals(line.from) && from.equals(line.to)) {
+            if (isSimilar(from, line.from) && isSimilar(to, line.to) || isSimilar(to, line.from) && isSimilar(from, line.to)) {
                 rarityLines.remove(i);
-                return;
+                return 0;
             }
         }
 
         rarityLines.add(new LineData(from, to, normal));
+        return 1;
+    }
+
+    private static boolean isSimilar(final Vector3f a, final Vector3f b) {
+        return a.equals(b);
     }
 }
