@@ -102,6 +102,7 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
     public static void handleExplosion(final ExplosionEvent.Detonate event) {
         if (((ExplosionAccess) event.getExplosion()).additional_enchantments$wasTriggeredByEnchantment()) {
             LivingEntity source = event.getExplosion().getSourceMob();
+
             event.getAffectedEntities().removeIf(entity -> {
                 if (entity == source) {
                     return true;

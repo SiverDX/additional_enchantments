@@ -33,10 +33,7 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class RenderHandler {
@@ -44,8 +41,9 @@ public class RenderHandler {
     private static final List<LineData> UNCOMMON_LINES = new ArrayList<>();
     private static final List<LineData> COMMON_LINES = new ArrayList<>();
     private static final List<LineData> MISC_LINES = new ArrayList<>();
-    private static final Map<Integer, SectionData> SECTION_CACHE = new HashMap<>();
-    private static final Map<Long, BlockData> BLOCK_CACHE = new HashMap<>();
+
+    private static final Map<Integer, SectionData> SECTION_CACHE = new WeakHashMap<>();
+    private static final Map<Long, BlockData> BLOCK_CACHE = new WeakHashMap<>();
 
     private record LineData(Vector3f from, Vector3f to, Vector3f normal) {
     }
