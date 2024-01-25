@@ -33,10 +33,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class RenderHandler {
@@ -44,8 +41,9 @@ public class RenderHandler {
     private static final List<LineData> UNCOMMON_LINES = new ArrayList<>();
     private static final List<LineData> COMMON_LINES = new ArrayList<>();
     private static final List<LineData> MISC_LINES = new ArrayList<>();
-    private static final Map<Integer, SectionData> SECTION_CACHE = new HashMap<>();
-    private static final Map<Long, BlockData> BLOCK_CACHE = new HashMap<>();
+
+    private static final Map<Integer, SectionData> SECTION_CACHE = new WeakHashMap<>();
+    private static final Map<Long, BlockData> BLOCK_CACHE = new WeakHashMap<>();
 
     private record LineData(Vector3f from, Vector3f to, Vector3f normal) {
     }
@@ -180,6 +178,7 @@ public class RenderHandler {
                     SectionData sectionData = SECTION_CACHE.get(hash);
 
                     if (sectionData != null && localPlayer.tickCount - sectionData.tickCount > 20L * ClientConfig.CACHE_KEPT_SECONDS.get()) {
+                        SECTION_CACHE.remove(hash);
                         sectionData = null;
                     }
 
@@ -247,7 +246,7 @@ public class RenderHandler {
                         SECTION_CACHE.put(hash, new SectionData(containsOres, localPlayer.tickCount));
                     }
 
-                    if (blockData == null) {
+                    if (containsOres && blockData == null) {
                         BLOCK_CACHE.put(mutablePosition.asLong(), new BlockData(rarity, localPlayer.tickCount));
                     }
 
