@@ -3,6 +3,8 @@ package de.cadentem.additional_enchantments.capability;
 import com.google.common.collect.Sets;
 import de.cadentem.additional_enchantments.data.AEEntityTags;
 import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
+import de.cadentem.additional_enchantments.mixin.AbstractArrowAccess;
+import de.cadentem.additional_enchantments.mixin.TridentAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,6 +30,8 @@ public class ProjectileData {
     public int homingEnchantmentLevel;
 
     public int explosiveTipEnchantmentLevel;
+    public boolean exploded;
+
     public int straightShotEnchantmentLevel;
 
     public void handleHomingMovement(final Projectile instance) {
@@ -39,15 +43,12 @@ public class ProjectileData {
                     homingTarget = livingEntity;
                 } else {
                     homingTargetId = -1;
-                    return;
                 }
-            } else {
-                return;
             }
         }
 
-        if (homingTarget.isRemoved()) {
-            homingTarget = null;
+        if (isInvalidTarget(homingTarget) || isInvalidProjectile(instance)) {
+            setHomingTarget(instance, null);
             return;
         }
 
@@ -62,7 +63,7 @@ public class ProjectileData {
     }
 
     public void searchForHomingTarget(final Projectile instance) {
-        if (homingTarget != null || !(instance.getOwner() instanceof ServerPlayer serverPlayer)) {
+        if (homingTarget != null || !(instance.getOwner() instanceof ServerPlayer serverPlayer) || isInvalidProjectile(instance)) {
             return;
         }
 
@@ -72,6 +73,10 @@ public class ProjectileData {
             }
 
             List<LivingEntity> entities = serverPlayer.getLevel().getEntitiesOfClass(LivingEntity.class, instance.getBoundingBox().inflate(5 + homingEnchantmentLevel * 2), entity -> {
+                if (isInvalidTarget(entity)) {
+                    return false;
+                }
+
                 if (entity.getType().is(AEEntityTags.HOMING_BLACKLIST)) {
                     return false;
                 }
@@ -120,10 +125,52 @@ public class ProjectileData {
                 target = entities.get(0);
             }
 
+            setHomingTarget(instance, target);
+        });
+    }
+
+    public void handleImpact(final Projectile projectile) {
+        if (straightShotEnchantmentLevel > 0) {
+            projectile.setNoGravity(false);
+        }
+
+        setHomingTarget(projectile, null);
+    }
+
+    public boolean hasAddedEffects() {
+        return addedEffects != null && !addedEffects.isEmpty();
+    }
+
+    private void setHomingTarget(final Projectile instance, final LivingEntity target) {
+        if (target == null) {
+            homingTarget = null;
+            homingTargetId = -1;
+        } else {
             homingTarget = target;
             homingTargetId = target.getId();
-            CapabilityHandler.syncProjectileData(instance);
-        });
+        }
+
+        CapabilityHandler.syncProjectileData(instance);
+    }
+
+    private boolean isInvalidTarget(final LivingEntity target) {
+        if (target == null) {
+            return true;
+        }
+
+        return target.isRemoved() || target.isDeadOrDying();
+    }
+
+    private boolean isInvalidProjectile(final Projectile projectile) {
+        if (projectile instanceof AbstractArrowAccess arrow && arrow.isInGround()) {
+            return true;
+        }
+
+        if (projectile instanceof TridentAccess trident && trident.didDealDamage()) {
+            return true;
+        }
+
+        return projectile.isRemoved();
     }
 
     public CompoundTag serializeNBT() {
@@ -133,6 +180,7 @@ public class ProjectileData {
         tag.putInt("explosiveTipEnchantmentLevel", explosiveTipEnchantmentLevel);
         tag.putInt("straightShotEnchantmentLevel", straightShotEnchantmentLevel);
         tag.putInt("homingTargetId", homingTargetId);
+        tag.putBoolean("exploded", exploded);
 
         if (hasAddedEffects()) {
             ListTag effects = new ListTag();
@@ -153,6 +201,7 @@ public class ProjectileData {
         explosiveTipEnchantmentLevel = tag.getInt("explosiveTipEnchantmentLevel");
         straightShotEnchantmentLevel = tag.getInt("straightShotEnchantmentLevel");
         homingTargetId = tag.getInt("homingTargetId");
+        exploded = tag.getBoolean("exploded");
 
         ListTag effects = tag.getList("addedEffects", ListTag.TAG_COMPOUND);
 
@@ -163,9 +212,5 @@ public class ProjectileData {
         for (int i = 0; i < effects.size(); i++) {
             addedEffects.add(MobEffectInstance.load(effects.getCompound(i)));
         }
-    }
-
-    public boolean hasAddedEffects() {
-        return addedEffects != null && !addedEffects.isEmpty();
     }
 }

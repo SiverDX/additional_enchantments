@@ -20,7 +20,9 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
@@ -57,6 +59,13 @@ public class CapabilityHandler {
             HomingEnchantment.setEnchantmentLevel(projectile);
             ExplosiveTipEnchantment.setEnchantmentLevel(projectile);
             syncProjectileData(projectile);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void handleProjectileImpact(final ProjectileImpactEvent event) {
+        if (!event.isCanceled()) {
+            ProjectileDataProvider.getCapability(event.getProjectile()).ifPresent(data -> data.handleImpact(event.getProjectile()));
         }
     }
 

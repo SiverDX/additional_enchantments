@@ -15,18 +15,27 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Explosion;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.NotNull;
 
 @Mod.EventBusSubscriber
 public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
     public ExplosiveTipEnchantment() {
-        super(Rarity.RARE, AEEnchantmentCategory.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.EXPLOSIVE_TIP_ID);
+        super(Rarity.RARE, AEEnchantmentCategory.RANGED_AND_TRIDENT, EquipmentSlot.MAINHAND, AEEnchantments.EXPLOSIVE_TIP_ID);
+    }
+
+    @Override
+    protected boolean checkCompatibility(@NotNull final Enchantment other) {
+        return other != Enchantments.RIPTIDE && super.checkCompatibility(other);
     }
 
     public static void setEnchantmentLevel(final Projectile projectile) {
@@ -48,6 +57,10 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
         }
 
         ProjectileDataProvider.getCapability(projectile).ifPresent(data -> {
+            if (data.exploded) {
+                return;
+            }
+
             if (data.explosiveTipEnchantmentLevel > 0) {
                 if (!(projectile.getOwner() instanceof LivingEntity livingOwner)) {
                     return;
@@ -74,7 +87,12 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
                         }
                     }
 
-                    projectile.discard();
+                    data.exploded = true;
+
+                    if (configuration.explosionType == Explosion.BlockInteraction.BREAK && event.getRayTraceResult() instanceof BlockHitResult) {
+                        // Otherwise the projectile will just keep falling down, hitting a block and resetting to its initial fall position
+                        event.setCanceled(true);
+                    }
                 });
             }
         });
@@ -85,6 +103,10 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
         if (((ExplosionAccess) event.getExplosion()).additional_enchantments$wasTriggeredByEnchantment()) {
             LivingEntity source = event.getExplosion().getSourceMob();
             event.getAffectedEntities().removeIf(entity -> {
+                if (entity == source) {
+                    return true;
+                }
+
                 if (entity instanceof ExperienceOrb || entity instanceof ItemEntity) {
                     return true;
                 }
