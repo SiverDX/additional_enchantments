@@ -18,7 +18,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Explosion;
-import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
@@ -89,7 +89,7 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
 
                     data.exploded = true;
 
-                    if (configuration.explosionType == Explosion.BlockInteraction.DESTROY && event.getRayTraceResult() instanceof BlockHitResult) {
+                    if (configuration.explosionType == Explosion.BlockInteraction.DESTROY && event.getRayTraceResult().getType() == HitResult.Type.BLOCK) {
                         // Otherwise the projectile will just keep falling down, hitting a block and resetting to its initial fall position
                         event.setCanceled(true);
                     }

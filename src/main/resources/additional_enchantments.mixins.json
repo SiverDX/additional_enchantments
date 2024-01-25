@@ -4,12 +4,14 @@
   "package": "de.cadentem.additional_enchantments.mixin",
   "compatibilityLevel": "JAVA_17",
   "refmap": "additional_enchantments.refmap.json",
+  "plugin": "de.cadentem.additional_enchantments.mixin.ApplyMixinPlugin",
   "mixins": [
     "AbstractArrowAccess",
     "EnderManMixin",
     "ExplosionMixin",
     "ProjectileMixin",
-    "TridentAccess"
+    "TridentAccess",
+    "forge.AbstractArrowMixin"
   ],
   "client": [
     "MinecraftMixin",
