@@ -5,10 +5,11 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "additional_enchantments.refmap.json",
   "mixins": [
+    "AbstractArrowAccess",
     "EnderManMixin",
-    "EntityMixin",
     "ExplosionMixin",
-    "ProjectileMixin"
+    "ProjectileMixin",
+    "TridentAccess"
   ],
   "client": [
     "MinecraftMixin",

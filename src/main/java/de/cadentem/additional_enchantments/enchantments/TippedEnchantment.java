@@ -13,11 +13,14 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.tags.ITag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +29,12 @@ import java.util.stream.Collectors;
 @Mod.EventBusSubscriber
 public class TippedEnchantment extends ConfigurableEnchantment {
     public TippedEnchantment() {
-        super(Rarity.RARE, AEEnchantmentCategory.RANGED, EquipmentSlot.MAINHAND, AEEnchantments.TIPPED_ID);
+        super(Rarity.RARE, AEEnchantmentCategory.RANGED_AND_TRIDENT, EquipmentSlot.MAINHAND, AEEnchantments.TIPPED_ID);
+    }
+
+    @Override
+    protected boolean checkCompatibility(@NotNull final Enchantment other) {
+        return other != Enchantments.RIPTIDE && super.checkCompatibility(other);
     }
 
     @SubscribeEvent
