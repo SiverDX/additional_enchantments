@@ -2,7 +2,7 @@ package de.cadentem.additional_enchantments.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Matrix4f;
 import de.cadentem.additional_enchantments.capability.Configuration;
 import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
 import de.cadentem.additional_enchantments.config.ClientConfig;
@@ -15,9 +15,9 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
@@ -32,21 +32,17 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class RenderHandler {
-    private static final List<LineData> RARE_LINES = new ArrayList<>();
-    private static final List<LineData> UNCOMMON_LINES = new ArrayList<>();
-    private static final List<LineData> COMMON_LINES = new ArrayList<>();
-    private static final List<LineData> MISC_LINES = new ArrayList<>();
+    private static long CACHE_TIME;
 
     private static final Map<Integer, SectionData> SECTION_CACHE = new WeakHashMap<>();
     private static final Map<Long, BlockData> BLOCK_CACHE = new WeakHashMap<>();
-
-    private record LineData(Vector3f from, Vector3f to, Vector3f normal) {
-    }
 
     private record BlockData(OreSightEnchantment.OreRarity rarity, long tickCount) {
     }
@@ -68,6 +64,7 @@ public class RenderHandler {
             return;
         }
 
+        CACHE_TIME = 20L * ClientConfig.CACHE_KEPT_SECONDS.get();
         LocalPlayer localPlayer = Minecraft.getInstance().player;
 
         if (localPlayer != null) {
@@ -95,33 +92,6 @@ public class RenderHandler {
         }
     }
 
-    private static void drawGroupedLines(final PoseStack poseStack, final BufferBuilder bufferBuilder) {
-        for (int i = OreSightEnchantment.OreRarity.values().length - 1; i >= 0; i--) {
-            OreSightEnchantment.OreRarity rarity = OreSightEnchantment.OreRarity.values()[i];
-
-            if (rarity == OreSightEnchantment.OreRarity.NONE) {
-                continue;
-            }
-
-            Vec3i color = switch (rarity) {
-                case ALL -> new Vec3i(255, 255, 255);
-                case COMMON -> new Vec3i(165, 42, 42);
-                case UNCOMMON -> new Vec3i(255, 215, 0);
-                case RARE -> new Vec3i(64, 224, 208);
-                default -> throw new IllegalStateException("Unexpected value: " + rarity);
-            };
-
-            List<LineData> rarityLines = getLines(rarity);
-
-            for (LineData line : rarityLines) {
-                bufferBuilder.vertex(poseStack.last().pose(), line.from.x(), line.from.y(), line.from.z()).color(color.getX(), color.getY(), color.getZ(), 255).normal(line.normal.x(), line.normal.y(), line.normal.z()).endVertex();
-                bufferBuilder.vertex(poseStack.last().pose(), line.to.x(), line.to.y(), line.to.z()).color(color.getX(), color.getY(), color.getZ(), 255).normal(line.normal.x(), line.normal.y(), line.normal.z()).endVertex();
-            }
-
-            rarityLines.clear();
-        }
-    }
-
     /**
      * Referenced off of <a href="https://github.com/TelepathicGrunt/Bumblezone/blob/31cc8dc7066fc19dd0b880f66d64460cee4d356b/common/src/main/java/com/telepathicgrunt/the_bumblezone/items/essence/LifeEssence.java#L132">TelepathicGrunt</a>
      */
@@ -129,6 +99,8 @@ public class RenderHandler {
         if (configuration.oreRarity == OreSightEnchantment.OreRarity.NONE) {
             return;
         }
+
+        radius = 30;
 
         Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         BlockPos startPosition = localPlayer.blockPosition();
@@ -163,23 +135,26 @@ public class RenderHandler {
                     LevelChunkSection section = currentChunk.getSection(sectionIndex);
 
                     mutablePosition.set(x, y, z);
-                    BlockData blockData = BLOCK_CACHE.get(mutablePosition.asLong());
 
                     OreSightEnchantment.OreRarity rarity = null;
+                    SectionData sectionData = null;
+                    BlockData blockData = null;
+                    int hash = 0;
 
-                    if (blockData != null && localPlayer.tickCount - blockData.tickCount > 20L * ClientConfig.CACHE_KEPT_SECONDS.get()) {
-                        BLOCK_CACHE.remove(mutablePosition.asLong());
-                        blockData = null;
-                    } else if (blockData != null) {
-                        rarity = blockData.rarity;
-                    }
+                    if (CACHE_TIME > 0) {
+                        blockData = getBlockCacheEntry(mutablePosition, localPlayer.tickCount);
 
-                    int hash = getSectionHash(currentChunkPosition.x, currentChunkPosition.z, sectionIndex);
-                    SectionData sectionData = SECTION_CACHE.get(hash);
+                        if (blockData != null) {
+                            rarity = blockData.rarity;
+                        }
 
-                    if (sectionData != null && localPlayer.tickCount - sectionData.tickCount > 20L * ClientConfig.CACHE_KEPT_SECONDS.get()) {
-                        SECTION_CACHE.remove(hash);
-                        sectionData = null;
+                        hash = getSectionHash(currentChunkPosition.x, currentChunkPosition.z, sectionIndex);
+                        sectionData = SECTION_CACHE.get(hash);
+
+                        if (sectionData != null && localPlayer.tickCount - sectionData.tickCount > CACHE_TIME) {
+                            SECTION_CACHE.remove(hash);
+                            sectionData = null;
+                        }
                     }
 
                     boolean containsOres = sectionData != null ? sectionData.containsOres : !section.hasOnlyAir() && section.maybeHas(testState -> testState.is(Tags.Blocks.ORES));
@@ -189,23 +164,7 @@ public class RenderHandler {
                         foundSection = true;
 
                         if (rarity == null) {
-                            BlockState state = currentChunk.getBlockState(mutablePosition);
-
-                            if (state.getBlock() == Blocks.AIR) {
-                                rarity = OreSightEnchantment.OreRarity.NONE;
-                            } else if (state.is(AEBlockTags.ORE_SIGHT_BLACKLIST)) {
-                                rarity = OreSightEnchantment.OreRarity.NONE;
-                            } else if (state.is(AEBlockTags.RARE_ORE)) {
-                                rarity = OreSightEnchantment.OreRarity.RARE;
-                            } else if (state.is(AEBlockTags.UNCOMMON_ORE)) {
-                                rarity = OreSightEnchantment.OreRarity.UNCOMMON;
-                            } else if (state.is(AEBlockTags.COMMON_ORE)) {
-                                rarity = OreSightEnchantment.OreRarity.COMMON;
-                            } else if (state.is(Tags.Blocks.ORES)) {
-                                rarity = OreSightEnchantment.OreRarity.ALL;
-                            } else {
-                                rarity = OreSightEnchantment.OreRarity.NONE;
-                            }
+                            rarity = getRarity(currentChunk, mutablePosition, localPlayer.tickCount);
                         }
 
                         if (rarity != OreSightEnchantment.OreRarity.NONE) {
@@ -216,38 +175,43 @@ public class RenderHandler {
                             float xMax = (float) (1 + x - camera.x());
                             float zMax = (float) (1 + z - camera.z());
 
-                            double xDifference = startPosition.getX() - x;
-                            double yDifference = startPosition.getY() - y;
-                            double zDifference = startPosition.getZ() - z;
-
-                            double distance = (xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
-
                             if (rarity.ordinal() >= configuration.oreRarity.ordinal()) {
                                 if (((LevelRendererAccess) levelRenderer).getCullingFrustum().isVisible(new AABB(x, y, z, x + 1, y + 1, z + 1))) {
-                                    if (distance > Mth.square(ClientConfig.GROUPED_RENDER_RANGE.get())) {
-                                        Vec3 color = switch (rarity) {
-                                            case ALL -> new Vec3(1, 1, 1);
-                                            case COMMON -> new Vec3(0.647, 0.165, 0.165);
-                                            case UNCOMMON -> new Vec3(1, 0.843, 0);
-                                            case RARE -> new Vec3(0.251, 0.878, 0.816);
-                                            default -> throw new IllegalStateException("Unexpected value: " + rarity);
-                                        };
+                                    boolean[] renderSides = new boolean[Direction.values().length];
 
-                                        LevelRenderer.renderLineBox(poseStack, bufferBuilder, xMin, yMin, zMin, xMax, yMax, zMax, (float) color.x(), (float) color.y(), (float) color.z(), 1);
-                                    } else {
-                                        collectLines(rarity, xMin, yMin, zMin, xMax, yMax, zMax);
+                                    for (Direction direction : Direction.values()) {
+                                        BlockPos relative = mutablePosition.relative(direction, 1);
+
+                                        if (relative.getX() >= minChunkX && relative.getX() <= maxChunkX && relative.getY() >= minChunkY && relative.getY() <= maxChunkY && relative.getZ() >= minChunkZ && relative.getZ() <= maxChunkZ) {
+                                            renderSides[direction.ordinal()] = rarity != getRarity(currentChunk, relative, localPlayer.tickCount);
+                                        } else {
+                                            // The other block is outside the [Ore Sight] radius
+                                            renderSides[direction.ordinal()] = true;
+                                        }
                                     }
+
+                                    Vec3i color = switch (rarity) {
+                                        case ALL -> new Vec3i(255, 255, 255);
+                                        case COMMON -> new Vec3i(165, 42, 42);
+                                        case UNCOMMON -> new Vec3i(255, 215, 0);
+                                        case RARE -> new Vec3i(64, 224, 208);
+                                        default -> throw new IllegalStateException("Unexpected value: " + rarity);
+                                    };
+
+                                    drawLines(bufferBuilder, poseStack.last().pose(), xMin, yMin, zMin, xMax, yMax, zMax, renderSides, color);
                                 }
                             }
                         }
                     }
 
-                    if (sectionData == null) {
-                        SECTION_CACHE.put(hash, new SectionData(containsOres, localPlayer.tickCount));
-                    }
+                    if (CACHE_TIME > 0) {
+                        if (sectionData == null) {
+                            SECTION_CACHE.put(hash, new SectionData(containsOres, localPlayer.tickCount));
+                        }
 
-                    if (containsOres && blockData == null) {
-                        BLOCK_CACHE.put(mutablePosition.asLong(), new BlockData(rarity, localPlayer.tickCount));
+                        if (containsOres && blockData == null) {
+                            BLOCK_CACHE.put(mutablePosition.asLong(), new BlockData(rarity, localPlayer.tickCount));
+                        }
                     }
 
                     if (!foundSection && y != minChunkY) {
@@ -267,18 +231,62 @@ public class RenderHandler {
                 x = Math.min(maxChunkX, SectionPos.sectionToBlockCoord(SectionPos.blockToSectionCoord(x) + 1));
             }
         }
-
-        drawGroupedLines(poseStack, bufferBuilder);
     }
 
-    private static List<LineData> getLines(final OreSightEnchantment.OreRarity rarity) {
-        return switch (rarity) {
-            case ALL -> MISC_LINES;
-            case COMMON -> COMMON_LINES;
-            case UNCOMMON -> UNCOMMON_LINES;
-            case RARE -> RARE_LINES;
-            case NONE -> throw new IllegalStateException("Unexpected value: " + rarity);
-        };
+    private static @Nullable BlockData getBlockCacheEntry(final BlockPos position, int tickCount) {
+        if (CACHE_TIME > 0) {
+            long key = position.asLong();
+
+            BlockData blockData = BLOCK_CACHE.get(key);
+
+            if (blockData != null && tickCount - blockData.tickCount > CACHE_TIME) {
+                BLOCK_CACHE.remove(key);
+                blockData = null;
+            }
+
+            return blockData;
+        }
+
+        return null;
+    }
+
+    private static OreSightEnchantment.OreRarity getRarity(final LevelChunk chunk, final BlockPos position, int tickCount) {
+        BlockData blockData = getBlockCacheEntry(position, tickCount);
+
+        if (blockData == null) {
+            OreSightEnchantment.OreRarity rarity = getRarity(chunk.getBlockState(position));
+
+            if (CACHE_TIME > 0) {
+                BLOCK_CACHE.put(position.asLong(), new BlockData(rarity, tickCount));
+            }
+
+            return rarity;
+        }
+
+        return blockData.rarity;
+    }
+
+    private static OreSightEnchantment.OreRarity getRarity(final BlockState state) {
+        OreSightEnchantment.OreRarity rarity;
+
+        // TODO :: cache for ore types?
+        if (state.getBlock() == Blocks.AIR) {
+            rarity = OreSightEnchantment.OreRarity.NONE;
+        } else if (state.is(AEBlockTags.ORE_SIGHT_BLACKLIST)) {
+            rarity = OreSightEnchantment.OreRarity.NONE;
+        } else if (state.is(AEBlockTags.RARE_ORE)) {
+            rarity = OreSightEnchantment.OreRarity.RARE;
+        } else if (state.is(AEBlockTags.UNCOMMON_ORE)) {
+            rarity = OreSightEnchantment.OreRarity.UNCOMMON;
+        } else if (state.is(AEBlockTags.COMMON_ORE)) {
+            rarity = OreSightEnchantment.OreRarity.COMMON;
+        } else if (state.is(Tags.Blocks.ORES)) {
+            rarity = OreSightEnchantment.OreRarity.ALL;
+        } else {
+            rarity = OreSightEnchantment.OreRarity.NONE;
+        }
+
+        return rarity;
     }
 
     /**
@@ -291,41 +299,65 @@ public class RenderHandler {
         return i ^ j;
     }
 
-    private static void collectLines(final OreSightEnchantment.OreRarity rarity, float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
-        int offset = 0;
+    private static void drawLines(final BufferBuilder bufferBuilder, final Matrix4f lastPose, final float minX, float minY, float minZ, float maxX, float maxY, float maxZ, final boolean[] renderSides, final Vec3i color) {
+        boolean renderNegativeY = renderSides[Direction.DOWN.ordinal()];
+        boolean renderPositiveY = renderSides[Direction.UP.ordinal()];
+        boolean renderNegativeZ = renderSides[Direction.NORTH.ordinal()];
+        boolean renderPositiveZ = renderSides[Direction.SOUTH.ordinal()];
+        boolean renderNegativeX = renderSides[Direction.WEST.ordinal()];
+        boolean renderPositiveX = renderSides[Direction.EAST.ordinal()];
 
-        offset += collect(rarity, new Vector3f(minX, minY, minZ), new Vector3f(maxX, minY, minZ), new Vector3f(1, 0, 0), offset);
-        offset += collect(rarity, new Vector3f(minX, minY, minZ), new Vector3f(minX, maxY, minZ), new Vector3f(0, 1, 0), offset);
-        offset += collect(rarity, new Vector3f(minX, minY, minZ), new Vector3f(minX, minY, maxZ), new Vector3f(0, 0, 1), offset);
-        offset += collect(rarity, new Vector3f(maxX, minY, minZ), new Vector3f(maxX, maxY, minZ), new Vector3f(0, 1, 0), offset);
-        offset += collect(rarity, new Vector3f(maxX, maxY, minZ), new Vector3f(minX, maxY, minZ), new Vector3f(-1, 0, 0), offset);
-        offset += collect(rarity, new Vector3f(minX, maxY, minZ), new Vector3f(minX, maxY, maxZ), new Vector3f(0, 0, 1), offset);
-        offset += collect(rarity, new Vector3f(minX, maxY, maxZ), new Vector3f(minX, minY, maxZ), new Vector3f(0, -1, 0), offset);
-        offset += collect(rarity, new Vector3f(minX, minY, maxZ), new Vector3f(maxX, minY, maxZ), new Vector3f(1, 0, 0), offset);
-        offset += collect(rarity, new Vector3f(maxX, minY, maxZ), new Vector3f(maxX, minY, minZ), new Vector3f(0, 0, -1), offset);
-        offset += collect(rarity, new Vector3f(minX, maxY, maxZ), new Vector3f(maxX, maxY, maxZ), new Vector3f(1, 0, 0), offset);
-        offset += collect(rarity, new Vector3f(maxX, minY, maxZ), new Vector3f(maxX, maxY, maxZ), new Vector3f(0, 1, 0), offset);
-        collect(rarity, new Vector3f(maxX, maxY, minZ), new Vector3f(maxX, maxY, maxZ), new Vector3f(0, 0, 1), offset);
-    }
-
-    private static int collect(final OreSightEnchantment.OreRarity rarity, final Vector3f from, final Vector3f to, final Vector3f normal, int offset) {
-        List<LineData> rarityLines = getLines(rarity);
-
-        // Last added has the highest chance of fitting
-        for (int i = rarityLines.size() - 1 - offset; i >= 0; i--) {
-            LineData line = rarityLines.get(i);
-
-            if (isSimilar(from, line.from) && isSimilar(to, line.to) || isSimilar(to, line.from) && isSimilar(from, line.to)) {
-                rarityLines.remove(i);
-                return 0;
-            }
+        if (renderNegativeY && renderNegativeZ) {
+            drawLine(bufferBuilder, lastPose, minX, minY, minZ, maxX, minY, minZ, 1, 0, 0, color);
         }
 
-        rarityLines.add(new LineData(from, to, normal));
-        return 1;
+        if (renderNegativeX && renderNegativeZ) {
+            drawLine(bufferBuilder, lastPose, minX, minY, minZ, minX, maxY, minZ, 0, 1, 0, color);
+        }
+
+        if (renderNegativeX && renderNegativeY) {
+            drawLine(bufferBuilder, lastPose, minX, minY, minZ, minX, minY, maxZ, 0, 0, 1, color);
+        }
+
+        if (renderPositiveX && renderNegativeZ) {
+            drawLine(bufferBuilder, lastPose, maxX, minY, minZ, maxX, maxY, minZ, 0, 1, 0, color);
+        }
+
+        if (renderPositiveY && renderNegativeZ) {
+            drawLine(bufferBuilder, lastPose, maxX, maxY, minZ, minX, maxY, minZ, -1, 0, 0, color);
+        }
+
+        if (renderPositiveY && renderNegativeX) {
+            drawLine(bufferBuilder, lastPose, minX, maxY, minZ, minX, maxY, maxZ, 0, 0, 1, color);
+        }
+
+        if (renderPositiveZ && renderNegativeX) {
+            drawLine(bufferBuilder, lastPose, minX, maxY, maxZ, minX, minY, maxZ, 0, -1, 0, color);
+        }
+
+        if (renderPositiveZ && renderNegativeY) {
+            drawLine(bufferBuilder, lastPose, minX, minY, maxZ, maxX, minY, maxZ, 1, 0, 0, color);
+        }
+
+        if (renderPositiveX && renderNegativeY) {
+            drawLine(bufferBuilder, lastPose, maxX, minY, maxZ, maxX, minY, minZ, 0, 0, -1, color);
+        }
+
+        if (renderPositiveY && renderPositiveZ) {
+            drawLine(bufferBuilder, lastPose, minX, maxY, maxZ, maxX, maxY, maxZ, 1, 0, 0, color);
+        }
+
+        if (renderPositiveX && renderPositiveZ) {
+            drawLine(bufferBuilder, lastPose, maxX, minY, maxZ, maxX, maxY, maxZ, 0, 1, 0, color);
+        }
+
+        if (renderPositiveX && renderPositiveY) {
+            drawLine(bufferBuilder, lastPose, maxX, maxY, minZ, maxX, maxY, maxZ, 0, 0, 1, color);
+        }
     }
 
-    private static boolean isSimilar(final Vector3f a, final Vector3f b) {
-        return a.equals(b);
+    private static void drawLine(final BufferBuilder bufferBuilder, final Matrix4f lastPose, float fromX, float fromY, float fromZ, float toX, float toY, float toZ, int normalX, int normalY, int normalZ, final Vec3i color) {
+        bufferBuilder.vertex(lastPose, fromX, fromY, fromZ).color(color.getX(), color.getY(), color.getZ(), 255).normal(normalX, normalY, normalZ).endVertex();
+        bufferBuilder.vertex(lastPose, toX, toY, toZ).color(color.getX(), color.getY(), color.getZ(), 255).normal(normalX, normalY, normalZ).endVertex();
     }
 }
