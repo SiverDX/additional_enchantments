@@ -22,7 +22,6 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
@@ -30,6 +29,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -38,10 +38,28 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
-public class RenderHandler {
+public class OreSightHandler {
     private static Map<Integer, Boolean[]> SECTION_CACHE;
     private static Map<Long, Integer> BLOCK_CACHE;
     private static int CACHE_EXPIRE = 2;
+
+    private static final Vec3i[] COLORS = new Vec3i[]{
+            new Vec3i(255, 255, 255),
+            new Vec3i(165, 42, 42),
+            new Vec3i(255, 215, 0),
+            new Vec3i(64, 224, 208),
+            new Vec3i(0, 0, 0)
+    };
+
+
+    public static boolean added;
+    @SubscribeEvent
+    public static void test(final RenderPlayerEvent event) {
+        if (!added) {
+            event.getRenderer().addLayer(new HunterLayer(event.getRenderer()));
+            added = true;
+        }
+    }
 
     @SubscribeEvent
     public static void handleOreSightEnchantment(final RenderLevelStageEvent event) {
@@ -158,21 +176,11 @@ public class RenderHandler {
                                         if (isWithin(relative, minChunkX, minChunkY, minChunkZ, maxChunkX, maxChunkY, maxChunkZ)) {
                                             renderSides[direction.ordinal()] = rarity != getRarity(currentChunk, relative);
                                         } else {
-                                            // The other block is outside the [Ore Sight] radius
                                             renderSides[direction.ordinal()] = true;
                                         }
                                     }
 
-                                    // TODO :: define once
-                                    Vec3i color = switch (rarity) {
-                                        case ALL -> new Vec3i(255, 255, 255);
-                                        case COMMON -> new Vec3i(165, 42, 42);
-                                        case UNCOMMON -> new Vec3i(255, 215, 0);
-                                        case RARE -> new Vec3i(64, 224, 208);
-                                        default -> throw new IllegalStateException("Unexpected value: " + rarity);
-                                    };
-
-                                    drawLines(bufferBuilder, poseStack.last().pose(), poseStack.last().normal(), xMin, yMin, zMin, xMax, yMax, zMax, renderSides, color);
+                                    drawLines(bufferBuilder, poseStack.last().pose(), poseStack.last().normal(), xMin, yMin, zMin, xMax, yMax, zMax, renderSides, COLORS[rarity.ordinal()]);
                                 }
                             }
                         }
@@ -256,8 +264,7 @@ public class RenderHandler {
     private static OreSightEnchantment.OreRarity getRarity(final BlockState state) {
         OreSightEnchantment.OreRarity rarity;
 
-        // TODO :: cache for ore types?
-        if (state.getBlock() == Blocks.AIR) {
+        if (state.isAir()) {
             rarity = OreSightEnchantment.OreRarity.NONE;
         } else if (state.is(AEBlockTags.ORE_SIGHT_BLACKLIST)) {
             rarity = OreSightEnchantment.OreRarity.NONE;
