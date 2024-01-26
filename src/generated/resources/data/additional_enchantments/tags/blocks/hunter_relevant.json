@@ -1,0 +1,23 @@
+{
+  "values": [
+    "#minecraft:flowers",
+    "#minecraft:saplings",
+    "#minecraft:crops",
+    "#minecraft:leaves",
+    "minecraft:grass",
+    "minecraft:tall_grass",
+    "minecraft:seagrass",
+    "minecraft:tall_seagrass",
+    "minecraft:fern",
+    "minecraft:large_fern",
+    "minecraft:dead_bush",
+    "minecraft:sweet_berry_bush",
+    "minecraft:glow_lichen",
+    "minecraft:big_dripleaf",
+    "minecraft:small_dripleaf",
+    "minecraft:nether_sprouts",
+    "minecraft:warped_roots",
+    "minecraft:warped_nylium",
+    "minecraft:crimson_nylium"
+  ]
+}

@@ -9,6 +9,7 @@
     "AbstractArrowAccess",
     "EnderManMixin",
     "ExplosionMixin",
+    "LivingEntityMixin",
     "ProjectileMixin",
     "TridentAccess",
     "forge.AbstractArrowMixin"

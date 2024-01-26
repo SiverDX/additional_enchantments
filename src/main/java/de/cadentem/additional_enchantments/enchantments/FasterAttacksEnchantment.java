@@ -4,10 +4,11 @@ import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchant
 import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -22,23 +23,25 @@ public class FasterAttacksEnchantment extends ConfigurableEnchantment {
     }
 
     @SubscribeEvent
-    public static void handlerPlayerTick(final TickEvent.PlayerTickEvent event) {
-        if (event.player.tickCount % 10 != 0) {
+    public static void handlerPlayerTick(final LivingEvent.LivingTickEvent event) {
+        LivingEntity livingEntity = event.getEntity();
+
+        if (livingEntity.tickCount % 10 != 0) {
             return;
         }
 
-        AttributeInstance attribute = event.player.getAttribute(Attributes.ATTACK_SPEED);
+        AttributeInstance attribute = livingEntity.getAttribute(Attributes.ATTACK_SPEED);
 
         if (attribute != null) {
-            int level = event.player.getMainHandItem().getEnchantmentLevel(AEEnchantments.FASTER_ATTACKS.get());
+            int enchantmentLevel = livingEntity.getMainHandItem().getEnchantmentLevel(AEEnchantments.FASTER_ATTACKS.get());
             AttributeModifier modifier = attribute.getModifier(UUID.fromString(ATTRIBUTE_UUID));
 
             if (modifier != null) {
                 attribute.removeModifier(modifier);
             }
 
-            if (level > 0) {
-                attribute.addTransientModifier(new AttributeModifier(UUID.fromString(ATTRIBUTE_UUID), "Faster Attacks enchantment", (double) level * 0.15, AttributeModifier.Operation.MULTIPLY_BASE));
+            if (enchantmentLevel > 0) {
+                attribute.addTransientModifier(new AttributeModifier(UUID.fromString(ATTRIBUTE_UUID), "Faster Attacks enchantment", (double) enchantmentLevel * 0.15, AttributeModifier.Operation.MULTIPLY_BASE));
             }
         }
     }

@@ -1,10 +1,12 @@
 package de.cadentem.additional_enchantments.capability;
 
 import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
+import de.cadentem.additional_enchantments.enchantments.HunterEnchantment;
 import de.cadentem.additional_enchantments.enchantments.OreSightEnchantment;
 import de.cadentem.additional_enchantments.enchantments.PerceptionEnchantment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Explosion;
 
@@ -16,6 +18,14 @@ public class Configuration {
     public PerceptionEnchantment.DisplayType displayType = PerceptionEnchantment.DisplayType.ALL;
     public Rarity itemFilter = Rarity.COMMON;
     public OreSightEnchantment.OreRarity oreRarity = OreSightEnchantment.OreRarity.ALL;
+
+    /**
+     * Not synced but updated on both sides (would need 1 packet per tick)
+     */
+    public int hunterStacks;
+
+    // Server only
+    public boolean isOnHunterBlock;
 
     public void cycleEffectFilter() {
         effectFilter = (MobEffectCategory) cycle(effectFilter);
@@ -63,6 +73,20 @@ public class Configuration {
         }
 
         return (Enum<?>) values[ordinal];
+    }
+
+    public void increaseHunterStacks(int enchantmentLevel) {
+        hunterStacks = Math.min(HunterEnchantment.getMaxStacks(enchantmentLevel), hunterStacks + 1);
+    }
+
+    public void reduceHunterStacks(final LivingEntity livingEntity, int enchantmentLevel) {
+        if (livingEntity.tickCount % Math.max(1, enchantmentLevel / 2) == 0) {
+            hunterStacks = Math.max(0, hunterStacks - 1);
+        }
+    }
+
+    public boolean hasMaxHunterStacks(int enchantmentLevel) {
+        return hunterStacks >= HunterEnchantment.getMaxStacks(enchantmentLevel);
     }
 
     public CompoundTag serializeNBT() {
