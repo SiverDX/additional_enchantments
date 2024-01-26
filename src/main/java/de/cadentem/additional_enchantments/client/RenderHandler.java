@@ -1,7 +1,9 @@
 package de.cadentem.additional_enchantments.client;
 
+import com.google.common.cache.CacheBuilder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import de.cadentem.additional_enchantments.capability.Configuration;
 import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
@@ -29,34 +31,17 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class RenderHandler {
-    private static long CACHE_TIME;
-
-    private static final Map<Integer, SectionData> SECTION_CACHE = new WeakHashMap<>();
-    private static final Map<Long, BlockData> BLOCK_CACHE = new WeakHashMap<>();
-
-    private record BlockData(OreSightEnchantment.OreRarity rarity, long tickCount) {
-    }
-
-    private record SectionData(boolean containsOres, long tickCount) {
-    }
-
-    @SubscribeEvent
-    public static void clearCache(final EntityJoinLevelEvent event) {
-        if (event.getEntity() instanceof Player player && player == ClientProxy.getLocalPlayer()) {
-            SECTION_CACHE.clear();
-            BLOCK_CACHE.clear();
-        }
-    }
+    private static Map<Integer, Boolean[]> SECTION_CACHE;
+    private static Map<Long, Integer> BLOCK_CACHE;
+    private static int CACHE_EXPIRE = 2;
 
     @SubscribeEvent
     public static void handleOreSightEnchantment(final RenderLevelStageEvent event) {
@@ -64,7 +49,11 @@ public class RenderHandler {
             return;
         }
 
-        CACHE_TIME = 20L * ClientConfig.CACHE_KEPT_SECONDS.get();
+        if (SECTION_CACHE == null || BLOCK_CACHE == null || ClientConfig.CACHE_EXPIRE.get() != CACHE_EXPIRE) {
+            CACHE_EXPIRE = ClientConfig.CACHE_EXPIRE.get();
+            initCaches();
+        }
+
         LocalPlayer localPlayer = Minecraft.getInstance().player;
 
         if (localPlayer != null) {
@@ -81,7 +70,7 @@ public class RenderHandler {
                     BufferBuilder bufferBuilder = tesselator.getBuilder();
                     bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
 
-                    collectAndDrawLines(localPlayer, enchantmentLevel + 1, configuration, poseStack, bufferBuilder, event.getLevelRenderer());
+                    drawLines(localPlayer, enchantmentLevel + 1, configuration, poseStack, bufferBuilder, event.getLevelRenderer());
 
                     tesselator.end();
                     poseStack.popPose();
@@ -92,15 +81,25 @@ public class RenderHandler {
         }
     }
 
+    private static void initCaches() {
+        SECTION_CACHE = CacheBuilder.newBuilder()
+                .expireAfterWrite(CACHE_EXPIRE, TimeUnit.SECONDS)
+                .<Integer, Boolean[]>build()
+                .asMap();
+
+        BLOCK_CACHE = CacheBuilder.newBuilder()
+                .expireAfterWrite(CACHE_EXPIRE, TimeUnit.SECONDS)
+                .<Long, Integer>build()
+                .asMap();
+    }
+
     /**
      * Referenced off of <a href="https://github.com/TelepathicGrunt/Bumblezone/blob/31cc8dc7066fc19dd0b880f66d64460cee4d356b/common/src/main/java/com/telepathicgrunt/the_bumblezone/items/essence/LifeEssence.java#L132">TelepathicGrunt</a>
      */
-    private static void collectAndDrawLines(final LocalPlayer localPlayer, int radius, final Configuration configuration, final PoseStack poseStack, final BufferBuilder bufferBuilder, final LevelRenderer levelRenderer) {
+    private static void drawLines(final LocalPlayer localPlayer, int radius, final Configuration configuration, final PoseStack poseStack, final BufferBuilder bufferBuilder, final LevelRenderer levelRenderer) {
         if (configuration.oreRarity == OreSightEnchantment.OreRarity.NONE) {
             return;
         }
-
-        radius = 30;
 
         Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         BlockPos startPosition = localPlayer.blockPosition();
@@ -136,36 +135,10 @@ public class RenderHandler {
 
                     mutablePosition.set(x, y, z);
 
-                    OreSightEnchantment.OreRarity rarity = null;
-                    SectionData sectionData = null;
-                    BlockData blockData = null;
-                    int hash = 0;
-
-                    if (CACHE_TIME > 0) {
-                        blockData = getBlockCacheEntry(mutablePosition, localPlayer.tickCount);
-
-                        if (blockData != null) {
-                            rarity = blockData.rarity;
-                        }
-
-                        hash = getSectionHash(currentChunkPosition.x, currentChunkPosition.z, sectionIndex);
-                        sectionData = SECTION_CACHE.get(hash);
-
-                        if (sectionData != null && localPlayer.tickCount - sectionData.tickCount > CACHE_TIME) {
-                            SECTION_CACHE.remove(hash);
-                            sectionData = null;
-                        }
-                    }
-
-                    boolean containsOres = sectionData != null ? sectionData.containsOres : !section.hasOnlyAir() && section.maybeHas(testState -> testState.is(Tags.Blocks.ORES));
-                    boolean renderOutline = rarity != OreSightEnchantment.OreRarity.NONE || containsOres;
-
-                    if (renderOutline) {
+                    if (containsOres(currentChunk, section, sectionIndex, configuration.oreRarity)) {
                         foundSection = true;
 
-                        if (rarity == null) {
-                            rarity = getRarity(currentChunk, mutablePosition, localPlayer.tickCount);
-                        }
+                        OreSightEnchantment.OreRarity rarity = getRarity(currentChunk, mutablePosition);
 
                         if (rarity != OreSightEnchantment.OreRarity.NONE) {
                             float xMin = (float) (x - camera.x());
@@ -182,14 +155,15 @@ public class RenderHandler {
                                     for (Direction direction : Direction.values()) {
                                         BlockPos relative = mutablePosition.relative(direction, 1);
 
-                                        if (relative.getX() >= minChunkX && relative.getX() <= maxChunkX && relative.getY() >= minChunkY && relative.getY() <= maxChunkY && relative.getZ() >= minChunkZ && relative.getZ() <= maxChunkZ) {
-                                            renderSides[direction.ordinal()] = rarity != getRarity(currentChunk, relative, localPlayer.tickCount);
+                                        if (isWithin(relative, minChunkX, minChunkY, minChunkZ, maxChunkX, maxChunkY, maxChunkZ)) {
+                                            renderSides[direction.ordinal()] = rarity != getRarity(currentChunk, relative);
                                         } else {
                                             // The other block is outside the [Ore Sight] radius
                                             renderSides[direction.ordinal()] = true;
                                         }
                                     }
 
+                                    // TODO :: define once
                                     Vec3i color = switch (rarity) {
                                         case ALL -> new Vec3i(255, 255, 255);
                                         case COMMON -> new Vec3i(165, 42, 42);
@@ -198,19 +172,9 @@ public class RenderHandler {
                                         default -> throw new IllegalStateException("Unexpected value: " + rarity);
                                     };
 
-                                    drawLines(bufferBuilder, poseStack.last().pose(), xMin, yMin, zMin, xMax, yMax, zMax, renderSides, color);
+                                    drawLines(bufferBuilder, poseStack.last().pose(), poseStack.last().normal(), xMin, yMin, zMin, xMax, yMax, zMax, renderSides, color);
                                 }
                             }
-                        }
-                    }
-
-                    if (CACHE_TIME > 0) {
-                        if (sectionData == null) {
-                            SECTION_CACHE.put(hash, new SectionData(containsOres, localPlayer.tickCount));
-                        }
-
-                        if (containsOres && blockData == null) {
-                            BLOCK_CACHE.put(mutablePosition.asLong(), new BlockData(rarity, localPlayer.tickCount));
                         }
                     }
 
@@ -233,37 +197,60 @@ public class RenderHandler {
         }
     }
 
-    private static @Nullable BlockData getBlockCacheEntry(final BlockPos position, int tickCount) {
-        if (CACHE_TIME > 0) {
-            long key = position.asLong();
-
-            BlockData blockData = BLOCK_CACHE.get(key);
-
-            if (blockData != null && tickCount - blockData.tickCount > CACHE_TIME) {
-                BLOCK_CACHE.remove(key);
-                blockData = null;
-            }
-
-            return blockData;
-        }
-
-        return null;
+    private static boolean isWithin(final BlockPos position, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
+        return position.getX() >= xMin && position.getX() <= xMax && position.getY() >= yMin && position.getY() <= yMax && position.getZ() >= zMin && position.getZ() <= zMax;
     }
 
-    private static OreSightEnchantment.OreRarity getRarity(final LevelChunk chunk, final BlockPos position, int tickCount) {
-        BlockData blockData = getBlockCacheEntry(position, tickCount);
-
-        if (blockData == null) {
-            OreSightEnchantment.OreRarity rarity = getRarity(chunk.getBlockState(position));
-
-            if (CACHE_TIME > 0) {
-                BLOCK_CACHE.put(position.asLong(), new BlockData(rarity, tickCount));
-            }
-
-            return rarity;
+    private static boolean containsOres(final LevelChunk chunk, final LevelChunkSection section, int sectionIndex, final OreSightEnchantment.OreRarity configuration) {
+        if (configuration == OreSightEnchantment.OreRarity.NONE) {
+            return false;
         }
 
-        return blockData.rarity;
+        Integer key = chunk.getPos().hashCode();
+        Boolean[] containsOres = SECTION_CACHE.get(key);
+
+        if (containsOres == null || containsOres[sectionIndex] == null) {
+            boolean containsOre = !section.hasOnlyAir() && section.maybeHas(state -> isRelevantRarity(state, configuration));
+
+            if (CACHE_EXPIRE > 0) {
+                containsOres = new Boolean[chunk.getSections().length];
+                containsOres[sectionIndex] = containsOre;
+                SECTION_CACHE.put(key, containsOres);
+            } else {
+                return containsOre;
+            }
+        }
+
+        return containsOres[sectionIndex];
+    }
+
+    private static OreSightEnchantment.OreRarity getRarity(final LevelChunk chunk, final BlockPos position) {
+        Long key = position.asLong();
+        Integer ordinal = BLOCK_CACHE.get(key);
+
+        if (ordinal == null) {
+            OreSightEnchantment.OreRarity rarity;
+
+            if (isWithin(position, chunk.getPos().getMinBlockX(), position.getY(), chunk.getPos().getMinBlockZ(), chunk.getPos().getMaxBlockX(), position.getY(), chunk.getPos().getMaxBlockZ())) {
+                rarity = getRarity(chunk.getBlockState(position));
+            } else {
+                Player localPlayer = ClientProxy.getLocalPlayer();
+
+                if (localPlayer != null) {
+                    rarity = getRarity(localPlayer.getLevel().getBlockState(position));
+                } else {
+                    return OreSightEnchantment.OreRarity.NONE;
+                }
+            }
+
+            ordinal = rarity.ordinal();
+
+            if (CACHE_EXPIRE > 0) {
+                BLOCK_CACHE.put(key, ordinal);
+            }
+        }
+
+        return OreSightEnchantment.OreRarity.values()[ordinal];
     }
 
     private static OreSightEnchantment.OreRarity getRarity(final BlockState state) {
@@ -289,17 +276,17 @@ public class RenderHandler {
         return rarity;
     }
 
-    /**
-     * Original ChunkPosition#hash method with y thrown into it
-     */
-    public static int getSectionHash(int x, int z, int y) {
-        int i = 1664525 * x + 1013904223;
-        int rotatedY = Integer.rotateLeft(y, 13);
-        int j = 1664525 * (z ^ -559038737 ^ rotatedY) + 1013904223;
-        return i ^ j;
+    private static boolean isRelevantRarity(final BlockState state, final OreSightEnchantment.OreRarity configuration) {
+        OreSightEnchantment.OreRarity rarity = getRarity(state);
+
+        if (rarity == OreSightEnchantment.OreRarity.NONE) {
+            return false;
+        }
+
+        return rarity.ordinal() >= configuration.ordinal();
     }
 
-    private static void drawLines(final BufferBuilder bufferBuilder, final Matrix4f lastPose, final float minX, float minY, float minZ, float maxX, float maxY, float maxZ, final boolean[] renderSides, final Vec3i color) {
+    private static void drawLines(final BufferBuilder bufferBuilder, final Matrix4f lastPose, final Matrix3f normal, final float minX, float minY, float minZ, float maxX, float maxY, float maxZ, final boolean[] renderSides, final Vec3i color) {
         boolean renderNegativeY = renderSides[Direction.DOWN.ordinal()];
         boolean renderPositiveY = renderSides[Direction.UP.ordinal()];
         boolean renderNegativeZ = renderSides[Direction.NORTH.ordinal()];
@@ -308,56 +295,56 @@ public class RenderHandler {
         boolean renderPositiveX = renderSides[Direction.EAST.ordinal()];
 
         if (renderNegativeY && renderNegativeZ) {
-            drawLine(bufferBuilder, lastPose, minX, minY, minZ, maxX, minY, minZ, 1, 0, 0, color);
+            drawLine(bufferBuilder, lastPose, normal, minX, minY, minZ, maxX, minY, minZ, 1, 0, 0, color);
         }
 
         if (renderNegativeX && renderNegativeZ) {
-            drawLine(bufferBuilder, lastPose, minX, minY, minZ, minX, maxY, minZ, 0, 1, 0, color);
+            drawLine(bufferBuilder, lastPose, normal, minX, minY, minZ, minX, maxY, minZ, 0, 1, 0, color);
         }
 
         if (renderNegativeX && renderNegativeY) {
-            drawLine(bufferBuilder, lastPose, minX, minY, minZ, minX, minY, maxZ, 0, 0, 1, color);
+            drawLine(bufferBuilder, lastPose, normal, minX, minY, minZ, minX, minY, maxZ, 0, 0, 1, color);
         }
 
         if (renderPositiveX && renderNegativeZ) {
-            drawLine(bufferBuilder, lastPose, maxX, minY, minZ, maxX, maxY, minZ, 0, 1, 0, color);
+            drawLine(bufferBuilder, lastPose, normal, maxX, minY, minZ, maxX, maxY, minZ, 0, 1, 0, color);
         }
 
         if (renderPositiveY && renderNegativeZ) {
-            drawLine(bufferBuilder, lastPose, maxX, maxY, minZ, minX, maxY, minZ, -1, 0, 0, color);
+            drawLine(bufferBuilder, lastPose, normal, maxX, maxY, minZ, minX, maxY, minZ, -1, 0, 0, color);
         }
 
         if (renderPositiveY && renderNegativeX) {
-            drawLine(bufferBuilder, lastPose, minX, maxY, minZ, minX, maxY, maxZ, 0, 0, 1, color);
+            drawLine(bufferBuilder, lastPose, normal, minX, maxY, minZ, minX, maxY, maxZ, 0, 0, 1, color);
         }
 
         if (renderPositiveZ && renderNegativeX) {
-            drawLine(bufferBuilder, lastPose, minX, maxY, maxZ, minX, minY, maxZ, 0, -1, 0, color);
+            drawLine(bufferBuilder, lastPose, normal, minX, maxY, maxZ, minX, minY, maxZ, 0, -1, 0, color);
         }
 
         if (renderPositiveZ && renderNegativeY) {
-            drawLine(bufferBuilder, lastPose, minX, minY, maxZ, maxX, minY, maxZ, 1, 0, 0, color);
+            drawLine(bufferBuilder, lastPose, normal, minX, minY, maxZ, maxX, minY, maxZ, 1, 0, 0, color);
         }
 
         if (renderPositiveX && renderNegativeY) {
-            drawLine(bufferBuilder, lastPose, maxX, minY, maxZ, maxX, minY, minZ, 0, 0, -1, color);
+            drawLine(bufferBuilder, lastPose, normal, maxX, minY, maxZ, maxX, minY, minZ, 0, 0, -1, color);
         }
 
         if (renderPositiveY && renderPositiveZ) {
-            drawLine(bufferBuilder, lastPose, minX, maxY, maxZ, maxX, maxY, maxZ, 1, 0, 0, color);
+            drawLine(bufferBuilder, lastPose, normal, minX, maxY, maxZ, maxX, maxY, maxZ, 1, 0, 0, color);
         }
 
         if (renderPositiveX && renderPositiveZ) {
-            drawLine(bufferBuilder, lastPose, maxX, minY, maxZ, maxX, maxY, maxZ, 0, 1, 0, color);
+            drawLine(bufferBuilder, lastPose, normal, maxX, minY, maxZ, maxX, maxY, maxZ, 0, 1, 0, color);
         }
 
         if (renderPositiveX && renderPositiveY) {
-            drawLine(bufferBuilder, lastPose, maxX, maxY, minZ, maxX, maxY, maxZ, 0, 0, 1, color);
+            drawLine(bufferBuilder, lastPose, normal, maxX, maxY, minZ, maxX, maxY, maxZ, 0, 0, 1, color);
         }
     }
 
-    private static void drawLine(final BufferBuilder bufferBuilder, final Matrix4f lastPose, float fromX, float fromY, float fromZ, float toX, float toY, float toZ, int normalX, int normalY, int normalZ, final Vec3i color) {
-        bufferBuilder.vertex(lastPose, fromX, fromY, fromZ).color(color.getX(), color.getY(), color.getZ(), 255).normal(normalX, normalY, normalZ).endVertex();
-        bufferBuilder.vertex(lastPose, toX, toY, toZ).color(color.getX(), color.getY(), color.getZ(), 255).normal(normalX, normalY, normalZ).endVertex();
+    private static void drawLine(final BufferBuilder bufferBuilder, final Matrix4f lastPose, final Matrix3f normal, float fromX, float fromY, float fromZ, float toX, float toY, float toZ, int normalX, int normalY, int normalZ, final Vec3i color) {
+        bufferBuilder.vertex(lastPose, fromX, fromY, fromZ).color(color.getX(), color.getY(), color.getZ(), 255).normal(normal, normalX, normalY, normalZ).endVertex();
+        bufferBuilder.vertex(lastPose, toX, toY, toZ).color(color.getX(), color.getY(), color.getZ(), 255).normal(normal, normalX, normalY, normalZ).endVertex();
     }
 }

@@ -6,11 +6,11 @@ public class ClientConfig {
     public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec SPEC;
 
-    public static final ForgeConfigSpec.IntValue CACHE_KEPT_SECONDS;
+    public static final ForgeConfigSpec.IntValue CACHE_EXPIRE;
 
     static {
         BUILDER.push("ore_sight");
-        CACHE_KEPT_SECONDS = BUILDER.comment("Determines for how long blocks are cached (affects how fast blocks update their outline) (0 disables caching)").defineInRange("cache_kept_seconds", 2, 0, 10);
+        CACHE_EXPIRE = BUILDER.comment("Determines after how many seconds cached entries expire (affects how fast blocks update their outline) (0 disables caching - not recommended)").defineInRange("cache_expire", 2, 0, 10);
         BUILDER.pop();
 
         SPEC = BUILDER.build();
