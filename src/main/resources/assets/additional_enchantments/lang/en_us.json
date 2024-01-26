@@ -33,6 +33,8 @@
   "enchantment.additional_enchantments.confusion.desc": "Has a chance to cause the attacked target to retaliate against a nearby entity, dropping you as a target",
   "enchantment.additional_enchantments.ore_sight": "Ore Sight",
   "enchantment.additional_enchantments.ore_sight.desc": "Outlines nearby ore blocks and distinguishes them by color based on their rarity group",
+  "enchantment.additional_enchantments.hunter": "Hunter",
+  "enchantment.additional_enchantments.hunter.desc": "Causes you to become invisible, gaining hunter stacks while within plant related blocks - attacks will deal increased critical damage at maximum stacks, using them up",
 
   "effect.additional_enchantments.poison": "Plague",
   "effect.additional_enchantments.poison.description": "Deals Magic damage and afflicted targets may spread this debuff - damage, tick rate and spread chance scale with level",

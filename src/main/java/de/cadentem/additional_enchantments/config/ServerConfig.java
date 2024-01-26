@@ -28,6 +28,7 @@ public class ServerConfig {
         ENCHANTMENTS.put(AEEnchantments.PERCEPTION_ID, 4);
         ENCHANTMENTS.put(AEEnchantments.CONFUSION_ID, 5);
         ENCHANTMENTS.put(AEEnchantments.ORE_SIGHT_ID, 5);
+        ENCHANTMENTS.put(AEEnchantments.HUNTER_ID, 6);
 
         for (String enchantment : ENCHANTMENTS.keySet()) {
             BUILDER.push(enchantment);

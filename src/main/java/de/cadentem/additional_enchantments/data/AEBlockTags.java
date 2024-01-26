@@ -5,6 +5,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -16,6 +17,7 @@ public class AEBlockTags extends BlockTagsProvider {
     public static final TagKey<Block> UNCOMMON_ORE = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "uncommon_ore"));
     public static final TagKey<Block> RARE_ORE = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "rare_ore"));
     public static final TagKey<Block> ORE_SIGHT_BLACKLIST = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "ore_sight_blacklist"));
+    public static final TagKey<Block> HUNTER_RELEVANT = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "hunter_relevant"));
 
     public AEBlockTags(final DataGenerator generator, @Nullable final ExistingFileHelper existingFileHelper) {
         super(generator, AE.MODID, existingFileHelper);
@@ -39,6 +41,24 @@ public class AEBlockTags extends BlockTagsProvider {
                 .add(Blocks.EMERALD_ORE).add(Blocks.DEEPSLATE_EMERALD_ORE).addOptional(spelunkery("granite_emerald_ore")).addOptional(spelunkery("andesite_emerald_ore")).addOptional(spelunkery("andesite_emerald_ore")).addOptional(spelunkery("diorite_emerald_ore")).addOptional(spelunkery("tuff_emerald_ore"))
                 .add(Blocks.DIAMOND_ORE).add(Blocks.DEEPSLATE_DIAMOND_ORE).addOptional(spelunkery("granite_diamond_ore")).addOptional(spelunkery("andesite_diamond_ore")).addOptional(spelunkery("andesite_diamond_ore")).addOptional(spelunkery("diorite_diamond_ore")).addOptional(spelunkery("tuff_diamond_ore")).addOptional(spelunkery("smooth_basalt_diamond_ore"))
                 .add(Blocks.ANCIENT_DEBRIS).addOptional(mod("irons_spellbooks", "arcane_debris"));
+
+        tag(HUNTER_RELEVANT)
+                .addTag(BlockTags.FLOWERS)
+                .addTag(BlockTags.SAPLINGS)
+                .addTag(BlockTags.CROPS)
+                .addTag(BlockTags.LEAVES)
+                .add(Blocks.GRASS)
+                .add(Blocks.FERN)
+                .add(Blocks.LARGE_FERN)
+                .add(Blocks.DEAD_BUSH)
+                .add(Blocks.SWEET_BERRY_BUSH)
+                .add(Blocks.GLOW_LICHEN)
+                .add(Blocks.BIG_DRIPLEAF)
+                .add(Blocks.SMALL_DRIPLEAF)
+                .add(Blocks.NETHER_SPROUTS)
+                .add(Blocks.WARPED_ROOTS)
+                .add(Blocks.WARPED_NYLIUM)
+                .add(Blocks.CRIMSON_NYLIUM);
     }
 
     private ResourceLocation spelunkery(final String id) {
