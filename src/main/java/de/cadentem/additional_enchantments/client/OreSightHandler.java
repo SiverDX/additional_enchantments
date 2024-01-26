@@ -221,7 +221,10 @@ public class OreSightHandler {
             boolean containsOre = !section.hasOnlyAir() && section.maybeHas(state -> isRelevantRarity(state, configuration));
 
             if (CACHE_EXPIRE > 0) {
-                containsOres = new Boolean[chunk.getSections().length];
+                if (containsOres == null) {
+                    containsOres = new Boolean[chunk.getSections().length];
+                }
+
                 containsOres[sectionIndex] = containsOre;
                 SECTION_CACHE.put(key, containsOres);
             } else {
