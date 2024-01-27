@@ -15,7 +15,7 @@ public class AEEnchantmentCategory {
         return item.builtInRegistryHolder().is(Tags.Items.TOOLS_SWORDS) || item.builtInRegistryHolder().is(Tags.Items.TOOLS_AXES) || item.builtInRegistryHolder().is(Tags.Items.TOOLS_TRIDENTS);
     });
 
-    public static final EnchantmentCategory RANGED_AND_TRIDENT = EnchantmentCategory.TRIDENT.create("ranged_and_trident", item -> {
+    public static final EnchantmentCategory RANGED_AND_TRIDENT = EnchantmentCategory.create("ranged_and_trident", item -> {
         if (isRanged(item)) {
             return true;
         }

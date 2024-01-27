@@ -9,13 +9,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class SyncConfiguration {
-    public CompoundTag tag;
-
-    public SyncConfiguration(final CompoundTag tag) {
-        this.tag = tag;
-    }
-
+public record SyncConfiguration(CompoundTag tag) {
     public void encode(final FriendlyByteBuf buffer) {
         buffer.writeNbt(tag);
     }

@@ -21,6 +21,10 @@ public abstract class MinecraftMixin {
     private void additional_enchantments$handlePerceptionEnchantment(final Entity entity, final CallbackInfoReturnable<Boolean> callback) {
         Player localPlayer = ClientProxy.getLocalPlayer();
 
+        if (localPlayer == null) {
+            return;
+        }
+
         if (localPlayer == entity || entity.getType().is(AEEntityTags.PERCEPTION_BLACKLIST) || entity.isInvisible() && ServerConfig.SPEC.isLoaded() && !ServerConfig.PERCEPTION_SHOW_INVISIBLE.get()) {
             return;
         }

@@ -9,6 +9,7 @@ import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchant
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
+import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
@@ -159,19 +161,34 @@ public class HunterEnchantment extends ConfigurableEnchantment {
         }
     }
 
-    public static int getClientEnchantmentLevel() {
-        Player localPlayer = ClientProxy.getLocalPlayer();
+    @SubscribeEvent
+    public static void removeCacheEntry(final EntityLeaveLevelEvent event) {
+        Entity entity = event.getEntity();
 
-        if (localPlayer == null) {
+        if (entity instanceof Player) {
+            if (!entity.getLevel().isClientSide()) {
+                return;
+            }
+
+            CLIENT_CACHE.remove(entity.getStringUUID());
+        }
+    }
+
+    public static int getClientEnchantmentLevel() {
+        return getClientEnchantmentLevel(ClientProxy.getLocalPlayer());
+    }
+
+    public static int getClientEnchantmentLevel(final Player player) {
+        if (player == null) {
             return 0;
         }
 
-        Pair<Integer, Integer> data = CLIENT_CACHE.get(localPlayer.getStringUUID());
+        Pair<Integer, Integer> data = CLIENT_CACHE.get(player.getStringUUID());
 
         // Cache is being kept even when the player leaves
-        if (data == null || Mth.abs(localPlayer.tickCount - data.getFirst()) > 20) {
-            data = Pair.of(localPlayer.tickCount, EnchantmentHelper.getEnchantmentLevel(AEEnchantments.HUNTER.get(), localPlayer));
-            CLIENT_CACHE.put(localPlayer.getStringUUID(), data);
+        if (data == null || Mth.abs(player.tickCount - data.getFirst()) > 20) {
+            data = Pair.of(player.tickCount, EnchantmentHelper.getEnchantmentLevel(AEEnchantments.HUNTER.get(), player));
+            CLIENT_CACHE.put(player.getStringUUID(), data);
         }
 
         return data.getSecond();

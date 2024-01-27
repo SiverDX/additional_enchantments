@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -30,55 +31,54 @@ public class HunterLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
 
     @Override
     public void render(@NotNull final PoseStack poseStack, @NotNull final MultiBufferSource bufferSource, int packedLight, @NotNull final AbstractClientPlayer player, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (player.isSpectator()) {
+        if (!player.isInvisible() || player.isSpectator()) {
             return;
         }
 
-        ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
-            if (configuration.hunterStacks > 0 || delay > 0) {
-                int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel();
+        int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel(player);
 
-                if (enchantmentLevel == 0) {
-                    delay = 0;
-                    return;
-                }
+        if (enchantmentLevel > 0) {
+            ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
+                if (configuration.hunterStacks > 0 || delay > 0) {
+                    if (configuration.hasMaxHunterStacks(enchantmentLevel)) {
+                        delay--;
 
-                if (configuration.hasMaxHunterStacks(enchantmentLevel)) {
-                    delay--;
-
-                    if (delay <= 0) {
-                        return;
+                        if (delay == 0) {
+                            return;
+                        }
+                    } else {
+                        delay = MAX_DELAY;
                     }
-                } else {
-                    delay = MAX_DELAY;
+
+                    float alpha = 1f - (float) configuration.hunterStacks / HunterEnchantment.getMaxStacks(enchantmentLevel);
+
+                    VertexConsumer buffer = bufferSource.getBuffer(RenderType.itemEntityTranslucentCull(player.getSkinTextureLocation()));
+                    getParentModel().renderToBuffer(poseStack, buffer, packedLight, PlayerRenderer.getOverlayCoords(player, 0), 1, 1, 1, alpha);
                 }
-
-                float alpha = 1f - (float) configuration.hunterStacks / HunterEnchantment.getMaxStacks(enchantmentLevel);
-
-                VertexConsumer buffer = bufferSource.getBuffer(RenderType.itemEntityTranslucentCull(player.getSkinTextureLocation()));
-                getParentModel().renderToBuffer(poseStack, buffer, packedLight, PlayerRenderer.getOverlayCoords(player, 0), 1, 1, 1, alpha);
-            }
-        });
+            });
+        }
     }
 
     @SubscribeEvent
     public static void updateHunterStacks(final LivingEvent.LivingTickEvent event) {
         LivingEntity livingEntity = event.getEntity();
 
-        if (livingEntity != ClientProxy.getLocalPlayer()) {
+        if (!(livingEntity instanceof Player player)) {
             return;
         }
 
-        int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel();
+        ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
+            int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel(player);
 
-        if (enchantmentLevel > 0) {
-            if (/* Basically inside the block */ HunterEnchantment.isBlockHunterRelevant(livingEntity.getFeetBlockState()) || /* Below feet */ HunterEnchantment.isBlockHunterRelevant(livingEntity.getBlockStateOn())) {
-                ConfigurationProvider.getCapability(livingEntity).ifPresent(configuration -> configuration.increaseHunterStacks(enchantmentLevel));
+            if (enchantmentLevel > 0) {
+                if (/* Basically inside the block */ HunterEnchantment.isBlockHunterRelevant(player.getFeetBlockState()) || /* Below feet */ HunterEnchantment.isBlockHunterRelevant(player.getBlockStateOn())) {
+                    configuration.increaseHunterStacks(enchantmentLevel);
+                } else {
+                    configuration.reduceHunterStacks(player, enchantmentLevel);
+                }
             } else {
-                ConfigurationProvider.getCapability(livingEntity).ifPresent(configuration -> configuration.reduceHunterStacks(livingEntity, enchantmentLevel));
+                configuration.hunterStacks = 0;
             }
-        } else {
-            ConfigurationProvider.getCapability(livingEntity).ifPresent(configuration -> configuration.hunterStacks = 0);
-        }
+        });
     }
 }

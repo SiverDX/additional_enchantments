@@ -15,8 +15,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Debug(export = true)
-@Pseudo // FIXME :: reverts the skin to default?
+@Pseudo
 @Mixin(targets = "dev.tr7zw.skinlayers.renderlayers.CustomLayerFeatureRenderer")
 public abstract class CustomLayerFeatureRendererMixin {
     @ModifyExpressionValue(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/AbstractClientPlayer;isInvisible()Z"))

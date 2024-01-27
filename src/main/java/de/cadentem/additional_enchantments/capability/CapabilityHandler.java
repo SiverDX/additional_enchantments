@@ -31,8 +31,8 @@ import net.minecraftforge.network.PacketDistributor;
 public class CapabilityHandler {
     public static final Capability<Configuration> CONFIGURATION_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
     public static final Capability<ProjectileData> PROJECTILE_DATA_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
-    public static ResourceLocation CONFIGURATION = new ResourceLocation(AE.MODID, "configuration");
-    public static ResourceLocation PROJECTILE_DATA = new ResourceLocation(AE.MODID, "projectile_data"); // TODO :: Sync in PlayerEvent.StartTracking needed?
+    public static final ResourceLocation CONFIGURATION = new ResourceLocation(AE.MODID, "configuration");
+    public static final ResourceLocation PROJECTILE_DATA = new ResourceLocation(AE.MODID, "projectile_data");
 
     @SubscribeEvent
     public static void attachCapability(final AttachCapabilitiesEvent<Entity> event) {

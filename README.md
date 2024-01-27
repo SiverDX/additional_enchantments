@@ -109,9 +109,9 @@
 - Default max. level: 6
 - Causes you to become invisible (gaining hunter stacks) when you're walking on plant related blocks (or while you're inside them)
   - Once you walk outside of those blocks you will slowly start to become visible again (losing hunter stacks)
-  - Becoming fully invisible will cause mobs to drop their focus on you, and you will not be able to be targeted by any
+  - Becoming fully invisible will cause mobs to drop their focus on you, and they will no longer target you
   - Attacking while being fully invisible will deal a critical strike - this will use up all of your hunter stacks
-  - The blocks are based on plant related material and the block tag `additional_enchantments:hunter_relevant`
+  - The blocks are based on plant related material and the block tag `additional_enchantments:hunter_relevant` (e.g. flowers, crops or leaves)
 - Enchantment level increases the critical damage, the rate at which you gain hunter stacks and reduces the rate at which you lose them
   - It will also reduce the amount of stacks needed to be considered at full stacks
 
