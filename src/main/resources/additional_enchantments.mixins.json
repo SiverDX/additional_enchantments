@@ -7,6 +7,7 @@
   "plugin": "de.cadentem.additional_enchantments.mixin.ApplyMixinPlugin",
   "mixins": [
     "AbstractArrowAccess",
+    "SwellGoalMixin",
     "EnderManMixin",
     "ExplosionMixin",
     "LivingEntityMixin",
@@ -18,7 +19,9 @@
     "MinecraftMixin",
     "ModelBakeryMixin",
     "LevelRendererAccess",
-    "LevelRendererMixin"
+    "LevelRendererMixin",
+    "PlayerRendererMixin",
+    "skinlayers3d.CustomLayerFeatureRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

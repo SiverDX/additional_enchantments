@@ -80,7 +80,7 @@ public class Configuration {
     }
 
     public void reduceHunterStacks(final LivingEntity livingEntity, int enchantmentLevel) {
-        if (livingEntity.tickCount % Math.max(1, enchantmentLevel / 2) == 0) {
+        if (livingEntity.tickCount % Math.max(1, enchantmentLevel / 3) == 0) {
             hunterStacks = Math.max(0, hunterStacks - 1);
         }
     }

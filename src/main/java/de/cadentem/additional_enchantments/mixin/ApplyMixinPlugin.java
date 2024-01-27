@@ -21,6 +21,13 @@ public class ApplyMixinPlugin implements IMixinConfigPlugin {
             return !LoadingModList.get().getModFileById("forge").getIssueURL().toString().contains("NeoForge");
         }
 
+        String modid = mixinClassName.replace("de.cadentem.additional_enchantments.mixin.", "");
+        String[] elements = modid.split("\\.");
+
+        if (elements.length == 2) {
+            return LoadingModList.get().getModFileById(elements[0]) != null;
+        }
+
         return true;
     }
 

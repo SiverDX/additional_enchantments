@@ -27,7 +27,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -50,16 +49,6 @@ public class OreSightHandler {
             new Vec3i(64, 224, 208),
             new Vec3i(0, 0, 0)
     };
-
-
-    public static boolean added;
-    @SubscribeEvent
-    public static void test(final RenderPlayerEvent event) {
-        if (!added) {
-            event.getRenderer().addLayer(new HunterLayer(event.getRenderer()));
-            added = true;
-        }
-    }
 
     @SubscribeEvent
     public static void handleOreSightEnchantment(final RenderLevelStageEvent event) {
