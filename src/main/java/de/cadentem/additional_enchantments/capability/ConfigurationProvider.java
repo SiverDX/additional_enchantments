@@ -1,5 +1,6 @@
 package de.cadentem.additional_enchantments.capability;
 
+import de.cadentem.additional_enchantments.client.ClientProxy;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
@@ -46,11 +47,23 @@ public class ConfigurationProvider implements ICapabilitySerializable<CompoundTa
 
             return sidedCache.computeIfAbsent(entity.getStringUUID(), key -> {
                 LazyOptional<Configuration> capability = entity.getCapability(CapabilityHandler.CONFIGURATION_CAPABILITY);
-                capability.addListener(ignored -> sidedCache.remove(entity.getStringUUID()));
+                capability.addListener(ignored -> sidedCache.remove(key));
                 return capability;
             });
         }
 
         return LazyOptional.empty();
+    }
+
+    public static void removeCacheEntry(final Entity entity) {
+        if (entity.getLevel().isClientSide()) {
+            if (entity == ClientProxy.getLocalPlayer()) {
+                CLIENT_CACHE.clear();
+            } else {
+                CLIENT_CACHE.remove(entity.getStringUUID());
+            }
+        } else {
+            SERVER_CACHE.remove(entity.getStringUUID());
+        }
     }
 }

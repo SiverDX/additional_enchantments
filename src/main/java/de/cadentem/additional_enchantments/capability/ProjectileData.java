@@ -30,7 +30,6 @@ public class ProjectileData {
     public int homingEnchantmentLevel;
 
     public int explosiveTipEnchantmentLevel;
-    public boolean exploded;
 
     public int straightShotEnchantmentLevel;
 
@@ -180,7 +179,6 @@ public class ProjectileData {
         tag.putInt("explosiveTipEnchantmentLevel", explosiveTipEnchantmentLevel);
         tag.putInt("straightShotEnchantmentLevel", straightShotEnchantmentLevel);
         tag.putInt("homingTargetId", homingTargetId);
-        tag.putBoolean("exploded", exploded);
 
         if (hasAddedEffects()) {
             ListTag effects = new ListTag();
@@ -201,7 +199,6 @@ public class ProjectileData {
         explosiveTipEnchantmentLevel = tag.getInt("explosiveTipEnchantmentLevel");
         straightShotEnchantmentLevel = tag.getInt("straightShotEnchantmentLevel");
         homingTargetId = tag.getInt("homingTargetId");
-        exploded = tag.getBoolean("exploded");
 
         ListTag effects = tag.getList("addedEffects", ListTag.TAG_COMPOUND);
 

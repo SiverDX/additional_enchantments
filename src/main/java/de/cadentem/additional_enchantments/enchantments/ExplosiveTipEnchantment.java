@@ -57,10 +57,6 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
         }
 
         ProjectileDataProvider.getCapability(projectile).ifPresent(data -> {
-            if (data.exploded) {
-                return;
-            }
-
             if (data.explosiveTipEnchantmentLevel > 0) {
                 if (!(projectile.getOwner() instanceof LivingEntity livingOwner)) {
                     return;
@@ -87,7 +83,7 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
                         }
                     }
 
-                    data.exploded = true;
+                    data.explosiveTipEnchantmentLevel = 0;
 
                     if (configuration.explosionType == Explosion.BlockInteraction.BREAK && event.getRayTraceResult().getType() == HitResult.Type.BLOCK) {
                         // Otherwise the projectile will just keep falling down, hitting a block and resetting to its initial fall position

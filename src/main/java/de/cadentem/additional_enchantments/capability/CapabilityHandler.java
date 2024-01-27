@@ -20,6 +20,7 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -93,6 +94,17 @@ public class CapabilityHandler {
     @SubscribeEvent // Only called server-side
     public static void handleDimensionChange(final PlayerEvent.PlayerChangedDimensionEvent event) {
         syncConfiguration(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public static void removeCacheEntry(final EntityLeaveLevelEvent event) {
+        Entity entity = event.getEntity();
+
+        if (entity instanceof Projectile) {
+            ProjectileDataProvider.removeCacheEntry(entity);
+        } else if (entity instanceof Player) {
+            ConfigurationProvider.removeCacheEntry(entity);
+        }
     }
 
     public static void syncProjectileData(final Projectile projectile) {
