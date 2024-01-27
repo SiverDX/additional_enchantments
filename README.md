@@ -8,8 +8,7 @@
 - Backports are not being considered at the moment
 
 ### Known problems
-- The transparency rendering of the `Hunter` enchantment has some issues with transparent blocks (e.g. water)
-- The transparency rendering of the `Hunter` enchantment is incompatible with [Skin Layers 3D](https://www.curseforge.com/minecraft/mc-mods/skin-layers-3d)
+- The player transparency rendering of the `Hunter` enchantment has some issues with transparent blocks (e.g. water)
 
 # Enchantments
 ### Enchantment Categories
@@ -115,3 +114,5 @@
   - The blocks are based on plant related material and the block tag `additional_enchantments:hunter_relevant`
 - Enchantment level increases the critical damage, the rate at which you gain hunter stacks and reduces the rate at which you lose them
   - It will also reduce the amount of stacks needed to be considered at full stacks
+
+![](https://i.imgur.com/J2Hx4GR.gif "Hunter")

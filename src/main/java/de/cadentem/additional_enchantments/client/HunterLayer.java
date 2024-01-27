@@ -1,7 +1,5 @@
 package de.cadentem.additional_enchantments.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
@@ -20,9 +18,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Referenced off of <a href="https://github.com/ryankshah/skyrimcraft/blob/master/src/main/java/com/ryankshah/skyrimcraft/event/PlayerEvents.java#L53">ryankshah</a>
- */
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class HunterLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     public HunterLayer(final RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer) {
@@ -60,11 +55,8 @@ public class HunterLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
 
                 float alpha = 1f - (float) configuration.hunterStacks / HunterEnchantment.getMaxStacks(enchantmentLevel);
 
-                RenderSystem.enableBlend();
-                RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
                 VertexConsumer buffer = bufferSource.getBuffer(RenderType.itemEntityTranslucentCull(player.getSkinTextureLocation()));
                 getParentModel().renderToBuffer(poseStack, buffer, packedLight, PlayerRenderer.getOverlayCoords(player, 0), 1, 1, 1, alpha);
-                RenderSystem.disableBlend();
             }
         });
     }

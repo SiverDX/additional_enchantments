@@ -142,6 +142,10 @@ public class HunterEnchantment extends ConfigurableEnchantment {
                 return;
             }
 
+            if (!player.isInvisible()) {
+                return;
+            }
+
             // Reduce invisibility effect if player is no longer on hunter-relevant blocks
             ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
                 if (!configuration.isOnHunterBlock && !player.hasEffect(MobEffects.INVISIBILITY)) {
