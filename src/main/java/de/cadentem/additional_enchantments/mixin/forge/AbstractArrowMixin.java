@@ -17,7 +17,8 @@ public class AbstractArrowMixin {
 
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             ProjectileDataProvider.getCapability(instance).ifPresent(data -> {
-                if (data.explosiveTipEnchantmentLevel > 0) {
+                if (data.exploded && data.explosiveTipEnchantmentLevel > 0) {
+                    data.explosiveTipEnchantmentLevel = 0;
                     result.set(false);
                 }
             });

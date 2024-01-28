@@ -1,6 +1,7 @@
 package de.cadentem.additional_enchantments.capability;
 
 import com.google.common.collect.Sets;
+import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.data.AEEntityTags;
 import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
 import de.cadentem.additional_enchantments.mixin.AbstractArrowAccess;
@@ -30,6 +31,7 @@ public class ProjectileData {
     public int homingEnchantmentLevel;
 
     public int explosiveTipEnchantmentLevel;
+    public boolean exploded;
 
     public int straightShotEnchantmentLevel;
 
@@ -179,6 +181,7 @@ public class ProjectileData {
         tag.putInt("explosiveTipEnchantmentLevel", explosiveTipEnchantmentLevel);
         tag.putInt("straightShotEnchantmentLevel", straightShotEnchantmentLevel);
         tag.putInt("homingTargetId", homingTargetId);
+        tag.putBoolean("exploded", exploded);
 
         if (hasAddedEffects()) {
             ListTag effects = new ListTag();
@@ -199,6 +202,7 @@ public class ProjectileData {
         explosiveTipEnchantmentLevel = tag.getInt("explosiveTipEnchantmentLevel");
         straightShotEnchantmentLevel = tag.getInt("straightShotEnchantmentLevel");
         homingTargetId = tag.getInt("homingTargetId");
+        exploded = tag.getBoolean("exploded");
 
         ListTag effects = tag.getList("addedEffects", ListTag.TAG_COMPOUND);
 
