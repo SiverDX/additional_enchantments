@@ -55,7 +55,7 @@ public class ProjectileDataProvider implements ICapabilitySerializable<CompoundT
         return LazyOptional.empty();
     }
 
-    public static void removeCacheEntry(final Entity entity) {
+    public static void removeCachedEntry(final Entity entity) {
         if (entity.getLevel().isClientSide()) {
             if (entity == ClientProxy.getLocalPlayer()) {
                 CLIENT_CACHE.clear();

@@ -1,6 +1,6 @@
 package de.cadentem.additional_enchantments.client;
 
-import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
+import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.capability.ProjectileDataProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -11,8 +11,8 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.Nullable;
 
 public class ClientProxy {
-    public static void handleSyncConfiguration(final CompoundTag tag) {
-        ConfigurationProvider.getCapability(Minecraft.getInstance().player).ifPresent(configuration -> configuration.deserializeNBT(tag));
+    public static void handleSyncPlayerData(final CompoundTag tag) {
+        PlayerDataProvider.getCapability(Minecraft.getInstance().player).ifPresent(data -> data.deserializeNBT(tag));
     }
 
     public static void handleSyncProjectileData(final CompoundTag tag, int entityId) {

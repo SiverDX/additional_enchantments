@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.enchantments;
 
 import com.mojang.datafixers.util.Pair;
-import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
+import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.client.ClientProxy;
 import de.cadentem.additional_enchantments.core.interfaces.LivingEntityAccess;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
@@ -51,8 +51,8 @@ public class HunterEnchantment extends ConfigurableEnchantment {
 
         if (livingEntity instanceof Mob mob && mob.getTarget() instanceof Player player) {
             // Reset aggro when maximum stacks are reached
-            ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
-                if (configuration.hasMaxHunterStacks(enchantmentLevel)) {
+            PlayerDataProvider.getCapability(player).ifPresent(data -> {
+                if (data.hasMaxHunterStacks(enchantmentLevel)) {
                     mob.setLastHurtByPlayer(null);
                     mob.setTarget(null);
                 }
@@ -65,9 +65,9 @@ public class HunterEnchantment extends ConfigurableEnchantment {
             if (enchantmentLevel > 0) {
                 if (/* Basically inside the block */ isBlockHunterRelevant(livingEntity.getFeetBlockState()) || /* Below feet */ isBlockHunterRelevant(livingEntity.getBlockStateOn())) {
                     if (livingEntity instanceof Player) {
-                        ConfigurationProvider.getCapability(livingEntity).ifPresent(configuration -> {
-                            configuration.increaseHunterStacks(enchantmentLevel);
-                            configuration.isOnHunterBlock = true;
+                        PlayerDataProvider.getCapability(livingEntity).ifPresent(data -> {
+                            data.increaseHunterStacks(enchantmentLevel);
+                            data.isOnHunterBlock = true;
                         });
                     }
 
@@ -79,19 +79,19 @@ public class HunterEnchantment extends ConfigurableEnchantment {
                     }
                 } else {
                     if (livingEntity instanceof Player) {
-                        ConfigurationProvider.getCapability(livingEntity).ifPresent(configuration -> {
-                            configuration.reduceHunterStacks(livingEntity, enchantmentLevel);
+                        PlayerDataProvider.getCapability(livingEntity).ifPresent(data -> {
+                            data.reduceHunterStacks(livingEntity, enchantmentLevel);
 
-                            if (configuration.hunterStacks > 0) {
+                            if (data.hunterStacks > 0) {
                                 invisibilityValid.set(true);
                             }
 
-                            configuration.isOnHunterBlock = false;
+                            data.isOnHunterBlock = false;
                         });
                     }
                 }
             } else if (livingEntity instanceof Player) {
-                ConfigurationProvider.getCapability(livingEntity).ifPresent(configuration -> configuration.hunterStacks = 0);
+                PlayerDataProvider.getCapability(livingEntity).ifPresent(data -> data.hunterStacks = 0);
             }
 
             if (!invisibilityValid.get()) {
@@ -110,8 +110,8 @@ public class HunterEnchantment extends ConfigurableEnchantment {
             int enchantmentLevel = EnchantmentHelper.getEnchantmentLevel(AEEnchantments.HUNTER.get(), player);
 
             if (enchantmentLevel > 0) {
-                ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
-                    if (configuration.hasMaxHunterStacks(enchantmentLevel)) {
+                PlayerDataProvider.getCapability(player).ifPresent(data -> {
+                    if (data.hasMaxHunterStacks(enchantmentLevel)) {
                         event.setNewTarget(null);
                     }
                 });
@@ -126,12 +126,12 @@ public class HunterEnchantment extends ConfigurableEnchantment {
         int enchantmentLevel = EnchantmentHelper.getEnchantmentLevel(AEEnchantments.HUNTER.get(), player);
 
         if (enchantmentLevel > 0) {
-            ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
-                if (configuration.hasMaxHunterStacks(enchantmentLevel)) {
+            PlayerDataProvider.getCapability(player).ifPresent(data -> {
+                if (data.hasMaxHunterStacks(enchantmentLevel)) {
                     event.setDamageModifier(event.getDamageModifier() + enchantmentLevel / 2f);
                     event.setResult(Event.Result.ALLOW);
 
-                    configuration.hunterStacks = 0;
+                    data.hunterStacks = 0;
                 }
             });
         }
@@ -149,12 +149,12 @@ public class HunterEnchantment extends ConfigurableEnchantment {
             }
 
             // Reduce invisibility effect if player is no longer on hunter-relevant blocks
-            ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
-                if (!configuration.isOnHunterBlock && !player.hasEffect(MobEffects.INVISIBILITY)) {
+            PlayerDataProvider.getCapability(player).ifPresent(data -> {
+                if (!data.isOnHunterBlock && !player.hasEffect(MobEffects.INVISIBILITY)) {
                     int enchantmentLevel = EnchantmentHelper.getEnchantmentLevel(AEEnchantments.HUNTER.get(), player);
 
                     if (enchantmentLevel > 0) {
-                        event.modifyVisibility(event.getVisibilityModifier() + 1 - ((double) configuration.hunterStacks / HunterEnchantment.getMaxStacks(enchantmentLevel)));
+                        event.modifyVisibility(event.getVisibilityModifier() + 1 - ((double) data.hunterStacks / HunterEnchantment.getMaxStacks(enchantmentLevel)));
                     }
                 }
             });

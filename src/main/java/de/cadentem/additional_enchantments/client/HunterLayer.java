@@ -2,7 +2,7 @@ package de.cadentem.additional_enchantments.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
+import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.enchantments.HunterEnchantment;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -38,9 +38,9 @@ public class HunterLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
         int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel(player);
 
         if (enchantmentLevel > 0) {
-            ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
-                if (configuration.hunterStacks > 0 || delay > 0) {
-                    if (configuration.hasMaxHunterStacks(enchantmentLevel)) {
+            PlayerDataProvider.getCapability(player).ifPresent(data -> {
+                if (data.hunterStacks > 0 || delay > 0) {
+                    if (data.hasMaxHunterStacks(enchantmentLevel)) {
                         delay--;
 
                         if (delay == 0) {
@@ -50,7 +50,7 @@ public class HunterLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
                         delay = MAX_DELAY;
                     }
 
-                    float alpha = 1f - (float) configuration.hunterStacks / HunterEnchantment.getMaxStacks(enchantmentLevel);
+                    float alpha = 1f - (float) data.hunterStacks / HunterEnchantment.getMaxStacks(enchantmentLevel);
 
                     VertexConsumer buffer = bufferSource.getBuffer(RenderType.itemEntityTranslucentCull(player.getSkinTextureLocation()));
                     getParentModel().renderToBuffer(poseStack, buffer, packedLight, PlayerRenderer.getOverlayCoords(player, 0), 1, 1, 1, alpha);
@@ -67,17 +67,17 @@ public class HunterLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
             return;
         }
 
-        ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
+        PlayerDataProvider.getCapability(player).ifPresent(data -> {
             int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel(player);
 
             if (enchantmentLevel > 0) {
                 if (/* Basically inside the block */ HunterEnchantment.isBlockHunterRelevant(player.getFeetBlockState()) || /* Below feet */ HunterEnchantment.isBlockHunterRelevant(player.getBlockStateOn())) {
-                    configuration.increaseHunterStacks(enchantmentLevel);
+                    data.increaseHunterStacks(enchantmentLevel);
                 } else {
-                    configuration.reduceHunterStacks(player, enchantmentLevel);
+                    data.reduceHunterStacks(player, enchantmentLevel);
                 }
             } else {
-                configuration.hunterStacks = 0;
+                data.hunterStacks = 0;
             }
         });
     }

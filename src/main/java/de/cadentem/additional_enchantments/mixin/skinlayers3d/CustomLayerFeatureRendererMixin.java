@@ -3,10 +3,9 @@ package de.cadentem.additional_enchantments.mixin.skinlayers3d;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
+import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.enchantments.HunterEnchantment;
 import net.minecraft.client.player.AbstractClientPlayer;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,8 +22,8 @@ public abstract class CustomLayerFeatureRendererMixin {
         AtomicBoolean result = new AtomicBoolean(isInvisible);
 
         if (isInvisible) {
-            ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
-                if (configuration.hunterStacks > 0) {
+            PlayerDataProvider.getCapability(player).ifPresent(data -> {
+                if (data.hunterStacks > 0) {
                     result.set(false);
                 }
             });
@@ -38,12 +37,12 @@ public abstract class CustomLayerFeatureRendererMixin {
         AtomicDouble result = new AtomicDouble(alpha);
 
         if (player.isInvisible()) {
-            ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
-                if (configuration.hunterStacks > 0) {
+            PlayerDataProvider.getCapability(player).ifPresent(data -> {
+                if (data.hunterStacks > 0) {
                     int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel();
 
                     if (enchantmentLevel > 0) {
-                        result.set(1f - (float) configuration.hunterStacks / HunterEnchantment.getMaxStacks(enchantmentLevel));
+                        result.set(1f - (float) data.hunterStacks / HunterEnchantment.getMaxStacks(enchantmentLevel));
                     }
                 }
             });

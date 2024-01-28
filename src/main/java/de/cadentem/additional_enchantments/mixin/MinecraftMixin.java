@@ -1,6 +1,6 @@
 package de.cadentem.additional_enchantments.mixin;
 
-import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
+import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.client.ClientProxy;
 import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.data.AEEntityTags;
@@ -29,15 +29,15 @@ public abstract class MinecraftMixin {
             return;
         }
 
-        ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
-            if (configuration.displayType == PerceptionEnchantment.DisplayType.NONE) {
+        PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+            if (data.displayType == PerceptionEnchantment.DisplayType.NONE) {
                 return;
             }
 
             if (entity instanceof ItemEntity item) {
-                if (configuration.displayType == PerceptionEnchantment.DisplayType.NO_ITEMS) {
+                if (data.displayType == PerceptionEnchantment.DisplayType.NO_ITEMS) {
                     return;
-                } else if (item.getItem().getRarity().ordinal() < configuration.itemFilter.ordinal()) {
+                } else if (item.getItem().getRarity().ordinal() < data.itemFilter.ordinal()) {
                     return;
                 }
             } else if (!(entity instanceof LivingEntity)) {

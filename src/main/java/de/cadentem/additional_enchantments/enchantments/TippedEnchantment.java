@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.enchantments;
 
 import com.google.common.collect.Sets;
-import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
+import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.capability.ProjectileDataProvider;
 import de.cadentem.additional_enchantments.data.AEEffectTags;
 import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
@@ -56,20 +56,20 @@ public class TippedEnchantment extends ConfigurableEnchantment {
             int level = livingOwner.getMainHandItem().getEnchantmentLevel(AEEnchantments.TIPPED.get());
 
             if (level > 0) {
-                ProjectileDataProvider.getCapability(projectile).ifPresent(data -> {
-                    if (data.hasAddedEffects()) {
+                ProjectileDataProvider.getCapability(projectile).ifPresent(projectileData -> {
+                    if (projectileData.hasAddedEffects()) {
                         return;
                     }
 
-                    data.addedEffects = Sets.newHashSet();
-                    data.tippedEnchantmentLevel = level;
+                    projectileData.addedEffects = Sets.newHashSet();
+                    projectileData.tippedEnchantmentLevel = level;
 
-                    ConfigurationProvider.getCapability(livingOwner).ifPresent(configuration -> {
+                    PlayerDataProvider.getCapability(livingOwner).ifPresent(playerData -> {
                         ITagManager<MobEffect> tags = ForgeRegistries.MOB_EFFECTS.tags();
 
                         if (tags != null) {
                             ITag<MobEffect> blacklist = tags.getTag(AEEffectTags.TIPPED_BLACKLIST);
-                            List<MobEffect> effects = ForgeRegistries.MOB_EFFECTS.getValues().stream().filter(effect -> !blacklist.contains(effect) && isValidEffect(configuration.effectFilter, effect)).collect(Collectors.toList());
+                            List<MobEffect> effects = ForgeRegistries.MOB_EFFECTS.getValues().stream().filter(effect -> !blacklist.contains(effect) && isValidEffect(playerData.effectFilter, effect)).collect(Collectors.toList());
 
                             List<MobEffect> appliedEffects;
 
@@ -90,7 +90,7 @@ public class TippedEnchantment extends ConfigurableEnchantment {
                             }
 
                             for (MobEffect effect : appliedEffects) {
-                                data.addedEffects.add(new MobEffectInstance(effect, effect.isInstantenous() ? 1 : 20 * (3 + (level * 2)), level - 1));
+                                projectileData.addedEffects.add(new MobEffectInstance(effect, effect.isInstantenous() ? 1 : 20 * (3 + (level * 2)), level - 1));
                             }
                         }
                     });

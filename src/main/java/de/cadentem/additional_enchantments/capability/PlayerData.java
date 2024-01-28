@@ -10,7 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Explosion;
 
-public class Configuration {
+public class PlayerData {
     public MobEffectCategory effectFilter = MobEffectCategory.HARMFUL;
     public Explosion.BlockInteraction explosionType = Explosion.BlockInteraction.BREAK;
     public HomingEnchantment.TypeFilter homingTypeFilter = HomingEnchantment.TypeFilter.ANY;
@@ -19,9 +19,7 @@ public class Configuration {
     public Rarity itemFilter = Rarity.COMMON;
     public OreSightEnchantment.OreRarity oreRarity = OreSightEnchantment.OreRarity.ALL;
 
-    /**
-     * Not synced but updated on both sides (would need 1 packet per tick)
-     */
+    // Not synced but updated on both sides, otherwise 1 packet per tick would be needed
     public int hunterStacks;
 
     // Server only
