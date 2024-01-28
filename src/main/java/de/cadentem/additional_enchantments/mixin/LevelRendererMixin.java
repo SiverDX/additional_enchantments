@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public abstract class LevelRendererMixin {
     @ModifyVariable(method = "renderLevel", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/entity/Entity;getTeamColor()I", shift = At.Shift.AFTER))
     private int additional_enchantments$getTypeColor(int teamColor, @Local final Entity entity) {
-        if (PerceptionEnchantment.getClientEnchantmentLevel() > 0 && teamColor == /* Default color (WHITE) */ 16777215 && !entity.getType().is(AEEntityTags.PERCEPTION_BLACKLIST)) {
+        if (teamColor == /* Default color (WHITE) */ 16777215 && PerceptionEnchantment.getClientEnchantmentLevel() > 0 && !entity.getType().is(AEEntityTags.PERCEPTION_BLACKLIST)) {
             if (entity.getType().is(Tags.EntityTypes.BOSSES)) {
                 return /* DARK_PURPLE */ 11141290;
             } else if (entity instanceof Monster) {
