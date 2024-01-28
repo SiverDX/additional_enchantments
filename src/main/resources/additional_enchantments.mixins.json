@@ -21,7 +21,8 @@
     "LevelRendererAccess",
     "LevelRendererMixin",
     "PlayerRendererMixin",
-    "skinlayers3d.CustomLayerFeatureRendererMixin"
+    "skinlayers3d.CustomLayerFeatureRendererMixin",
+    "skinlayers3d.PlayerRenderMixin"
   ],
   "injectors": {
     "defaultRequire": 1
