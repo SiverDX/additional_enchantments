@@ -15,6 +15,7 @@
     "TridentAccess"
   ],
   "client": [
+    "ItemInHandRendererMixin",
     "MinecraftMixin",
     "ModelBakeryMixin",
     "LevelRendererAccess",

@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
+import de.cadentem.additional_enchantments.client.HunterLayer;
 import de.cadentem.additional_enchantments.enchantments.HunterEnchantment;
 import net.minecraft.client.player.AbstractClientPlayer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +22,7 @@ public abstract class CustomLayerFeatureRendererMixin {
     private boolean additional_enchantments$allowRenderWhenTransparent(boolean isInvisible, @Local(argsOnly = true) final AbstractClientPlayer player) {
         AtomicBoolean result = new AtomicBoolean(isInvisible);
 
-        if (isInvisible) {
+        if (isInvisible && HunterEnchantment.getClientEnchantmentLevel(player) > 0) {
             PlayerDataProvider.getCapability(player).ifPresent(data -> {
                 if (data.hunterStacks > 0) {
                     result.set(false);
@@ -37,15 +38,15 @@ public abstract class CustomLayerFeatureRendererMixin {
         AtomicDouble result = new AtomicDouble(alpha);
 
         if (player.isInvisible()) {
-            PlayerDataProvider.getCapability(player).ifPresent(data -> {
-                if (data.hunterStacks > 0) {
-                    int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel();
+            int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel(player);
 
-                    if (enchantmentLevel > 0) {
-                        result.set(1f - (float) data.hunterStacks / HunterEnchantment.getMaxStacks(enchantmentLevel));
+            if (enchantmentLevel > 0) {
+                PlayerDataProvider.getCapability(player).ifPresent(data -> {
+                    if (data.hunterStacks > 0) {
+                        result.set(HunterLayer.getAlpha(data.hunterStacks, enchantmentLevel));
                     }
-                }
-            });
+                });
+            }
         }
 
         return result.floatValue();
