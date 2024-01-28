@@ -1,6 +1,6 @@
 package de.cadentem.additional_enchantments.enchantments;
 
-import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
+import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.capability.ProjectileDataProvider;
 import de.cadentem.additional_enchantments.core.interfaces.ExplosionAccess;
 import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
@@ -56,18 +56,14 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
             return;
         }
 
-        ProjectileDataProvider.getCapability(projectile).ifPresent(data -> {
-            if (data.exploded) {
-                return;
-            }
-
-            if (data.explosiveTipEnchantmentLevel > 0) {
+        ProjectileDataProvider.getCapability(projectile).ifPresent(projectileData -> {
+            if (projectileData.explosiveTipEnchantmentLevel > 0) {
                 if (!(projectile.getOwner() instanceof LivingEntity livingOwner)) {
                     return;
                 }
 
-                ConfigurationProvider.getCapability(livingOwner).ifPresent(configuration -> {
-                    Explosion explosion = new Explosion(serverLevel, projectile, null, null, projectile.getX(), projectile.getY(), projectile.getZ(), data.explosiveTipEnchantmentLevel, false, configuration.explosionType);
+                PlayerDataProvider.getCapability(livingOwner).ifPresent(playerData -> {
+                    Explosion explosion = new Explosion(serverLevel, projectile, null, null, projectile.getX(), projectile.getY(), projectile.getZ(), projectileData.explosiveTipEnchantmentLevel, false, playerData.explosionType);
                     ((ExplosionAccess) explosion).additional_enchantments$setWasTriggeredByEnchantment(true);
 
                     if (ForgeEventFactory.onExplosionStart(projectile.level(), explosion)) {
@@ -77,19 +73,19 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
                     explosion.explode();
                     explosion.finalizeExplosion(true);
 
-                    if (configuration.explosionType == Explosion.BlockInteraction.KEEP) {
+                    if (playerData.explosionType == Explosion.BlockInteraction.KEEP) {
                         explosion.clearToBlow();
                     }
 
                     for (ServerPlayer serverPlayer : serverLevel.players()) {
                         if (serverPlayer.distanceToSqr(projectile.getX(), projectile.getY(), projectile.getZ()) < 4096) {
-                            serverPlayer.connection.send(new ClientboundExplodePacket(projectile.getX(), projectile.getY(), projectile.getZ(), data.explosiveTipEnchantmentLevel, explosion.getToBlow(), explosion.getHitPlayers().get(serverPlayer)));
+                            serverPlayer.connection.send(new ClientboundExplodePacket(projectile.getX(), projectile.getY(), projectile.getZ(), projectileData.explosiveTipEnchantmentLevel, explosion.getToBlow(), explosion.getHitPlayers().get(serverPlayer)));
                         }
                     }
 
-                    data.exploded = true;
+                    projectileData.explosiveTipEnchantmentLevel = 0;
 
-                    if (configuration.explosionType == Explosion.BlockInteraction.DESTROY && event.getRayTraceResult().getType() == HitResult.Type.BLOCK) {
+                    if (playerData.explosionType == Explosion.BlockInteraction.DESTROY && event.getRayTraceResult().getType() == HitResult.Type.BLOCK) {
                         // Otherwise the projectile will just keep falling down, hitting a block and resetting to its initial fall position
                         event.setCanceled(true);
                     }

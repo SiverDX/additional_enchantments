@@ -6,7 +6,7 @@ import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
 import de.cadentem.additional_enchantments.enchantments.StraightShotEnchantment;
 import de.cadentem.additional_enchantments.enchantments.TippedEnchantment;
 import de.cadentem.additional_enchantments.network.NetworkHandler;
-import de.cadentem.additional_enchantments.network.SyncConfiguration;
+import de.cadentem.additional_enchantments.network.SyncPlayerData;
 import de.cadentem.additional_enchantments.network.SyncProjectileData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -20,6 +20,7 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -29,10 +30,10 @@ import net.minecraftforge.network.PacketDistributor;
 
 @Mod.EventBusSubscriber
 public class CapabilityHandler {
-    public static final Capability<Configuration> CONFIGURATION_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+    public static final Capability<PlayerData> PLAYER_DATA_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
     public static final Capability<ProjectileData> PROJECTILE_DATA_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
-    public static ResourceLocation CONFIGURATION = new ResourceLocation(AE.MODID, "configuration");
-    public static ResourceLocation PROJECTILE_DATA = new ResourceLocation(AE.MODID, "projectile_data");
+    public static final ResourceLocation PLAYER_DATA = new ResourceLocation(AE.MODID, "player_data");
+    public static final ResourceLocation PROJECTILE_DATA = new ResourceLocation(AE.MODID, "projectile_data");
 
     @SubscribeEvent
     public static void attachCapability(final AttachCapabilitiesEvent<Entity> event) {
@@ -41,7 +42,7 @@ public class CapabilityHandler {
                 return;
             }
 
-            event.addCapability(CONFIGURATION, new ConfigurationProvider());
+            event.addCapability(PLAYER_DATA, new PlayerDataProvider());
         } else if (event.getObject() instanceof Projectile) {
             event.addCapability(PROJECTILE_DATA, new ProjectileDataProvider());
         }
@@ -74,10 +75,11 @@ public class CapabilityHandler {
         if (event.isWasDeath()) {
             event.getOriginal().reviveCaps();
 
-            ConfigurationProvider.getCapability(event.getEntity()).ifPresent(configuration -> {
-                ConfigurationProvider.getCapability(event.getOriginal()).ifPresent(oldConfiguration -> {
-                    configuration.deserializeNBT(oldConfiguration.serializeNBT());
-                    syncConfiguration(event.getEntity());
+            PlayerDataProvider.getCapability(event.getEntity()).ifPresent(data -> {
+                // Cache would return the new (empty) capability
+                event.getOriginal().getCapability(PLAYER_DATA_CAPABILITY).ifPresent(oldData -> {
+                    data.deserializeNBT(oldData.serializeNBT());
+                    syncPlayerData(event.getEntity());
                 });
             });
 
@@ -87,12 +89,23 @@ public class CapabilityHandler {
 
     @SubscribeEvent // Only called server-side
     public static void handlePlayerLogin(final PlayerEvent.PlayerLoggedInEvent event) {
-        syncConfiguration(event.getEntity());
+        syncPlayerData(event.getEntity());
     }
 
     @SubscribeEvent // Only called server-side
     public static void handleDimensionChange(final PlayerEvent.PlayerChangedDimensionEvent event) {
-        syncConfiguration(event.getEntity());
+        syncPlayerData(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public static void removeCachedEntry(final EntityLeaveLevelEvent event) {
+        Entity entity = event.getEntity();
+
+        if (entity instanceof Projectile) {
+            ProjectileDataProvider.removeCachedEntry(entity);
+        } else if (entity instanceof Player) {
+            PlayerDataProvider.removeCachedEntry(entity);
+        }
     }
 
     public static void syncProjectileData(final Projectile projectile) {
@@ -101,7 +114,7 @@ public class CapabilityHandler {
             return;
         }
 
-        ProjectileDataProvider.getCapability(projectile).ifPresent(projectileData -> syncProjectileData(projectile, projectileData.serializeNBT()));
+        ProjectileDataProvider.getCapability(projectile).ifPresent(data -> syncProjectileData(projectile, data.serializeNBT()));
     }
 
     public static void syncProjectileData(final Projectile projectile, final CompoundTag tag) {
@@ -113,15 +126,15 @@ public class CapabilityHandler {
         NetworkHandler.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> projectile), new SyncProjectileData(tag, projectile.getId()));
     }
 
-    public static void syncConfiguration(final Player player) {
-        ConfigurationProvider.getCapability(player).ifPresent(configuration -> syncConfiguration(player, configuration.serializeNBT()));
+    public static void syncPlayerData(final Player player) {
+        PlayerDataProvider.getCapability(player).ifPresent(data -> syncPlayerData(player, data.serializeNBT()));
     }
 
-    public static void syncConfiguration(final Player player, final CompoundTag tag) {
+    public static void syncPlayerData(final Player player, final CompoundTag tag) {
         if (player instanceof ServerPlayer serverPlayer) {
-            NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new SyncConfiguration(tag));
+            NetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new SyncPlayerData(tag));
         } else {
-            NetworkHandler.CHANNEL.sendToServer(new SyncConfiguration(tag));
+            NetworkHandler.CHANNEL.sendToServer(new SyncPlayerData(tag));
         }
     }
 }

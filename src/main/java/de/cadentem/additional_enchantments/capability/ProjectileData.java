@@ -30,7 +30,6 @@ public class ProjectileData {
     public int homingEnchantmentLevel;
 
     public int explosiveTipEnchantmentLevel;
-    public boolean exploded;
 
     public int straightShotEnchantmentLevel;
 
@@ -67,8 +66,8 @@ public class ProjectileData {
             return;
         }
 
-        ConfigurationProvider.getCapability(serverPlayer).ifPresent(configuration -> {
-            if (configuration.homingTypeFilter == HomingEnchantment.TypeFilter.NONE) {
+        PlayerDataProvider.getCapability(serverPlayer).ifPresent(playerData -> {
+            if (playerData.homingTypeFilter == HomingEnchantment.TypeFilter.NONE) {
                 return;
             }
 
@@ -85,15 +84,15 @@ public class ProjectileData {
                     return false;
                 }
 
-                if (configuration.homingTypeFilter == HomingEnchantment.TypeFilter.MONSTER && !(entity instanceof Monster)) {
+                if (playerData.homingTypeFilter == HomingEnchantment.TypeFilter.MONSTER && !(entity instanceof Monster)) {
                     return false;
                 }
 
-                if (configuration.homingTypeFilter == HomingEnchantment.TypeFilter.ANIMAL && (!(entity instanceof Animal))) {
+                if (playerData.homingTypeFilter == HomingEnchantment.TypeFilter.ANIMAL && (!(entity instanceof Animal))) {
                     return false;
                 }
 
-                if (configuration.homingTypeFilter == HomingEnchantment.TypeFilter.BOSSES && !(entity.getType().is(Tags.EntityTypes.BOSSES))) {
+                if (playerData.homingTypeFilter == HomingEnchantment.TypeFilter.BOSSES && !(entity.getType().is(Tags.EntityTypes.BOSSES))) {
                     return false;
                 }
 
@@ -107,15 +106,15 @@ public class ProjectileData {
 
             LivingEntity target;
 
-            if (configuration.homingPriority == HomingEnchantment.Priority.RANDOM) {
+            if (playerData.homingPriority == HomingEnchantment.Priority.RANDOM) {
                 target = entities.get(serverPlayer.getRandom().nextInt(entities.size()));
             } else {
                 entities.sort((a, b) -> {
-                    if (configuration.homingPriority == HomingEnchantment.Priority.CLOSEST) {
+                    if (playerData.homingPriority == HomingEnchantment.Priority.CLOSEST) {
                         return Float.compare(a.distanceTo(instance), b.distanceTo(instance));
-                    } else if (configuration.homingPriority == HomingEnchantment.Priority.LOWEST_HEALTH) {
+                    } else if (playerData.homingPriority == HomingEnchantment.Priority.LOWEST_HEALTH) {
                         return Float.compare((a.getMaxHealth() / 100) * a.getHealth(), b.getMaxHealth() / 100 * b.getHealth());
-                    } else if (configuration.homingPriority == HomingEnchantment.Priority.HIGHEST_HEALTH) {
+                    } else if (playerData.homingPriority == HomingEnchantment.Priority.HIGHEST_HEALTH) {
                         return Float.compare((a.getMaxHealth() / 100) * a.getHealth(), b.getMaxHealth() / 100 * b.getHealth()) * -1;
                     }
 
@@ -180,7 +179,6 @@ public class ProjectileData {
         tag.putInt("explosiveTipEnchantmentLevel", explosiveTipEnchantmentLevel);
         tag.putInt("straightShotEnchantmentLevel", straightShotEnchantmentLevel);
         tag.putInt("homingTargetId", homingTargetId);
-        tag.putBoolean("exploded", exploded);
 
         if (hasAddedEffects()) {
             ListTag effects = new ListTag();
@@ -201,7 +199,6 @@ public class ProjectileData {
         explosiveTipEnchantmentLevel = tag.getInt("explosiveTipEnchantmentLevel");
         straightShotEnchantmentLevel = tag.getInt("straightShotEnchantmentLevel");
         homingTargetId = tag.getInt("homingTargetId");
-        exploded = tag.getBoolean("exploded");
 
         ListTag effects = tag.getList("addedEffects", ListTag.TAG_COMPOUND);
 

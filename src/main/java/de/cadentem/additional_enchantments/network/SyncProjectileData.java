@@ -8,15 +8,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class SyncProjectileData {
-    public CompoundTag tag;
-    public int entityId;
-
-    public SyncProjectileData(final CompoundTag tag, int entityId) {
-        this.tag = tag;
-        this.entityId = entityId;
-    }
-
+public record SyncProjectileData(CompoundTag tag, int entityId) {
     public void encode(final FriendlyByteBuf buffer) {
         buffer.writeNbt(tag);
         buffer.writeInt(entityId);

@@ -2,7 +2,8 @@ package de.cadentem.additional_enchantments.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
+import de.cadentem.additional_enchantments.capability.PlayerData;
+import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.enchantments.HunterEnchantment;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -11,9 +12,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
@@ -30,55 +30,54 @@ public class HunterLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
 
     @Override
     public void render(@NotNull final PoseStack poseStack, @NotNull final MultiBufferSource bufferSource, int packedLight, @NotNull final AbstractClientPlayer player, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (player.isSpectator()) {
+        if (!player.isInvisible() || player.isSpectator()) {
             return;
         }
 
-        ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
-            if (configuration.hunterStacks > 0 || delay > 0) {
-                int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel();
+        int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel(player);
 
-                if (enchantmentLevel == 0) {
-                    delay = 0;
-                    return;
-                }
+        if (enchantmentLevel > 0) {
+            PlayerDataProvider.getCapability(player).ifPresent(data -> {
+                if (data.hunterStacks > 0 || delay > 0) {
+                    if (data.hasMaxHunterStacks(enchantmentLevel)) {
+                        delay--;
 
-                if (configuration.hasMaxHunterStacks(enchantmentLevel)) {
-                    delay--;
-
-                    if (delay <= 0) {
-                        return;
+                        if (delay == 0) {
+                            return;
+                        }
+                    } else {
+                        delay = MAX_DELAY;
                     }
-                } else {
-                    delay = MAX_DELAY;
+
+                    VertexConsumer buffer = bufferSource.getBuffer(RenderType.itemEntityTranslucentCull(player.getSkinTextureLocation()));
+                    getParentModel().renderToBuffer(poseStack, buffer, packedLight, PlayerRenderer.getOverlayCoords(player, 0), 1, 1, 1, getAlpha(data.hunterStacks, enchantmentLevel));
                 }
+            });
+        }
+    }
 
-                float alpha = 1f - (float) configuration.hunterStacks / HunterEnchantment.getMaxStacks(enchantmentLevel);
+    @SubscribeEvent
+    public static void updateHunterStacks(final TickEvent.PlayerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
+            return;
+        }
 
-                VertexConsumer buffer = bufferSource.getBuffer(RenderType.itemEntityTranslucentCull(player.getSkinTextureLocation()));
-                getParentModel().renderToBuffer(poseStack, buffer, packedLight, PlayerRenderer.getOverlayCoords(player, 0), 1, 1, 1, alpha);
+        PlayerDataProvider.getCapability(event.player).ifPresent(data -> {
+            int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel(event.player);
+
+            if (enchantmentLevel > 0) {
+                if (/* Basically inside the block */ HunterEnchantment.isBlockHunterRelevant(event.player.getFeetBlockState()) || /* Below feet */ HunterEnchantment.isBlockHunterRelevant(event.player.getBlockStateOn())) {
+                    data.increaseHunterStacks(enchantmentLevel);
+                } else {
+                    data.reduceHunterStacks(event.player, enchantmentLevel);
+                }
+            } else {
+                data.hunterStacks = 0;
             }
         });
     }
 
-    @SubscribeEvent
-    public static void updateHunterStacks(final LivingEvent.LivingTickEvent event) {
-        LivingEntity livingEntity = event.getEntity();
-
-        if (livingEntity != ClientProxy.getLocalPlayer()) {
-            return;
-        }
-
-        int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel();
-
-        if (enchantmentLevel > 0) {
-            if (/* Basically inside the block */ HunterEnchantment.isBlockHunterRelevant(livingEntity.getFeetBlockState()) || /* Below feet */ HunterEnchantment.isBlockHunterRelevant(livingEntity.getBlockStateOn())) {
-                ConfigurationProvider.getCapability(livingEntity).ifPresent(configuration -> configuration.increaseHunterStacks(enchantmentLevel));
-            } else {
-                ConfigurationProvider.getCapability(livingEntity).ifPresent(configuration -> configuration.reduceHunterStacks(livingEntity, enchantmentLevel));
-            }
-        } else {
-            ConfigurationProvider.getCapability(livingEntity).ifPresent(configuration -> configuration.hunterStacks = 0);
-        }
+    public static float getAlpha(int hunterStacks, int enchantmentLevel) {
+        return 1f - (float) hunterStacks / HunterEnchantment.getMaxStacks(enchantmentLevel);
     }
 }

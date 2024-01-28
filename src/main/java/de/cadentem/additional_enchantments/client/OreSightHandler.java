@@ -3,8 +3,8 @@ package de.cadentem.additional_enchantments.client;
 import com.google.common.cache.CacheBuilder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import de.cadentem.additional_enchantments.capability.Configuration;
-import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
+import de.cadentem.additional_enchantments.capability.PlayerData;
+import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.config.ClientConfig;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
 import de.cadentem.additional_enchantments.enchantments.OreSightEnchantment;
@@ -67,7 +67,7 @@ public class OreSightHandler {
             int enchantmentLevel = OreSightEnchantment.getClientEnchantmentLevel();
 
             if (enchantmentLevel > 0) {
-                ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
+                PlayerDataProvider.getCapability(localPlayer).ifPresent(playerData -> {
                     PoseStack poseStack = event.getPoseStack();
                     poseStack.pushPose();
                     RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -77,7 +77,7 @@ public class OreSightHandler {
                     BufferBuilder bufferBuilder = tesselator.getBuilder();
                     bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
 
-                    drawLines(localPlayer, enchantmentLevel + 1, configuration, poseStack, bufferBuilder, event.getLevelRenderer());
+                    drawLines(localPlayer, enchantmentLevel + 1, playerData, poseStack, bufferBuilder, event.getLevelRenderer());
 
                     tesselator.end();
                     poseStack.popPose();
@@ -103,8 +103,8 @@ public class OreSightHandler {
     /**
      * Referenced off of <a href="https://github.com/TelepathicGrunt/Bumblezone/blob/31cc8dc7066fc19dd0b880f66d64460cee4d356b/common/src/main/java/com/telepathicgrunt/the_bumblezone/items/essence/LifeEssence.java#L132">TelepathicGrunt</a>
      */
-    private static void drawLines(final LocalPlayer localPlayer, int radius, final Configuration configuration, final PoseStack poseStack, final BufferBuilder bufferBuilder, final LevelRenderer levelRenderer) {
-        if (configuration.oreRarity == OreSightEnchantment.OreRarity.NONE) {
+    private static void drawLines(final LocalPlayer localPlayer, int radius, final PlayerData playerData, final PoseStack poseStack, final BufferBuilder bufferBuilder, final LevelRenderer levelRenderer) {
+        if (playerData.oreRarity == OreSightEnchantment.OreRarity.NONE) {
             return;
         }
 
@@ -142,7 +142,7 @@ public class OreSightHandler {
 
                     mutablePosition.set(x, y, z);
 
-                    if (containsOres(currentChunk, section, sectionIndex, configuration.oreRarity)) {
+                    if (containsOres(currentChunk, section, sectionIndex, playerData.oreRarity)) {
                         foundSection = true;
 
                         OreSightEnchantment.OreRarity rarity = getRarity(currentChunk, mutablePosition);
@@ -155,7 +155,7 @@ public class OreSightHandler {
                             float xMax = (float) (1 + x - camera.x());
                             float zMax = (float) (1 + z - camera.z());
 
-                            if (rarity.ordinal() >= configuration.oreRarity.ordinal()) {
+                            if (rarity.ordinal() >= playerData.oreRarity.ordinal()) {
                                 if (((LevelRendererAccess) levelRenderer).getCullingFrustum().isVisible(new AABB(x, y, z, x + 1, y + 1, z + 1))) {
                                     boolean[] renderSides = new boolean[Direction.values().length];
 

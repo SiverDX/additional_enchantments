@@ -3,10 +3,10 @@ package de.cadentem.additional_enchantments.mixin.skinlayers3d;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
+import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
+import de.cadentem.additional_enchantments.client.HunterLayer;
 import de.cadentem.additional_enchantments.enchantments.HunterEnchantment;
 import net.minecraft.client.player.AbstractClientPlayer;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,17 +15,16 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Debug(export = true)
-@Pseudo // FIXME :: reverts the skin to default?
+@Pseudo
 @Mixin(targets = "dev.tr7zw.skinlayers.renderlayers.CustomLayerFeatureRenderer")
 public abstract class CustomLayerFeatureRendererMixin {
     @ModifyExpressionValue(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/AbstractClientPlayer;isInvisible()Z"))
     private boolean additional_enchantments$allowRenderWhenTransparent(boolean isInvisible, @Local(argsOnly = true) final AbstractClientPlayer player) {
         AtomicBoolean result = new AtomicBoolean(isInvisible);
 
-        if (isInvisible) {
-            ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
-                if (configuration.hunterStacks > 0) {
+        if (isInvisible && HunterEnchantment.getClientEnchantmentLevel(player) > 0) {
+            PlayerDataProvider.getCapability(player).ifPresent(data -> {
+                if (data.hunterStacks > 0) {
                     result.set(false);
                 }
             });
@@ -39,15 +38,15 @@ public abstract class CustomLayerFeatureRendererMixin {
         AtomicDouble result = new AtomicDouble(alpha);
 
         if (player.isInvisible()) {
-            ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
-                if (configuration.hunterStacks > 0) {
-                    int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel();
+            int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel(player);
 
-                    if (enchantmentLevel > 0) {
-                        result.set(1f - (float) configuration.hunterStacks / HunterEnchantment.getMaxStacks(enchantmentLevel));
+            if (enchantmentLevel > 0) {
+                PlayerDataProvider.getCapability(player).ifPresent(data -> {
+                    if (data.hunterStacks > 0) {
+                        result.set(HunterLayer.getAlpha(data.hunterStacks, enchantmentLevel));
                     }
-                }
-            });
+                });
+            }
         }
 
         return result.floatValue();

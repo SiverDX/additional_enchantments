@@ -1,6 +1,6 @@
 package de.cadentem.additional_enchantments.mixin;
 
-import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
+import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.SwellGoal;
@@ -22,8 +22,8 @@ public class SwellGoalMixin {
             int enchantmentLevel = EnchantmentHelper.getEnchantmentLevel(AEEnchantments.HUNTER.get(), player);
 
             if (enchantmentLevel > 0) {
-                ConfigurationProvider.getCapability(player).ifPresent(configuration -> {
-                    if (configuration.hasMaxHunterStacks(enchantmentLevel)) {
+                PlayerDataProvider.getCapability(player).ifPresent(data -> {
+                    if (data.hasMaxHunterStacks(enchantmentLevel)) {
                         target = null;
                     }
                 });

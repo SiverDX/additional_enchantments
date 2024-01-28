@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.client;
 
 import de.cadentem.additional_enchantments.capability.CapabilityHandler;
-import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
+import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.enchantments.OreSightEnchantment;
 import de.cadentem.additional_enchantments.enchantments.PerceptionEnchantment;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
@@ -32,15 +32,15 @@ public class KeyHandler {
             return;
         }
 
-        AtomicBoolean changedConfiguration = new AtomicBoolean(false);
+        AtomicBoolean playerDataChanged = new AtomicBoolean(false);
 
         if (event.getKey() == CYCLE_TIPPED.getKey().getValue()) {
             if (localPlayer.getMainHandItem().getEnchantmentLevel(AEEnchantments.TIPPED.get()) > 0) {
                 if (CYCLE_TIPPED.consumeClick()) {
-                    ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
-                        configuration.cycleEffectFilter();
-                        localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Tipped", configuration.effectFilter.name()));
-                        changedConfiguration.set(true);
+                    PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                        data.cycleEffectFilter();
+                        localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Tipped", data.effectFilter.name()));
+                        playerDataChanged.set(true);
                     });
                 }
             }
@@ -49,10 +49,10 @@ public class KeyHandler {
         if (event.getKey() == CYCLE_EXPLOSIVE_TIP.getKey().getValue()) {
             if (localPlayer.getMainHandItem().getEnchantmentLevel(AEEnchantments.EXPLOSIVE_TIP.get()) > 0) {
                 if (CYCLE_EXPLOSIVE_TIP.consumeClick()) {
-                    ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
-                        configuration.cycleExplosionType();
-                        localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Explosive Tip", configuration.explosionType.name()));
-                        changedConfiguration.set(true);
+                    PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                        data.cycleExplosionType();
+                        localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Explosive Tip", data.explosionType.name()));
+                        playerDataChanged.set(true);
                     });
                 }
             }
@@ -62,16 +62,16 @@ public class KeyHandler {
             if (localPlayer.getMainHandItem().getEnchantmentLevel(AEEnchantments.HOMING.get()) > 0) {
                 if (CYCLE_HOMING.consumeClick()) {
                     if (localPlayer.isShiftKeyDown()) {
-                        ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
-                            configuration.cycleHomingPriority();
-                            localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Homing (priority)", configuration.homingPriority.name()));
-                            changedConfiguration.set(true);
+                        PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                            data.cycleHomingPriority();
+                            localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Homing (priority)", data.homingPriority.name()));
+                            playerDataChanged.set(true);
                         });
                     } else {
-                        ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
-                            configuration.cycleHomingFilter();
-                            localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Homing (type)", configuration.homingTypeFilter.name()));
-                            changedConfiguration.set(true);
+                        PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                            data.cycleHomingFilter();
+                            localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Homing (type)", data.homingTypeFilter.name()));
+                            playerDataChanged.set(true);
                         });
                     }
                 }
@@ -82,16 +82,16 @@ public class KeyHandler {
             if (PerceptionEnchantment.getClientEnchantmentLevel() > 0) {
                 if (CYCLE_PERCEPTION.consumeClick()) {
                     if (localPlayer.isShiftKeyDown()) {
-                        ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
-                            configuration.cycleItemFilter();
-                            localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Perception (item filter)", configuration.itemFilter.name()));
-                            changedConfiguration.set(true);
+                        PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                            data.cycleItemFilter();
+                            localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Perception (item filter)", data.itemFilter.name()));
+                            playerDataChanged.set(true);
                         });
                     } else {
-                        ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
-                            configuration.cycleDisplayType();
-                            localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Perception (display type)", configuration.displayType.name()));
-                            changedConfiguration.set(true);
+                        PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                            data.cycleDisplayType();
+                            localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Perception (display type)", data.displayType.name()));
+                            playerDataChanged.set(true);
                         });
                     }
                 }
@@ -101,17 +101,17 @@ public class KeyHandler {
         if (event.getKey() == CYCLE_ORE_SIGHT.getKey().getValue()) {
             if (OreSightEnchantment.getClientEnchantmentLevel() > 0) {
                 if (CYCLE_ORE_SIGHT.consumeClick()) {
-                    ConfigurationProvider.getCapability(localPlayer).ifPresent(configuration -> {
-                        configuration.cycleOreRarity();
-                        localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Ore Sight", configuration.oreRarity.name()));
-                        changedConfiguration.set(true);
+                    PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                        data.cycleOreRarity();
+                        localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Ore Sight", data.oreRarity.name()));
+                        playerDataChanged.set(true);
                     });
                 }
             }
         }
 
-        if (changedConfiguration.get()) {
-            CapabilityHandler.syncConfiguration(localPlayer);
+        if (playerDataChanged.get()) {
+            CapabilityHandler.syncPlayerData(localPlayer);
         }
     }
 }

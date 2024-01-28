@@ -4,7 +4,7 @@ import de.cadentem.additional_enchantments.client.ClientProxy;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -14,21 +14,21 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProjectileDataProvider implements ICapabilitySerializable<CompoundTag>  {
-    public static final Map<String, LazyOptional<ProjectileData>> SERVER_CACHE = new HashMap<>();
-    public static final Map<String, LazyOptional<ProjectileData>> CLIENT_CACHE = new HashMap<>();
+public class PlayerDataProvider implements ICapabilitySerializable<CompoundTag> {
+    public static final Map<String, LazyOptional<PlayerData>> SERVER_CACHE = new HashMap<>();
+    public static final Map<String, LazyOptional<PlayerData>> CLIENT_CACHE = new HashMap<>();
 
-    private final ProjectileData handler;
-    private final LazyOptional<ProjectileData> instance;
+    private final PlayerData data;
+    private final LazyOptional<PlayerData> instance;
 
-    public ProjectileDataProvider() {
-        handler = new ProjectileData();
-        instance = LazyOptional.of(() -> handler);
+    public PlayerDataProvider() {
+        data = new PlayerData();
+        instance = LazyOptional.of(() -> data);
     }
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull final Capability<T> capability, @Nullable final Direction side) {
-        return capability == CapabilityHandler.PROJECTILE_DATA_CAPABILITY ? instance.cast() : LazyOptional.empty();
+        return capability == CapabilityHandler.PLAYER_DATA_CAPABILITY ? instance.cast() : LazyOptional.empty();
     }
 
     @Override
@@ -41,12 +41,12 @@ public class ProjectileDataProvider implements ICapabilitySerializable<CompoundT
         instance.orElseThrow(() -> new IllegalArgumentException("Capability instance was not present")).deserializeNBT(tag);
     }
 
-    public static LazyOptional<ProjectileData> getCapability(final Entity entity) {
-        if (entity instanceof Projectile) {
-            Map<String, LazyOptional<ProjectileData>> sidedCache = entity.level().isClientSide() ? CLIENT_CACHE : SERVER_CACHE;
+    public static LazyOptional<PlayerData> getCapability(final Entity entity) {
+        if (entity instanceof Player) {
+            Map<String, LazyOptional<PlayerData>> sidedCache = entity.level().isClientSide() ? CLIENT_CACHE : SERVER_CACHE;
 
             return sidedCache.computeIfAbsent(entity.getStringUUID(), key -> {
-                LazyOptional<ProjectileData> capability = entity.getCapability(CapabilityHandler.PROJECTILE_DATA_CAPABILITY);
+                LazyOptional<PlayerData> capability = entity.getCapability(CapabilityHandler.PLAYER_DATA_CAPABILITY);
                 capability.addListener(ignored -> sidedCache.remove(key));
                 return capability;
             });

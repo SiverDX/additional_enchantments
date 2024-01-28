@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.enchantments;
 
 import com.google.common.collect.Sets;
-import de.cadentem.additional_enchantments.capability.ConfigurationProvider;
+import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.capability.ProjectileDataProvider;
 import de.cadentem.additional_enchantments.data.AEEffectTags;
 import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
@@ -20,6 +20,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.tags.ITag;
+import net.minecraftforge.registries.tags.ITagManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -55,38 +56,42 @@ public class TippedEnchantment extends ConfigurableEnchantment {
             int level = livingOwner.getMainHandItem().getEnchantmentLevel(AEEnchantments.TIPPED.get());
 
             if (level > 0) {
-                ProjectileDataProvider.getCapability(projectile).ifPresent(data -> {
-                    if (data.hasAddedEffects()) {
+                ProjectileDataProvider.getCapability(projectile).ifPresent(projectileData -> {
+                    if (projectileData.hasAddedEffects()) {
                         return;
                     }
 
-                    data.addedEffects = Sets.newHashSet();
-                    data.tippedEnchantmentLevel = level;
+                    projectileData.addedEffects = Sets.newHashSet();
+                    projectileData.tippedEnchantmentLevel = level;
 
-                    ConfigurationProvider.getCapability(livingOwner).ifPresent(configuration -> {
-                        ITag<MobEffect> blacklist = ForgeRegistries.MOB_EFFECTS.tags().getTag(AEEffectTags.TIPPED_BLACKLIST);
-                        List<MobEffect> effects = ForgeRegistries.MOB_EFFECTS.getValues().stream().filter(effect -> !blacklist.contains(effect) && isValidEffect(configuration.effectFilter, effect)).collect(Collectors.toList());
+                    PlayerDataProvider.getCapability(livingOwner).ifPresent(playerData -> {
+                        ITagManager<MobEffect> tags = ForgeRegistries.MOB_EFFECTS.tags();
 
-                        List<MobEffect> appliedEffects;
+                        if (tags != null) {
+                            ITag<MobEffect> blacklist = tags.getTag(AEEffectTags.TIPPED_BLACKLIST);
+                            List<MobEffect> effects = ForgeRegistries.MOB_EFFECTS.getValues().stream().filter(effect -> !blacklist.contains(effect) && isValidEffect(playerData.effectFilter, effect)).collect(Collectors.toList());
 
-                        if (effects.size() <= level) {
-                            appliedEffects = new ArrayList<>(effects);
-                        } else {
-                            appliedEffects = new ArrayList<>();
-                            int count = 0;
+                            List<MobEffect> appliedEffects;
 
-                            while (count < level) {
-                                MobEffect effect = effects.get(livingOwner.getRandom().nextInt(effects.size()));
+                            if (effects.size() <= level) {
+                                appliedEffects = new ArrayList<>(effects);
+                            } else {
+                                appliedEffects = new ArrayList<>();
+                                int count = 0;
 
-                                effects.remove(effect);
-                                appliedEffects.add(effect);
+                                while (count < level) {
+                                    MobEffect effect = effects.get(livingOwner.getRandom().nextInt(effects.size()));
 
-                                count++;
+                                    effects.remove(effect);
+                                    appliedEffects.add(effect);
+
+                                    count++;
+                                }
                             }
-                        }
 
-                        for (MobEffect effect : appliedEffects) {
-                            data.addedEffects.add(new MobEffectInstance(effect, effect.isInstantenous() ? 1 : 20 * (3 + (level * 2)), level - 1));
+                            for (MobEffect effect : appliedEffects) {
+                                projectileData.addedEffects.add(new MobEffectInstance(effect, effect.isInstantenous() ? 1 : 20 * (3 + (level * 2)), level - 1));
+                            }
                         }
                     });
                 });
