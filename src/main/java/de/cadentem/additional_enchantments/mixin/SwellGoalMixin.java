@@ -22,8 +22,8 @@ public class SwellGoalMixin {
             int enchantmentLevel = EnchantmentHelper.getEnchantmentLevel(AEEnchantments.HUNTER.get(), player);
 
             if (enchantmentLevel > 0) {
-                PlayerDataProvider.getCapability(player).ifPresent(Data -> {
-                    if (Data.hasMaxHunterStacks(enchantmentLevel)) {
+                PlayerDataProvider.getCapability(player).ifPresent(data -> {
+                    if (data.hasMaxHunterStacks(enchantmentLevel)) {
                         target = null;
                     }
                 });
