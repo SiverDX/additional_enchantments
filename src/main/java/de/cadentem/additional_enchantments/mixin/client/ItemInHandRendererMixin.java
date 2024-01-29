@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.mixin;
+package de.cadentem.additional_enchantments.mixin.client;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import de.cadentem.additional_enchantments.capability.PlayerDataProvider;

@@ -1,0 +1,14 @@
+{
+  "values": [
+    "minecraft:sweet_berry_bush",
+    "minecraft:cobweb",
+    {
+      "id": "projectvibrantjourneys:prickly_bush",
+      "required": false
+    },
+    {
+      "id": "vinery:taiga_grape_bush_red",
+      "required": false
+    }
+  ]
+}

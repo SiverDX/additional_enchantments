@@ -36,8 +36,8 @@
   "enchantment.additional_enchantments.hunter": "Hunter",
   "enchantment.additional_enchantments.hunter.desc": "Causes you to become invisible, gaining hunter stacks while within plant related blocks - attacks will deal increased critical damage at maximum stacks, using them up",
 
-  "effect.additional_enchantments.poison": "Plague",
-  "effect.additional_enchantments.poison.description": "Deals Magic damage and afflicted targets may spread this debuff - damage, tick rate and spread chance scale with level",
+  "effect.additional_enchantments.plague": "Plague",
+  "effect.additional_enchantments.plague.description": "Deals Magic damage and afflicted targets may spread this debuff - damage, tick rate and spread chance scale with level",
   "effect.additional_enchantments.wither": "Wither",
   "effect.additional_enchantments.wither.description": "Deals Wither damage - damage and tick rate scale with level"
 }

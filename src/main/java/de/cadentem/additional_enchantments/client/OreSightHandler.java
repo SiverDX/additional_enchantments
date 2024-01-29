@@ -8,7 +8,7 @@ import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.config.ClientConfig;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
 import de.cadentem.additional_enchantments.enchantments.OreSightEnchantment;
-import de.cadentem.additional_enchantments.mixin.LevelRendererAccess;
+import de.cadentem.additional_enchantments.mixin.client.LevelRendererAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;

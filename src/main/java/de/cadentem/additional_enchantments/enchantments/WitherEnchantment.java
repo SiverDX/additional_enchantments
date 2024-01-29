@@ -23,7 +23,7 @@ public class WitherEnchantment extends ConfigurableEnchantment {
 
     @Override
     public void doPostAttack(@NotNull final LivingEntity attacker, @NotNull final Entity target, int level) {
-        if (target instanceof LivingEntity livingTarget) {
+        if (target instanceof LivingEntity livingTarget && (level / 10d) > attacker.getRandom().nextDouble()) {
             livingTarget.addEffect(new MobEffectInstance(AEMobEffects.WITHER.get(), 20 * (3 + (level * 2)), level - 1));
         }
     }

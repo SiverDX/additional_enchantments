@@ -7,21 +7,21 @@
   "plugin": "de.cadentem.additional_enchantments.mixin.ApplyMixinPlugin",
   "mixins": [
     "AbstractArrowAccess",
-    "SwellGoalMixin",
     "EnderManMixin",
     "ExplosionMixin",
+    "ExperienceOrbMixin",
     "LivingEntityMixin",
     "ProjectileMixin",
-    "TridentAccess",
-    "forge.AbstractArrowMixin"
+    "SwellGoalMixin",
+    "TridentAccess"
   ],
   "client": [
-    "ItemInHandRendererMixin",
-    "MinecraftMixin",
-    "ModelBakeryMixin",
-    "LevelRendererAccess",
-    "LevelRendererMixin",
-    "PlayerRendererMixin",
+    "client.ItemInHandRendererMixin",
+    "client.MinecraftMixin",
+    "client.ModelBakeryMixin",
+    "client.LevelRendererAccess",
+    "client.LevelRendererMixin",
+    "client.PlayerRendererMixin",
     "skinlayers3d.CustomLayerFeatureRendererMixin",
     "skinlayers3d.PlayerRenderMixin"
   ],
