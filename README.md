@@ -1,8 +1,5 @@
 ![](https://i.imgur.com/6l64DCT.png "Logo")
 # FAQ
-### Content
-- More enchantments are planned
-
 ### Versions / Loaders
 - Fabric is not planned
 - Backports are not being considered at the moment
