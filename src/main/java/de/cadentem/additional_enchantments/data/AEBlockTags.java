@@ -12,6 +12,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class AEBlockTags extends BlockTagsProvider {
     public static final TagKey<Block> COMMON_ORE = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "common_ore"));
     public static final TagKey<Block> UNCOMMON_ORE = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "uncommon_ore"));
@@ -68,7 +70,21 @@ public class AEBlockTags extends BlockTagsProvider {
                 .add(Blocks.SWEET_BERRY_BUSH)
                 .add(Blocks.COBWEB)
                 .addOptional(new ResourceLocation("projectvibrantjourneys", "prickly_bush"))
-                .addOptional(new ResourceLocation("vinery", "taiga_grape_bush_red"));
+                .addOptional(new ResourceLocation("vinery", "taiga_grape_bush_red"))
+                .addOptional(new ResourceLocation("vinery", "taiga_grape_bush_white"));
+
+        List<String> bushes = List.of(
+                "blackberry",
+                "blueberry",
+                "cranberry",
+                "raspberry"
+        );
+
+        for (String bush : bushes) {
+            for (int stage = 0; stage < 4; stage++) {
+                tag(BRACEWALK).addOptional(new ResourceLocation("wildberries", bush + "_bush_stage_" + stage));
+            }
+        }
     }
 
     private ResourceLocation spelunkery(final String id) {

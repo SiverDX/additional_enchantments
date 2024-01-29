@@ -18,7 +18,7 @@ public class ApplyMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(final String targetClassName, final String mixinClassName) {
         String modid = mixinClassName.replace("de.cadentem.additional_enchantments.mixin.", "");
-        modid = modid.replace(".client", "");
+        modid = modid.replace("client.", "");
         String[] elements = modid.split("\\.");
 
         if (elements.length == 2) {
