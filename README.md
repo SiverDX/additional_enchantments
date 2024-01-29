@@ -48,7 +48,7 @@
 ## Voiding (Digger)
 - Max. level: 1
 - Causes certain terrain blocks (specified by the tag `additional_enchantments:voiding`) to no longer drop their block as loot
-  - Other loot added to these blocks is not affected
+  - Other loot added to these blocks is not affected (e.g. Flint from Gravel)
   - This behaviour can be enabled or disabled through the keybind (default being `G`)
 
 ## Hydro Shock (Trident)
