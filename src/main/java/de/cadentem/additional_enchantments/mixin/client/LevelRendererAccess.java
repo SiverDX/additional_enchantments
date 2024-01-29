@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.mixin;
+package de.cadentem.additional_enchantments.mixin.client;
 
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.culling.Frustum;

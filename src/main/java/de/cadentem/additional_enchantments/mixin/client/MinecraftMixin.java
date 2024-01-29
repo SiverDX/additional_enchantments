@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.mixin;
+package de.cadentem.additional_enchantments.mixin.client;
 
 import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.client.ClientProxy;

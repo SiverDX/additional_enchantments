@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.mixin;
+package de.cadentem.additional_enchantments.mixin.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import de.cadentem.additional_enchantments.data.AEEntityTags;

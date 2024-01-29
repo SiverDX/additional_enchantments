@@ -18,6 +18,7 @@ public class AEBlockTags extends BlockTagsProvider {
     public static final TagKey<Block> RARE_ORE = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "rare_ore"));
     public static final TagKey<Block> ORE_SIGHT_BLACKLIST = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "ore_sight_blacklist"));
     public static final TagKey<Block> HUNTER_RELEVANT = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "hunter_relevant"));
+    public static final TagKey<Block> BRACEWALK = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "bracewalk"));
 
     public AEBlockTags(final DataGenerator generator, @Nullable final ExistingFileHelper existingFileHelper) {
         super(generator, AE.MODID, existingFileHelper);
@@ -62,6 +63,12 @@ public class AEBlockTags extends BlockTagsProvider {
                 .add(Blocks.WARPED_ROOTS)
                 .add(Blocks.WARPED_NYLIUM)
                 .add(Blocks.CRIMSON_NYLIUM);
+
+        tag(BRACEWALK)
+                .add(Blocks.SWEET_BERRY_BUSH)
+                .add(Blocks.COBWEB)
+                .addOptional(new ResourceLocation("projectvibrantjourneys", "prickly_bush"))
+                .addOptional(new ResourceLocation("vinery", "taiga_grape_bush_red"));
     }
 
     private ResourceLocation spelunkery(final String id) {

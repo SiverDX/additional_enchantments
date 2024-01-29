@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.mixin;
+package de.cadentem.additional_enchantments.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

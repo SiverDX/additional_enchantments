@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.mixin;
+package de.cadentem.additional_enchantments.mixin.client;
 
 import de.cadentem.additional_enchantments.AE;
 import net.minecraft.client.renderer.block.model.BlockModel;
