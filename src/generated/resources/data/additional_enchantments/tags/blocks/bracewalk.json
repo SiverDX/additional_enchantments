@@ -9,6 +9,74 @@
     {
       "id": "vinery:taiga_grape_bush_red",
       "required": false
+    },
+    {
+      "id": "vinery:taiga_grape_bush_white",
+      "required": false
+    },
+    {
+      "id": "wildberries:blackberry_bush_stage_0",
+      "required": false
+    },
+    {
+      "id": "wildberries:blackberry_bush_stage_1",
+      "required": false
+    },
+    {
+      "id": "wildberries:blackberry_bush_stage_2",
+      "required": false
+    },
+    {
+      "id": "wildberries:blackberry_bush_stage_3",
+      "required": false
+    },
+    {
+      "id": "wildberries:blueberry_bush_stage_0",
+      "required": false
+    },
+    {
+      "id": "wildberries:blueberry_bush_stage_1",
+      "required": false
+    },
+    {
+      "id": "wildberries:blueberry_bush_stage_2",
+      "required": false
+    },
+    {
+      "id": "wildberries:blueberry_bush_stage_3",
+      "required": false
+    },
+    {
+      "id": "wildberries:cranberry_bush_stage_0",
+      "required": false
+    },
+    {
+      "id": "wildberries:cranberry_bush_stage_1",
+      "required": false
+    },
+    {
+      "id": "wildberries:cranberry_bush_stage_2",
+      "required": false
+    },
+    {
+      "id": "wildberries:cranberry_bush_stage_3",
+      "required": false
+    },
+    {
+      "id": "wildberries:raspberry_bush_stage_0",
+      "required": false
+    },
+    {
+      "id": "wildberries:raspberry_bush_stage_1",
+      "required": false
+    },
+    {
+      "id": "wildberries:raspberry_bush_stage_2",
+      "required": false
+    },
+    {
+      "id": "wildberries:raspberry_bush_stage_3",
+      "required": false
     }
   ]
 }
