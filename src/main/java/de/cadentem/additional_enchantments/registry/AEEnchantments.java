@@ -24,6 +24,7 @@ public class AEEnchantments {
     public static final String HUNTER_ID = "hunter";
     public static final String BRACEWALK_ID = "bracewalk";
     public static final String HYDRO_SHOCK_ID = "hydro_shock";
+    public static final String VOIDING_ID = "voiding";
 
     public static final RegistryObject<HomingEnchantment> HOMING = ENCHANTMENTS.register(HOMING_ID, HomingEnchantment::new);
     public static final RegistryObject<TippedEnchantment> TIPPED = ENCHANTMENTS.register(TIPPED_ID, TippedEnchantment::new);
@@ -39,4 +40,5 @@ public class AEEnchantments {
     public static final RegistryObject<HunterEnchantment> HUNTER = ENCHANTMENTS.register(HUNTER_ID, HunterEnchantment::new);
     public static final RegistryObject<Bracewalk> BRACEWALK = ENCHANTMENTS.register(BRACEWALK_ID, Bracewalk::new);
     public static final RegistryObject<HydroShockEnchantment> HYDRO_SHOCK = ENCHANTMENTS.register(HYDRO_SHOCK_ID, HydroShockEnchantment::new);
+    public static final RegistryObject<VoidingEnchantment> VOIDING = ENCHANTMENTS.register(VOIDING_ID, VoidingEnchantment::new);
 }

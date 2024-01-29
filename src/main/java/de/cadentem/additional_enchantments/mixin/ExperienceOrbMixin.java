@@ -17,7 +17,7 @@ public class ExperienceOrbMixin {
         if (!HydroShockEnchantment.FIRE_IMMUNE_LOOT.isEmpty() && experienceOrb.getLevel() instanceof ServerLevel serverLevel) {
             boolean shouldMakeImmune = false;
 
-            for (String uuid : HydroShockEnchantment.FIRE_IMMUNE_LOOT) {
+            for (String uuid : HydroShockEnchantment.FIRE_IMMUNE_LOOT.keySet()) {
                 Entity entity = serverLevel.getEntity(UUID.fromString(uuid));
 
                 if (entity != null && experienceOrb.distanceTo(entity) <= 64) {

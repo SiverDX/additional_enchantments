@@ -7,10 +7,7 @@ import de.cadentem.additional_enchantments.client.ClientRegistry;
 import de.cadentem.additional_enchantments.config.ClientConfig;
 import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.network.NetworkHandler;
-import de.cadentem.additional_enchantments.registry.AEEnchantments;
-import de.cadentem.additional_enchantments.registry.AEEntityTypes;
-import de.cadentem.additional_enchantments.registry.AEItems;
-import de.cadentem.additional_enchantments.registry.AEMobEffects;
+import de.cadentem.additional_enchantments.registry.*;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -35,6 +32,7 @@ public class AE {
         AEMobEffects.MOB_EFFECTS.register(modEventBus);
         AEEntityTypes.ENTITY_TYPES.register(modEventBus);
         AEItems.ITEMS.register(modEventBus);
+        AELootModifiers.LOOT_MODIFIERS.register(modEventBus);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);

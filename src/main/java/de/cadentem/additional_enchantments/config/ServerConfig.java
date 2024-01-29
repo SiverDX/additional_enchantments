@@ -31,12 +31,17 @@ public class ServerConfig {
         ENCHANTMENTS.put(AEEnchantments.HUNTER_ID, 6);
         ENCHANTMENTS.put(AEEnchantments.BRACEWALK_ID, 4);
         ENCHANTMENTS.put(AEEnchantments.HYDRO_SHOCK_ID, 5);
+        ENCHANTMENTS.put(AEEnchantments.VOIDING_ID, 1);
 
         for (String enchantment : ENCHANTMENTS.keySet()) {
             BUILDER.push(enchantment);
 
             EnchantmentConfiguration enchantmentConfiguration = new EnchantmentConfiguration();
-            enchantmentConfiguration.maxLevel = BUILDER.comment("Maximum acquirable level of the enchantment").defineInRange("max_level", ENCHANTMENTS.get(enchantment), 1, 15);
+
+            if (ENCHANTMENTS.get(enchantment) > 1) {
+                enchantmentConfiguration.maxLevel = BUILDER.comment("Maximum acquirable level of the enchantment").defineInRange("max_level", ENCHANTMENTS.get(enchantment), 1, 15);
+            }
+
             enchantmentConfiguration.isEnabled = BUILDER.comment("Enable or disable the enchantment completely").define("is_enabled", true);
             enchantmentConfiguration.isDiscoverable = BUILDER.comment("Determines if this enchantment can appear in loot / the enchantment table etc.").define("is_discoverable", true);
             enchantmentConfiguration.isAllowedOnBooks = BUILDER.comment("Allow the enchantment to be applied to books").define("is_allowed_on_books", true);

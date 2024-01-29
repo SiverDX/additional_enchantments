@@ -13,5 +13,6 @@ public class DataGen {
         generator.addProvider(event.includeServer(), new AEBlockTags(generator.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
         generator.addProvider(event.includeServer(), new AEEntityTags(generator.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
         generator.addProvider(event.includeServer(), new AEEffectTags(generator.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
+        generator.addProvider(event.includeServer(), new AELootModifiers(generator));
     }
 }

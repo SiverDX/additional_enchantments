@@ -1,0 +1,18 @@
+{
+  "type": "additional_enchantments:voiding",
+  "conditions": [
+    {
+      "condition": "minecraft:match_tool",
+      "predicate": {
+        "enchantments": [
+          {
+            "enchantment": "additional_enchantments:voiding",
+            "levels": {
+              "min": 1
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
