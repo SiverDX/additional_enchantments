@@ -37,7 +37,7 @@ public class HydroShockEnchantment extends ConfigurableEnchantment {
     public static void handleDamage(final LivingHurtEvent event) {
         LivingEntity target = event.getEntity();
 
-        if (target.getLevel().isClientSide()) {
+        if (target.level().isClientSide()) {
             return;
         }
 
@@ -55,20 +55,20 @@ public class HydroShockEnchantment extends ConfigurableEnchantment {
             }
 
             if (enchantmentLevel > 0) {
-                if (target.isSensitiveToWater() || target.isOnFire() || target.isInWater() || target.getLevel().isRainingAt(target.blockPosition())) {
+                if (target.isSensitiveToWater() || target.isOnFire() || target.isInWater() || target.level().isRainingAt(target.blockPosition())) {
                     float multiplier = 1f + (enchantmentLevel / 7f);
                     event.setAmount(event.getAmount() * multiplier);
                 }
 
                 if (wasThrown && (enchantmentLevel / 5d) > livingAttacker.getRandom().nextDouble()) {
-                    LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(attacker.getLevel());
+                    LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(attacker.level());
                     FIRE_IMMUNE_LOOT.put(attacker.getStringUUID(), true);
 
                     if (bolt != null) {
                         bolt.addTag(LIGHTNING_BOLT_TAG + "safe");
                         bolt.addTag(LIGHTNING_BOLT_TAG + attacker.getStringUUID());
                         bolt.setPos(target.position());
-                        attacker.getLevel().addFreshEntity(bolt);
+                        attacker.level().addFreshEntity(bolt);
                     }
                 }
             }
@@ -80,7 +80,7 @@ public class HydroShockEnchantment extends ConfigurableEnchantment {
         Entity attacker = event.getSource().getEntity();
 
         if (attacker instanceof LightningBolt bolt && bolt.getTags().contains(LIGHTNING_BOLT_TAG + ".safe") || attacker instanceof LivingEntity && FIRE_IMMUNE_LOOT.getOrDefault(attacker.getStringUUID(), false)) {
-            Set<ItemEntity> fireImmuneItems = event.getDrops().stream().map(itemEntity -> new ItemEntity(itemEntity.level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), itemEntity.getItem()) {
+            Set<ItemEntity> fireImmuneItems = event.getDrops().stream().map(itemEntity -> new ItemEntity(itemEntity.level(), itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), itemEntity.getItem()) {
                 @Override
                 public boolean fireImmune() {
                     return true;

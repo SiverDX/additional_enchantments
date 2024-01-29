@@ -1,3 +1,3 @@
-// 1.19.2	2024-01-29T14:22:43.2615529	Global Loot Modifiers : additional_enchantments
+// 1.20.1	2024-01-29T15:57:52.6554792	Global Loot Modifiers : additional_enchantments
 c2fcc84f0dbfa43e291de9e3cc9297d62cb3e113 data/additional_enchantments/loot_modifiers/voiding.json
 e0d399156bc8edcab8657ba442556a92c925beef data/forge/loot_modifiers/global_loot_modifiers.json

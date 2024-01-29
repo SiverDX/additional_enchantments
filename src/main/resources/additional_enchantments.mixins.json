@@ -13,7 +13,8 @@
     "LivingEntityMixin",
     "ProjectileMixin",
     "SwellGoalMixin",
-    "TridentAccess"
+    "TridentAccess",
+    "forge.AbstractArrowMixin"
   ],
   "client": [
     "client.ItemInHandRendererMixin",

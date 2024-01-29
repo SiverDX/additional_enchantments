@@ -25,7 +25,7 @@ public class Bracewalk extends ConfigurableEnchantment {
     public static void breakBlocks(final LivingEvent.LivingTickEvent event) {
         LivingEntity entity = event.getEntity();
 
-        if (entity.getLevel().isClientSide() || /* Players can check more often */ !(entity instanceof Player) && entity.tickCount % 10 != 0) {
+        if (entity.level().isClientSide() || /* Players can check more often */ !(entity instanceof Player) && entity.tickCount % 10 != 0) {
             return;
         }
 
@@ -33,10 +33,10 @@ public class Bracewalk extends ConfigurableEnchantment {
 
         if (enchantmentLevel > 0) {
             BlockPos.betweenClosedStream(entity.getBoundingBox()).forEach(blockPosition -> {
-                BlockState blockState = entity.getLevel().getBlockState(blockPosition);
+                BlockState blockState = entity.level().getBlockState(blockPosition);
 
                 if (blockState.is(AEBlockTags.BRACEWALK)) {
-                    entity.getLevel().destroyBlock(blockPosition, true);
+                    entity.level().destroyBlock(blockPosition, true);
                 }
             });
         }

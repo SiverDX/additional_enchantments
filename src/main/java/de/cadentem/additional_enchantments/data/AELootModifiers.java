@@ -6,14 +6,14 @@ import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraftforge.common.data.GlobalLootModifierProvider;
 
 public class AELootModifiers extends GlobalLootModifierProvider {
-    public AELootModifiers(final DataGenerator generator) {
-        super(generator, AE.MODID);
+    public AELootModifiers(final PackOutput output) {
+        super(output, AE.MODID);
     }
 
     @Override

@@ -14,7 +14,7 @@ import java.util.UUID;
 public class ExperienceOrbMixin {
     @ModifyArg(method = "award", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z"))
     private static Entity additional_enchantments$makeExperienceFireImmune(final Entity experienceOrb) {
-        if (!HydroShockEnchantment.FIRE_IMMUNE_LOOT.isEmpty() && experienceOrb.getLevel() instanceof ServerLevel serverLevel) {
+        if (!HydroShockEnchantment.FIRE_IMMUNE_LOOT.isEmpty() && experienceOrb.level() instanceof ServerLevel serverLevel) {
             boolean shouldMakeImmune = false;
 
             for (String uuid : HydroShockEnchantment.FIRE_IMMUNE_LOOT.keySet()) {
@@ -26,7 +26,7 @@ public class ExperienceOrbMixin {
             }
 
             if (shouldMakeImmune) {
-                return new ExperienceOrb(experienceOrb.getLevel(), experienceOrb.getX(), experienceOrb.getY(), experienceOrb.getZ(), ((ExperienceOrb) experienceOrb).value) {
+                return new ExperienceOrb(experienceOrb.level(), experienceOrb.getX(), experienceOrb.getY(), experienceOrb.getZ(), ((ExperienceOrb) experienceOrb).value) {
                     @Override
                     public boolean fireImmune() {
                         return true;
