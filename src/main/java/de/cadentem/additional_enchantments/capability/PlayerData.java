@@ -1,9 +1,6 @@
 package de.cadentem.additional_enchantments.capability;
 
-import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
-import de.cadentem.additional_enchantments.enchantments.HunterEnchantment;
-import de.cadentem.additional_enchantments.enchantments.OreSightEnchantment;
-import de.cadentem.additional_enchantments.enchantments.PerceptionEnchantment;
+import de.cadentem.additional_enchantments.enchantments.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,6 +15,7 @@ public class PlayerData {
     public PerceptionEnchantment.DisplayType displayType = PerceptionEnchantment.DisplayType.ALL;
     public Rarity itemFilter = Rarity.COMMON;
     public OreSightEnchantment.OreRarity oreRarity = OreSightEnchantment.OreRarity.ALL;
+    public VoidingEnchantment.State voidingState = VoidingEnchantment.State.ENABLED;
 
     // Not synced but updated on both sides, otherwise 1 packet per tick would be needed
     public int hunterStacks;
@@ -58,6 +56,10 @@ public class PlayerData {
         oreRarity = (OreSightEnchantment.OreRarity) cycle(oreRarity);
     }
 
+    public void cycleVoiding() {
+        voidingState = (VoidingEnchantment.State) cycle(voidingState);
+    }
+
     private Enum<?> cycle(final Enum<?> type) {
         int ordinal = type.ordinal();
 
@@ -95,6 +97,7 @@ public class PlayerData {
         tag.putInt("homingPriority", homingPriority.ordinal());
         tag.putInt("itemFilter", itemFilter.ordinal());
         tag.putInt("oreRarity", oreRarity.ordinal());
+        tag.putInt("voidingState", voidingState.ordinal());
 
         return tag;
     }
@@ -106,5 +109,6 @@ public class PlayerData {
         homingPriority = HomingEnchantment.Priority.values()[tag.getInt("homingPriority")];
         itemFilter = Rarity.values()[tag.getInt("itemFilter")];
         oreRarity = OreSightEnchantment.OreRarity.values()[tag.getInt("oreRarity")];
+        voidingState = VoidingEnchantment.State.values()[tag.getInt("voidingState")];
     }
 }

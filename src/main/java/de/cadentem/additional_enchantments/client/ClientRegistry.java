@@ -36,9 +36,13 @@ public class ClientRegistry {
         KeyHandler.CYCLE_PERCEPTION.setKeyConflictContext(KeyConflictContext.IN_GAME);
         event.register(KeyHandler.CYCLE_PERCEPTION);
 
-        KeyHandler.CYCLE_ORE_SIGHT = new KeyMapping("keybind.additional_enchantments.ore_sight", InputConstants.KEY_N, "keybind.additional_enchantments.category");
+        KeyHandler.CYCLE_ORE_SIGHT = new KeyMapping("keybind.additional_enchantments.ore_sight", InputConstants.KEY_U, "keybind.additional_enchantments.category");
         KeyHandler.CYCLE_ORE_SIGHT.setKeyConflictContext(KeyConflictContext.IN_GAME);
         event.register(KeyHandler.CYCLE_ORE_SIGHT);
+
+        KeyHandler.CYCLE_VOIDING = new KeyMapping("keybind.additional_enchantments.voiding", InputConstants.KEY_G, "keybind.additional_enchantments.category");
+        KeyHandler.CYCLE_VOIDING.setKeyConflictContext(KeyConflictContext.IN_GAME);
+        event.register(KeyHandler.CYCLE_VOIDING);
     }
 
     @SubscribeEvent

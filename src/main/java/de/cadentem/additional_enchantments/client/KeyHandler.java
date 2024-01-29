@@ -23,12 +23,15 @@ public class KeyHandler {
     public static KeyMapping CYCLE_EXPLOSIVE_TIP;
     public static KeyMapping CYCLE_PERCEPTION;
     public static KeyMapping CYCLE_ORE_SIGHT;
+    public static KeyMapping CYCLE_VOIDING;
+
+    private static int LAST_PRESS_TICK;
 
     @SubscribeEvent
     public static void handleKey(final InputEvent.Key event) {
         LocalPlayer localPlayer = Minecraft.getInstance().player;
 
-        if (localPlayer == null || Minecraft.getInstance().screen != null) {
+        if (localPlayer == null || Minecraft.getInstance().screen != null || Math.abs(localPlayer.tickCount - LAST_PRESS_TICK) <= 20) {
             return;
         }
 
@@ -36,81 +39,82 @@ public class KeyHandler {
 
         if (event.getKey() == CYCLE_TIPPED.getKey().getValue()) {
             if (localPlayer.getMainHandItem().getEnchantmentLevel(AEEnchantments.TIPPED.get()) > 0) {
-                if (CYCLE_TIPPED.consumeClick()) {
-                    PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
-                        data.cycleEffectFilter();
-                        localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Tipped", data.effectFilter.name()));
-                        playerDataChanged.set(true);
-                    });
-                }
+                PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                    data.cycleEffectFilter();
+                    localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Tipped", data.effectFilter.name()));
+                    playerDataChanged.set(true);
+                });
             }
         }
 
         if (event.getKey() == CYCLE_EXPLOSIVE_TIP.getKey().getValue()) {
             if (localPlayer.getMainHandItem().getEnchantmentLevel(AEEnchantments.EXPLOSIVE_TIP.get()) > 0) {
-                if (CYCLE_EXPLOSIVE_TIP.consumeClick()) {
-                    PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
-                        data.cycleExplosionType();
-                        localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Explosive Tip", data.explosionType.name()));
-                        playerDataChanged.set(true);
-                    });
-                }
+                PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                    data.cycleExplosionType();
+                    localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Explosive Tip", data.explosionType.name()));
+                    playerDataChanged.set(true);
+                });
             }
         }
 
         if (event.getKey() == CYCLE_HOMING.getKey().getValue()) {
             if (localPlayer.getMainHandItem().getEnchantmentLevel(AEEnchantments.HOMING.get()) > 0) {
-                if (CYCLE_HOMING.consumeClick()) {
-                    if (localPlayer.isShiftKeyDown()) {
-                        PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
-                            data.cycleHomingPriority();
-                            localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Homing (priority)", data.homingPriority.name()));
-                            playerDataChanged.set(true);
-                        });
-                    } else {
-                        PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
-                            data.cycleHomingFilter();
-                            localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Homing (type)", data.homingTypeFilter.name()));
-                            playerDataChanged.set(true);
-                        });
-                    }
+                if (localPlayer.isShiftKeyDown()) {
+                    PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                        data.cycleHomingPriority();
+                        localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Homing (priority)", data.homingPriority.name()));
+                        playerDataChanged.set(true);
+                    });
+                } else {
+                    PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                        data.cycleHomingFilter();
+                        localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Homing (type)", data.homingTypeFilter.name()));
+                        playerDataChanged.set(true);
+                    });
                 }
             }
         }
 
         if (event.getKey() == CYCLE_PERCEPTION.getKey().getValue()) {
             if (PerceptionEnchantment.getClientEnchantmentLevel() > 0) {
-                if (CYCLE_PERCEPTION.consumeClick()) {
-                    if (localPlayer.isShiftKeyDown()) {
-                        PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
-                            data.cycleItemFilter();
-                            localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Perception (item filter)", data.itemFilter.name()));
-                            playerDataChanged.set(true);
-                        });
-                    } else {
-                        PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
-                            data.cycleDisplayType();
-                            localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Perception (display type)", data.displayType.name()));
-                            playerDataChanged.set(true);
-                        });
-                    }
-                }
-            }
-        }
-
-        if (event.getKey() == CYCLE_ORE_SIGHT.getKey().getValue()) {
-            if (OreSightEnchantment.getClientEnchantmentLevel() > 0) {
-                if (CYCLE_ORE_SIGHT.consumeClick()) {
+                if (localPlayer.isShiftKeyDown()) {
                     PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
-                        data.cycleOreRarity();
-                        localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Ore Sight", data.oreRarity.name()));
+                        data.cycleItemFilter();
+                        localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Perception (item filter)", data.itemFilter.name()));
+                        playerDataChanged.set(true);
+                    });
+                } else {
+                    PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                        data.cycleDisplayType();
+                        localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Perception (display type)", data.displayType.name()));
                         playerDataChanged.set(true);
                     });
                 }
             }
         }
 
+        if (event.getKey() == CYCLE_ORE_SIGHT.getKey().getValue()) {
+            if (OreSightEnchantment.getClientEnchantmentLevel() > 0) {
+                PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                    data.cycleOreRarity();
+                    localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Ore Sight", data.oreRarity.name()));
+                    playerDataChanged.set(true);
+                });
+            }
+        }
+
+        if (event.getKey() == CYCLE_VOIDING.getKey().getValue()) {
+            if (localPlayer.getMainHandItem().getEnchantmentLevel(AEEnchantments.VOIDING.get()) > 0) {
+                PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                    data.cycleVoiding();
+                    localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Voiding", data.voidingState.name()));
+                    playerDataChanged.set(true);
+                });
+            }
+        }
+
         if (playerDataChanged.get()) {
+            LAST_PRESS_TICK = localPlayer.tickCount;
             CapabilityHandler.syncPlayerData(localPlayer);
         }
     }

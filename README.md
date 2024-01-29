@@ -16,6 +16,7 @@
 - **Ranged**: Bow and Crossbow
 - **Ranged and Trident**: Entries from **Ranged** and Tridents
   - Note that these are enchantments for projectiles, meaning for Tridents they only apply when thrown (and are therefor incompatible with the `Riptide` enchantment)
+- **Digger**: Vanilla category and contains things like pickaxes or shovels
 
 ### Configuration
 - All enchantments are configurable
@@ -46,6 +47,20 @@
 - Has a chance to cause the attacked target to retaliate against a randomly chosen nearby entity, dropping the attacker as a target
   - Targets can be blacklisted with the tag `additional_enchantments:confusion_blacklist`
 - Enchantment level increases the chance of this effect to occur and also the range to check against possible retaliation targets
+
+## Voiding (Digger)
+- Max. level: 1
+- Causes certain terrain blocks (specified by the tag `additional_enchantments:voiding`) to no longer drop their block as loot
+  - Other loot added to these blocks is not affected
+  - This behaviour can be enabled or disabled through the keybind (default being `G`)
+
+## Hydro Shock (Trident)
+- Default max. level: 5
+- Deal increased damage to targets on fire, in water, weak to water or if it is raining at the position
+  - When the Trident is thrown it may cause a lightning bolt to occur at the target position
+    - The lightning bolt itself will not damage the player, items or experience orbs
+    - The fire will still damage the player - there is some safety to make items and experience orbs fire immune if the target dies within a second of getting hit by the lightning bolt
+- Enchantment level scales the damage multiplier and chance for the lightning bolt to occur
 
 ## Explosive Tip (Ranged and Trident)
 - Default max. level: 4
@@ -99,11 +114,16 @@
   - The groups are based on three block tags: `additional_enchantments:common_ore`, `additional_enchantments:uncommon_ore` and `additional_enchantments:rare_ore`
   - If the block is a `forge:ores` but not part of a rarity group it will be outlined with a white color
 - Enchantment level increases the range
-- It's possible to switch between the rarities (ALL, COMMON, UNCOMMON, RARE and NONE (no outlines will be displayed)) with the keybind (default being `N`)
+- It's possible to switch between the rarities (ALL, COMMON, UNCOMMON, RARE and NONE (no outlines will be displayed)) with the keybind (default being `U`)
   - Blocks can be blacklisted with the tag `additional_enchantments:ore_sight_blacklist`
 - There are two client side configurations
   - One determines how far away ore lines get rendered as group (reducing this will improve performance)
   - The other one determines how long block data is cached (reducing this will make outline updates happen faster)
+
+## Bracewalk (Legs)
+- Default max. level: 4
+- Reduces the effectiveness of knock back while also breaking certain blocks which slow you down (specified by the tag `additional_enchantments:bracewalk`)
+- Enchantment level scales the knock back reduction
 
 ## Hunter (Boots)
 - Default max. level: 6
@@ -114,5 +134,7 @@
   - The blocks are based on plant related material and the block tag `additional_enchantments:hunter_relevant` (e.g. flowers, crops or leaves)
 - Enchantment level increases the critical damage, the rate at which you gain hunter stacks and reduces the rate at which you lose them
   - It will also reduce the amount of stacks needed to be considered at full stacks
+
+# Misc
 
 ![](https://i.imgur.com/J2Hx4GR.gif "Hunter")

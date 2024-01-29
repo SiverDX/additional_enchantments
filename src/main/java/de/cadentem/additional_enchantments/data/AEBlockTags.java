@@ -9,6 +9,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,6 +22,7 @@ public class AEBlockTags extends BlockTagsProvider {
     public static final TagKey<Block> ORE_SIGHT_BLACKLIST = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "ore_sight_blacklist"));
     public static final TagKey<Block> HUNTER_RELEVANT = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "hunter_relevant"));
     public static final TagKey<Block> BRACEWALK = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "bracewalk"));
+    public static final TagKey<Block> VOIDING = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "voiding"));
 
     public AEBlockTags(final DataGenerator generator, @Nullable final ExistingFileHelper existingFileHelper) {
         super(generator, AE.MODID, existingFileHelper);
@@ -85,6 +87,14 @@ public class AEBlockTags extends BlockTagsProvider {
                 tag(BRACEWALK).addOptional(new ResourceLocation("wildberries", bush + "_bush_stage_" + stage));
             }
         }
+
+        tag(VOIDING)
+                .addTag(BlockTags.DIRT)
+                .addTag(Tags.Blocks.STONE)
+                .addTag(Tags.Blocks.COBBLESTONE)
+                .addTag(Tags.Blocks.SAND)
+                .addTag(Tags.Blocks.GRAVEL)
+                .addTag(Tags.Blocks.NETHERRACK);
     }
 
     private ResourceLocation spelunkery(final String id) {

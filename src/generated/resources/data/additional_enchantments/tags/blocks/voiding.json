@@ -1,0 +1,10 @@
+{
+  "values": [
+    "#minecraft:dirt",
+    "#forge:stone",
+    "#forge:cobblestone",
+    "#forge:sand",
+    "#forge:gravel",
+    "#forge:netherrack"
+  ]
+}
