@@ -10,6 +10,7 @@ import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.config.ClientConfig;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
 import de.cadentem.additional_enchantments.enchantments.OreSightEnchantment;
+import de.cadentem.additional_enchantments.mixin.client.FrustumAccess;
 import de.cadentem.additional_enchantments.mixin.client.LevelRendererAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -25,7 +26,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
@@ -91,11 +91,13 @@ public class OreSightHandler {
     private static void initCaches() {
         SECTION_CACHE = CacheBuilder.newBuilder()
                 .expireAfterWrite(CACHE_EXPIRE, TimeUnit.SECONDS)
+                .concurrencyLevel(1)
                 .<Integer, Boolean[]>build()
                 .asMap();
 
         BLOCK_CACHE = CacheBuilder.newBuilder()
                 .expireAfterWrite(CACHE_EXPIRE, TimeUnit.SECONDS)
+                .concurrencyLevel(1)
                 .<Long, Integer>build()
                 .asMap();
     }
@@ -123,6 +125,7 @@ public class OreSightHandler {
         boolean foundSection = false;
 
         BlockPos.MutableBlockPos mutablePosition = BlockPos.ZERO.mutable();
+        FrustumAccess cullingFrustum = (FrustumAccess) ((LevelRendererAccess) levelRenderer).getCullingFrustum();
 
         for (int x = minChunkX; x <= maxChunkX; x++) {
             for (int z = minChunkZ; z <= maxChunkZ; z++) {
@@ -145,18 +148,18 @@ public class OreSightHandler {
                     if (containsOres(currentChunk, section, sectionIndex, playerData.oreRarity)) {
                         foundSection = true;
 
-                        OreSightEnchantment.OreRarity rarity = getRarity(currentChunk, mutablePosition);
+                        float xMin = (float) (x - camera.x());
+                        float yMin = (float) (y - camera.y());
+                        float zMin = (float) (z - camera.z());
+                        float yMax = (float) (1 + y - camera.y());
+                        float xMax = (float) (1 + x - camera.x());
+                        float zMax = (float) (1 + z - camera.z());
 
-                        if (rarity != OreSightEnchantment.OreRarity.NONE) {
-                            float xMin = (float) (x - camera.x());
-                            float yMin = (float) (y - camera.y());
-                            float zMin = (float) (z - camera.z());
-                            float yMax = (float) (1 + y - camera.y());
-                            float xMax = (float) (1 + x - camera.x());
-                            float zMax = (float) (1 + z - camera.z());
+                        if (cullingFrustum.isCubeInFrustum(xMin, yMin, zMin, xMax, yMax, zMax)) {
+                            OreSightEnchantment.OreRarity rarity = getRarity(currentChunk, mutablePosition);
 
-                            if (rarity.ordinal() >= playerData.oreRarity.ordinal()) {
-                                if (((LevelRendererAccess) levelRenderer).getCullingFrustum().isVisible(new AABB(x, y, z, x + 1, y + 1, z + 1))) {
+                            if (rarity != OreSightEnchantment.OreRarity.NONE) {
+                                if (rarity.ordinal() >= playerData.oreRarity.ordinal()) {
                                     boolean[] renderSides = new boolean[Direction.values().length];
 
                                     for (Direction direction : Direction.values()) {
@@ -165,6 +168,7 @@ public class OreSightHandler {
                                         if (isWithin(relative, minChunkX, minChunkY, minChunkZ, maxChunkX, maxChunkY, maxChunkZ)) {
                                             renderSides[direction.ordinal()] = rarity != getRarity(currentChunk, relative);
                                         } else {
+                                            // Outside of enchantment range, render to "close" the shape
                                             renderSides[direction.ordinal()] = true;
                                         }
                                     }

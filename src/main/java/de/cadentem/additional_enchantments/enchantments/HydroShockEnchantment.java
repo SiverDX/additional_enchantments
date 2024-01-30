@@ -80,7 +80,7 @@ public class HydroShockEnchantment extends ConfigurableEnchantment {
         Entity attacker = event.getSource().getEntity();
 
         if (attacker instanceof LightningBolt bolt && bolt.getTags().contains(LIGHTNING_BOLT_TAG + ".safe") || attacker instanceof LivingEntity && FIRE_IMMUNE_LOOT.getOrDefault(attacker.getStringUUID(), false)) {
-            Set<ItemEntity> fireImmuneItems = event.getDrops().stream().map(itemEntity -> new ItemEntity(itemEntity.level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), itemEntity.getItem()) {
+            Set<ItemEntity> fireImmuneItems = event.getDrops().stream().map(itemEntity -> new ItemEntity(itemEntity.getLevel(), itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), itemEntity.getItem()) {
                 @Override
                 public boolean fireImmune() {
                     return true;

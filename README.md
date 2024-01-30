@@ -1,5 +1,9 @@
 ![](https://i.imgur.com/6l64DCT.png "Logo")
 # FAQ
+### General
+- Duplicate keybinds work but only make sense if multiple player-configurable enchantments cannot be active at the same time
+  - e.g. multiple bow-related enchantments or armor enchantments + main hand enchantments
+
 ### Versions / Loaders
 - Fabric is not planned
 - Backports are not being considered at the moment
@@ -29,14 +33,14 @@
 - Applies a poison effect to entities which deals magic damage
   - Also has a chance to spread to nearby targets (does not affect players or Tamable Animals owned by players)
   - Targets can be blacklisted with the tag `additional_enchantments:plague_blacklist`
-- Enchantment level increases the duration, damage while reducing the time between damage ticks
+- Enchantment level increases the duration, damage, application chance and reduces the time between damage ticks
   - In addition, it also increases the chance and range for the spread
 - Not compatible with the `Wither` enchantment
 
 ## Wither (Melee)
 - Default max. level: 6
 - Applies a wither effect to entities which deals wither damage
-- Enchantment level increases the duration and damage while also reducing the duration between damage ticks
+- Enchantment level increases the duration, damage, application chance and reduces the time between damage ticks
 - Not compatible with the `Poison` enchantment
 
 ## Confusion (Melee)
@@ -119,7 +123,7 @@
 
 ## Bracewalk (Legs)
 - Default max. level: 4
-- Reduces the effectiveness of knock back while also breaking certain blocks which slow you down (specified by the tag `additional_enchantments:bracewalk`)
+- Reduces the effectiveness of knock back while also breaking certain blocks which slow you down (specified by the tag `additional_enchantments:bracewalk`) (e.g. Cobwebs)
 - Enchantment level scales the knock back reduction
 
 ## Hunter (Boots)

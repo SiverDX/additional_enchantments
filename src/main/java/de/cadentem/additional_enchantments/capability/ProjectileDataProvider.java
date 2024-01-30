@@ -58,7 +58,7 @@ public class ProjectileDataProvider implements ICapabilitySerializable<CompoundT
     public static void removeCachedEntry(final Entity entity) {
         if (entity.getLevel().isClientSide()) {
             if (entity == ClientProxy.getLocalPlayer()) {
-                CLIENT_CACHE.clear();
+                CLIENT_CACHE.clear(); // TODO :: find other way to clear cache when player leaves a world (this also triggers for death)
             } else {
                 CLIENT_CACHE.remove(entity.getStringUUID());
             }

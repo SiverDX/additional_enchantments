@@ -16,6 +16,7 @@
     "TridentAccess"
   ],
   "client": [
+    "client.FrustumAccess",
     "client.ItemInHandRendererMixin",
     "client.MinecraftMixin",
     "client.ModelBakeryMixin",
