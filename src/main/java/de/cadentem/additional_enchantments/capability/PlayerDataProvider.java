@@ -15,16 +15,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerDataProvider implements ICapabilitySerializable<CompoundTag> {
-    public static final Map<String, LazyOptional<PlayerData>> SERVER_CACHE = new HashMap<>();
-    public static final Map<String, LazyOptional<PlayerData>> CLIENT_CACHE = new HashMap<>();
+    public static final Map<Integer, LazyOptional<PlayerData>> SERVER_CACHE = new HashMap<>();
+    public static final Map<Integer, LazyOptional<PlayerData>> CLIENT_CACHE = new HashMap<>();
 
-    private final PlayerData data;
-    private final LazyOptional<PlayerData> instance;
-
-    public PlayerDataProvider() {
-        data = new PlayerData();
-        instance = LazyOptional.of(() -> data);
-    }
+    private final PlayerData data = new PlayerData();
+    private final LazyOptional<PlayerData> instance = LazyOptional.of(() -> data);
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull final Capability<T> capability, @Nullable final Direction side) {
@@ -43,13 +38,19 @@ public class PlayerDataProvider implements ICapabilitySerializable<CompoundTag> 
 
     public static LazyOptional<PlayerData> getCapability(final Entity entity) {
         if (entity instanceof Player) {
-            Map<String, LazyOptional<PlayerData>> sidedCache = entity.level().isClientSide() ? CLIENT_CACHE : SERVER_CACHE;
+            Map<Integer, LazyOptional<PlayerData>> sidedCache = entity.level().isClientSide() ? CLIENT_CACHE : SERVER_CACHE;
+            LazyOptional<PlayerData> capability = sidedCache.get(entity.getId());
 
-            return sidedCache.computeIfAbsent(entity.getStringUUID(), key -> {
-                LazyOptional<PlayerData> capability = entity.getCapability(CapabilityHandler.PLAYER_DATA_CAPABILITY);
-                capability.addListener(ignored -> sidedCache.remove(key));
-                return capability;
-            });
+            if (capability == null) {
+                capability = entity.getCapability(CapabilityHandler.PLAYER_DATA_CAPABILITY);
+                capability.addListener(ignored -> sidedCache.remove(entity.getId()));
+
+                if (capability.isPresent()) {
+                    sidedCache.put(entity.getId(), capability);
+                }
+            }
+
+            return capability;
         }
 
         return LazyOptional.empty();
@@ -60,10 +61,10 @@ public class PlayerDataProvider implements ICapabilitySerializable<CompoundTag> 
             if (entity == ClientProxy.getLocalPlayer()) {
                 CLIENT_CACHE.clear();
             } else {
-                CLIENT_CACHE.remove(entity.getStringUUID());
+                CLIENT_CACHE.remove(entity.getId());
             }
         } else {
-            SERVER_CACHE.remove(entity.getStringUUID());
+            SERVER_CACHE.remove(entity.getId());
         }
     }
 }

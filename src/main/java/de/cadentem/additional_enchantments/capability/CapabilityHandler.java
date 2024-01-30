@@ -60,6 +60,8 @@ public class CapabilityHandler {
             HomingEnchantment.setEnchantmentLevel(projectile);
             ExplosiveTipEnchantment.setEnchantmentLevel(projectile);
             syncProjectileData(projectile);
+        } else if (event.getEntity() instanceof Player player) {
+            syncPlayerData(player);
         }
     }
 
@@ -72,29 +74,11 @@ public class CapabilityHandler {
 
     @SubscribeEvent // Only called server-side
     public static void handlePlayerDeath(final PlayerEvent.Clone event) {
-        if (event.isWasDeath()) {
+        if (event.isWasDeath()) { // FIXME :: called with `false` when entering end portal
             event.getOriginal().reviveCaps();
-
-            PlayerDataProvider.getCapability(event.getEntity()).ifPresent(data -> {
-                // Cache would return the new (empty) capability
-                event.getOriginal().getCapability(PLAYER_DATA_CAPABILITY).ifPresent(oldData -> {
-                    data.deserializeNBT(oldData.serializeNBT());
-                    syncPlayerData(event.getEntity());
-                });
-            });
-
+            PlayerDataProvider.getCapability(event.getEntity()).ifPresent(data -> PlayerDataProvider.getCapability(event.getOriginal()).ifPresent(oldData -> data.deserializeNBT(oldData.serializeNBT())));
             event.getOriginal().invalidateCaps();
         }
-    }
-
-    @SubscribeEvent // Only called server-side
-    public static void handlePlayerLogin(final PlayerEvent.PlayerLoggedInEvent event) {
-        syncPlayerData(event.getEntity());
-    }
-
-    @SubscribeEvent // Only called server-side
-    public static void handleDimensionChange(final PlayerEvent.PlayerChangedDimensionEvent event) {
-        syncPlayerData(event.getEntity());
     }
 
     @SubscribeEvent
