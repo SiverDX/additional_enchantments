@@ -10,7 +10,10 @@ public class DataGen {
     @SubscribeEvent
     public static void configureDataGen(final GatherDataEvent event){
         DataGenerator generator = event.getGenerator();
-        generator.addProvider(event.includeServer(), new AEBlockTags(generator.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
+
+        AEBlockTags blockTagsProvider = new AEBlockTags(generator.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper());
+        generator.addProvider(event.includeServer(), blockTagsProvider);
+        generator.addProvider(event.includeServer(), new AEItemTags(generator.getPackOutput(), event.getLookupProvider(), blockTagsProvider.contentsGetter(), event.getExistingFileHelper()));
         generator.addProvider(event.includeServer(), new AEEntityTags(generator.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
         generator.addProvider(event.includeServer(), new AEEffectTags(generator.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
         generator.addProvider(event.includeServer(), new AELootModifiers(generator.getPackOutput()));

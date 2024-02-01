@@ -70,7 +70,8 @@ repositories {
 dependencies {
     minecraft "net.neoforged:forge:${minecraft_version}-${neo_version}"
 
-    implementation fg.deobf("dev:skinlayers3d:forge-1.6.2-mc1.20.1")
+    /* --- Compatibility --- */
+    compileOnly fg.deobf("dev:skinlayers3d:forge-1.6.2-mc1.20.1")
 
     /* --- Mixin Configuration --- */
     implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-common:${mixin_squared_version}"))

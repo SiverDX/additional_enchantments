@@ -27,8 +27,8 @@ public class AEBlockTags extends BlockTagsProvider {
     public static final TagKey<Block> BRACEWALK = TagKey.create(Registries.BLOCK, new ResourceLocation(AE.MODID, "bracewalk"));
     public static final TagKey<Block> VOIDING = TagKey.create(Registries.BLOCK, new ResourceLocation(AE.MODID, "voiding"));
 
-    public AEBlockTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable final ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, AE.MODID, existingFileHelper);
+    public AEBlockTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable final ExistingFileHelper fileHelper) {
+        super(output, lookupProvider, AE.MODID, fileHelper);
     }
 
     @Override

@@ -20,8 +20,8 @@ public class AEEntityTags extends EntityTypeTagsProvider {
     public static final TagKey<EntityType<?>> CONFUSION_BLACKLIST = new TagKey<>(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "confusion_blacklist"));
     public static final TagKey<EntityType<?>> PLAGUE_BLACKLIST = new TagKey<>(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "plague_blacklist"));
 
-    public AEEntityTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, final ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, AE.MODID, existingFileHelper);
+    public AEEntityTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, final ExistingFileHelper fileHelper) {
+        super(output, lookupProvider, AE.MODID, fileHelper);
     }
 
     @Override
