@@ -11,11 +11,13 @@ public class DataGen {
     @SubscribeEvent
     public static void configureDataGen(final GatherDataEvent event){
         DataGenerator generator = event.getGenerator();
-        ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
+        ExistingFileHelper fileHelper = event.getExistingFileHelper();
 
-        generator.addProvider(event.includeServer(), new AEBlockTags(generator, existingFileHelper));
-        generator.addProvider(event.includeServer(), new AEEntityTags(generator, existingFileHelper));
-        generator.addProvider(event.includeServer(), new AEEffectTags(generator, existingFileHelper));
+        AEBlockTags blockTagsProvider = new AEBlockTags(generator, fileHelper);
+        generator.addProvider(event.includeServer(), blockTagsProvider);
+        generator.addProvider(event.includeServer(), new AEItemTags(generator, blockTagsProvider, fileHelper));
+        generator.addProvider(event.includeServer(), new AEEntityTags(generator, fileHelper));
+        generator.addProvider(event.includeServer(), new AEEffectTags(generator, fileHelper));
         generator.addProvider(event.includeServer(), new AELootModifiers(generator));
     }
 }

@@ -24,8 +24,8 @@ public class AEBlockTags extends BlockTagsProvider {
     public static final TagKey<Block> BRACEWALK = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "bracewalk"));
     public static final TagKey<Block> VOIDING = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(AE.MODID, "voiding"));
 
-    public AEBlockTags(final DataGenerator generator, @Nullable final ExistingFileHelper existingFileHelper) {
-        super(generator, AE.MODID, existingFileHelper);
+    public AEBlockTags(final DataGenerator generator, @Nullable final ExistingFileHelper fileHelper) {
+        super(generator, AE.MODID, fileHelper);
     }
 
     @Override

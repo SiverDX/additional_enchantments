@@ -17,8 +17,8 @@ public class AEEntityTags extends EntityTypeTagsProvider {
     public static final TagKey<EntityType<?>> CONFUSION_BLACKLIST = new TagKey<>(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "confusion_blacklist"));
     public static final TagKey<EntityType<?>> PLAGUE_BLACKLIST = new TagKey<>(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "plague_blacklist"));
 
-    public AEEntityTags(final DataGenerator generator, @Nullable final ExistingFileHelper existingFileHelper) {
-        super(generator, AE.MODID, existingFileHelper);
+    public AEEntityTags(final DataGenerator generator, @Nullable final ExistingFileHelper fileHelper) {
+        super(generator, AE.MODID, fileHelper);
     }
 
     @Override

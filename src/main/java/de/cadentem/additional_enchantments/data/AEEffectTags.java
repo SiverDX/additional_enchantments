@@ -14,8 +14,8 @@ import org.jetbrains.annotations.Nullable;
 public class AEEffectTags extends ForgeRegistryTagsProvider<MobEffect> {
     public static final TagKey<MobEffect> TIPPED_BLACKLIST = new TagKey<>(Registry.MOB_EFFECT_REGISTRY, new ResourceLocation(AE.MODID, "tipped_blacklist"));
 
-    public AEEffectTags(final DataGenerator generator, @Nullable final ExistingFileHelper existingFileHelper) {
-        super(generator, ForgeRegistries.MOB_EFFECTS, AE.MODID, existingFileHelper);
+    public AEEffectTags(final DataGenerator generator, @Nullable final ExistingFileHelper fileHelper) {
+        super(generator, ForgeRegistries.MOB_EFFECTS, AE.MODID, fileHelper);
     }
 
     @Override
