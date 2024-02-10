@@ -73,7 +73,8 @@ public class AEBlockTags extends BlockTagsProvider {
                 .add(Blocks.COBWEB)
                 .addOptional(new ResourceLocation("projectvibrantjourneys", "prickly_bush"))
                 .addOptional(new ResourceLocation("vinery", "taiga_grape_bush_red"))
-                .addOptional(new ResourceLocation("vinery", "taiga_grape_bush_white"));
+                .addOptional(new ResourceLocation("vinery", "taiga_grape_bush_white"))
+                .addOptional(new ResourceLocation("iceandfire", "dragon_ice_spikes"));
 
         List<String> bushes = List.of(
                 "blackberry",

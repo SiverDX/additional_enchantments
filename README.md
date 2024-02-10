@@ -30,7 +30,7 @@
 
 ## Plague (Melee)
 - Default max. level: 6
-- Applies a poison effect to entities which deals magic damage
+- Applies a plague effect to entities which deals magic damage
   - Also has a chance to spread to nearby targets (does not affect players or Tamable Animals owned by players)
   - Targets can be blacklisted with the tag `additional_enchantments:plague_blacklist`
 - Enchantment level increases the duration, damage, application chance and reduces the time between damage ticks
@@ -41,7 +41,7 @@
 - Default max. level: 6
 - Applies a wither effect to entities which deals wither damage
 - Enchantment level increases the duration, damage, application chance and reduces the time between damage ticks
-- Not compatible with the `Poison` enchantment
+- Not compatible with the `Plague` enchantment
 
 ## Confusion (Melee)
 - Default max. level: 5

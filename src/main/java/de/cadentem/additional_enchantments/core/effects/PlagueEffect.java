@@ -1,9 +1,8 @@
 package de.cadentem.additional_enchantments.core.effects;
 
-import com.mojang.math.Vector3f;
 import de.cadentem.additional_enchantments.data.AEEntityTags;
 import de.cadentem.additional_enchantments.registry.AEMobEffects;
-import net.minecraft.core.particles.DustParticleOptions;
+import de.cadentem.additional_enchantments.registry.AEParticles;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
@@ -18,8 +17,6 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 public class PlagueEffect extends MobEffect {
-    private static final DustParticleOptions PLAGUE_OPTION = new DustParticleOptions(new Vector3f(Vec3.fromRGB24(5635925)), 3);
-
     public PlagueEffect() {
         super(MobEffectCategory.HARMFUL, 5149489);
     }
@@ -34,8 +31,9 @@ public class PlagueEffect extends MobEffect {
             if (livingEntity.getLevel() instanceof ServerLevel serverLevel) {
                 Vec3 center = boundingBox.getCenter();
                 double size = boundingBox.getSize();
+                int particleCount = (int) (16 * Math.pow((1 + amplifier), 1.5));
 
-                serverLevel.sendParticles(PLAGUE_OPTION, center.x(), center.y(), center.z(), (int) (16 * Math.pow((1 + amplifier), 1.5)), size / 2, size / 2, size / 2, 0);
+                serverLevel.sendParticles(AEParticles.PLAGUE.get(), center.x(), center.y(), center.z(), Math.min(1000, particleCount), size / 2, size / 2, size / 2, 0);
             }
 
             List<LivingEntity> entities = livingEntity.getLevel().getEntitiesOfClass(LivingEntity.class, boundingBox, plagueTarget -> {

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.registry.AEEntityTypes;
 import de.cadentem.additional_enchantments.registry.AEItems;
+import de.cadentem.additional_enchantments.registry.AEParticles;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
@@ -12,6 +13,7 @@ import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -43,6 +45,11 @@ public class ClientRegistry {
         KeyHandler.CYCLE_VOIDING = new KeyMapping("keybind.additional_enchantments.voiding", InputConstants.KEY_G, "keybind.additional_enchantments.category");
         KeyHandler.CYCLE_VOIDING.setKeyConflictContext(KeyConflictContext.IN_GAME);
         event.register(KeyHandler.CYCLE_VOIDING);
+    }
+
+    @SubscribeEvent
+    public static void registerParticles(final RegisterParticleProvidersEvent event) {
+        event.register(AEParticles.PLAGUE.get(), PlagueParticle.Provider::new);
     }
 
     @SubscribeEvent
