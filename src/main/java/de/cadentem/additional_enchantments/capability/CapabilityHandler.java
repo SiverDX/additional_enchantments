@@ -49,7 +49,7 @@ public class CapabilityHandler {
     }
 
     @SubscribeEvent
-    public static void handleProjectile(final EntityJoinLevelEvent event) {
+    public static void handleInitialSync(final EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide()) {
             return;
         }
@@ -74,7 +74,7 @@ public class CapabilityHandler {
 
     @SubscribeEvent // Only called server-side
     public static void handlePlayerDeath(final PlayerEvent.Clone event) {
-        if (event.isWasDeath()) { // FIXME :: called with `false` when entering end portal
+        if (event.isWasDeath()) { // FIXME :: called with `false` when entering end portal (copy persistent data)
             event.getOriginal().reviveCaps();
             PlayerDataProvider.getCapability(event.getEntity()).ifPresent(data -> PlayerDataProvider.getCapability(event.getOriginal()).ifPresent(oldData -> data.deserializeNBT(oldData.serializeNBT())));
             event.getOriginal().invalidateCaps();
