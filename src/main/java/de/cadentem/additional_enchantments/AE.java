@@ -29,10 +29,11 @@ public class AE {
         modEventBus.register(this);
 
         AEEnchantments.ENCHANTMENTS.register(modEventBus);
-        AEMobEffects.MOB_EFFECTS.register(modEventBus);
         AEEntityTypes.ENTITY_TYPES.register(modEventBus);
         AEItems.ITEMS.register(modEventBus);
         AELootModifiers.LOOT_MODIFIERS.register(modEventBus);
+        AEMobEffects.MOB_EFFECTS.register(modEventBus);
+        AEParticles.PARTICLE_TYPES.register(modEventBus);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);

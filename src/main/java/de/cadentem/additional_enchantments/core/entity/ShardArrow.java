@@ -93,8 +93,9 @@ public class ShardArrow extends AbstractArrow {
         if (level() instanceof ServerLevel serverLevel) {
             double xzOffset = getBbWidth() * enchantmentLevel;
             double yOffset = getBbHeight() * enchantmentLevel;
+            int particleCount = (int) (8 * Math.pow(enchantmentLevel, 1.5));
 
-            serverLevel.sendParticles(PARTICLES, getX(), getY(), getZ(), (int) (8 * Math.pow(enchantmentLevel, 1.5)), xzOffset, yOffset, xzOffset, 0);
+            serverLevel.sendParticles(PARTICLES, getX(), getY(), getZ(), Math.min(1000, particleCount), xzOffset, yOffset, xzOffset, 0);
         }
     }
 }
