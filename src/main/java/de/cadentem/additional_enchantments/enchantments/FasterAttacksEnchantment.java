@@ -1,5 +1,6 @@
 package de.cadentem.additional_enchantments.enchantments;
 
+import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
@@ -41,7 +42,7 @@ public class FasterAttacksEnchantment extends ConfigurableEnchantment {
             }
 
             if (enchantmentLevel > 0) {
-                attribute.addTransientModifier(new AttributeModifier(UUID.fromString(ATTRIBUTE_UUID), "Faster Attacks enchantment", (double) enchantmentLevel * 0.15, AttributeModifier.Operation.MULTIPLY_BASE));
+                attribute.addTransientModifier(new AttributeModifier(UUID.fromString(ATTRIBUTE_UUID), "Faster Attacks enchantment", enchantmentLevel * ServerConfig.FASTER_ATTACKS_MULTIPLIER.get(), AttributeModifier.Operation.MULTIPLY_BASE));
             }
         }
     }

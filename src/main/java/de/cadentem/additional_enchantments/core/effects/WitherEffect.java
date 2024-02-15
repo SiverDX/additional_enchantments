@@ -1,5 +1,6 @@
 package de.cadentem.additional_enchantments.core.effects;
 
+import de.cadentem.additional_enchantments.config.ServerConfig;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,11 +12,11 @@ public class WitherEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(final LivingEntity livingEntity, int amplifier) {
-        livingEntity.hurt(livingEntity.damageSources().wither(), (1 + amplifier) * 0.75f);
+        livingEntity.hurt(livingEntity.damageSources().wither(), (ServerConfig.WITHER_DAMAGE_BASE.get().floatValue() + amplifier) * ServerConfig.WITHER_DAMAGE_MULTIPLIER.get().floatValue());
     }
 
     @Override
     public boolean isDurationEffectTick(int duration, int amplifier) {
-        return duration % (Math.max(1, 20 - amplifier / 2)) == 0;
+        return duration % (Math.max(1, 20 - amplifier / ServerConfig.WITHER_DAMAGE_TICK_RATE.get())) == 0;
     }
 }
