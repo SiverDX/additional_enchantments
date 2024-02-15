@@ -2,6 +2,7 @@ package de.cadentem.additional_enchantments.enchantments;
 
 import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.capability.ProjectileDataProvider;
+import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.core.interfaces.ExplosionAccess;
 import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
@@ -62,8 +63,10 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
                     return;
                 }
 
+                float radius = Math.max(0.1f, projectileData.explosiveTipEnchantmentLevel * ServerConfig.EXPLOSIVE_TIP_RADIUS_MULTIPLIER.get().floatValue());
+
                 PlayerDataProvider.getCapability(livingOwner).ifPresent(playerData -> {
-                    Explosion explosion = new Explosion(serverLevel, projectile, null, null, projectile.getX(), projectile.getY(), projectile.getZ(), projectileData.explosiveTipEnchantmentLevel, false, playerData.explosionType);
+                    Explosion explosion = new Explosion(serverLevel, projectile, null, null, projectile.getX(), projectile.getY(), projectile.getZ(), radius, false, playerData.explosionType);
                     ((ExplosionAccess) explosion).additional_enchantments$setWasTriggeredByEnchantment(true);
 
                     if (ForgeEventFactory.onExplosionStart(projectile.getLevel(), explosion)) {
@@ -79,7 +82,7 @@ public class ExplosiveTipEnchantment extends ConfigurableEnchantment {
 
                     for (ServerPlayer serverPlayer : serverLevel.players()) {
                         if (serverPlayer.distanceToSqr(projectile.getX(), projectile.getY(), projectile.getZ()) < 4096) {
-                            serverPlayer.connection.send(new ClientboundExplodePacket(projectile.getX(), projectile.getY(), projectile.getZ(), projectileData.explosiveTipEnchantmentLevel, explosion.getToBlow(), explosion.getHitPlayers().get(serverPlayer)));
+                            serverPlayer.connection.send(new ClientboundExplodePacket(projectile.getX(), projectile.getY(), projectile.getZ(), radius, explosion.getToBlow(), explosion.getHitPlayers().get(serverPlayer)));
                         }
                     }
 

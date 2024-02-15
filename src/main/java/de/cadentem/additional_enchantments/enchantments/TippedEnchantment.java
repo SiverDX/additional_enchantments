@@ -3,6 +3,7 @@ package de.cadentem.additional_enchantments.enchantments;
 import com.google.common.collect.Sets;
 import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.capability.ProjectileDataProvider;
+import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.data.AEEffectTags;
 import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
@@ -90,7 +91,7 @@ public class TippedEnchantment extends ConfigurableEnchantment {
                             }
 
                             for (MobEffect effect : appliedEffects) {
-                                projectileData.addedEffects.add(new MobEffectInstance(effect, effect.isInstantenous() ? 1 : 20 * (3 + (level * 2)), level - 1));
+                                projectileData.addedEffects.add(new MobEffectInstance(effect, effect.isInstantenous() ? 1 : (int) (20 * (ServerConfig.TIPPED_DURATION_BASE.get() + (level * ServerConfig.TIPPED_DURATION_MULTIPLIER.get()))), level - 1));
                             }
                         }
                     });

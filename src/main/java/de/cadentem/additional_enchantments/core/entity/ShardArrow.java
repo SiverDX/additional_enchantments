@@ -1,5 +1,6 @@
 package de.cadentem.additional_enchantments.core.entity;
 
+import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.registry.AEEntityTypes;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
@@ -66,7 +67,9 @@ public class ShardArrow extends AbstractArrow {
 
     private void handleHit() {
         if (getLevel() instanceof ServerLevel serverLevel) {
-            if (serverLevel.getRandom().nextDouble() > 0.3) {
+            double chance = ServerConfig.SHATTER_CHANCE_BASE.get() + (enchantmentLevel * ServerConfig.SHATTER_CHANCE_MULTIPLIER.get());
+            if (serverLevel.getRandom().nextDouble() <= chance) {
+                float damage = enchantmentLevel * ServerConfig.SHATTER_DAMAGE_MULTIPLIER.get().floatValue();
                 sendParticles();
 
                 // Cannot handle the damage while gathering entities due to possible `ConcurrentModificationException`
@@ -82,7 +85,7 @@ public class ShardArrow extends AbstractArrow {
                     }
 
                     return !(owner instanceof LivingEntity livingOwner) || !(livingEntity instanceof TamableAnimal tamable) || !tamable.isOwnedBy(livingOwner);
-                }).forEach(livingEntity -> livingEntity.hurt(DamageSource.arrow(this, getOwner()).setMagic(), enchantmentLevel / 2f));
+                }).forEach(livingEntity -> livingEntity.hurt(DamageSource.arrow(this, getOwner()).setMagic(), damage));
 
                 discard();
             }

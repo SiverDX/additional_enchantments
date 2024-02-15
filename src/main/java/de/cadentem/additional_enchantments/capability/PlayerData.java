@@ -1,5 +1,6 @@
 package de.cadentem.additional_enchantments.capability;
 
+import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.enchantments.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -80,7 +81,7 @@ public class PlayerData {
     }
 
     public void reduceHunterStacks(final LivingEntity livingEntity, int enchantmentLevel) {
-        if (livingEntity.tickCount % Math.max(1, enchantmentLevel / 3) == 0) {
+        if (livingEntity.tickCount % Math.max(1, enchantmentLevel / ServerConfig.HUNTER_STACK_REDUCTION.get()) == 0) {
             hunterStacks = Math.max(0, hunterStacks - 1);
         }
     }

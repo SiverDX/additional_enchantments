@@ -1,5 +1,6 @@
 package de.cadentem.additional_enchantments.core.effects;
 
+import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.data.AEEntityTags;
 import de.cadentem.additional_enchantments.registry.AEMobEffects;
 import de.cadentem.additional_enchantments.registry.AEParticles;
@@ -23,7 +24,7 @@ public class PlagueEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(final LivingEntity livingEntity, int amplifier) {
-        livingEntity.hurt(DamageSource.MAGIC, (1 + amplifier) * 0.5f);
+        livingEntity.hurt(DamageSource.MAGIC, (ServerConfig.PLAGUE_DAMAGE_BASE.get().floatValue() + amplifier) * ServerConfig.PLAGUE_DAMAGE_MULTIPLIER.get().floatValue());
 
         if ((1 + amplifier) * 0.05d > livingEntity.getRandom().nextDouble()) {
             AABB boundingBox = livingEntity.getBoundingBox().inflate(1 + amplifier);
@@ -50,7 +51,8 @@ public class PlagueEffect extends MobEffect {
 
             entities.forEach(plagueTarget -> {
                 if (plagueTarget.getRandom().nextBoolean()) {
-                    plagueTarget.addEffect(new MobEffectInstance(AEMobEffects.PLAGUE.get(), 20 * (3 + amplifier / 2), amplifier / 2));
+                    int spreadAmplifier = amplifier / 2;
+                    plagueTarget.addEffect(new MobEffectInstance(AEMobEffects.PLAGUE.get(), 20 * (int) (ServerConfig.PLAGUE_DURATION_BASE.get() + spreadAmplifier), spreadAmplifier));
                 }
             });
         }
@@ -58,6 +60,6 @@ public class PlagueEffect extends MobEffect {
 
     @Override
     public boolean isDurationEffectTick(int duration, int amplifier) {
-        return duration % (Math.max(1, 20 - (1 + amplifier) / 3)) == 0;
+        return duration % (Math.max(1, 20 - (1 + amplifier) / ServerConfig.PLAGUE_DAMAGE_TICK_RATE.get())) == 0;
     }
 }

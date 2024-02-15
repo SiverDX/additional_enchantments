@@ -117,9 +117,6 @@
 - Enchantment level increases the range
 - It's possible to switch between the rarities (ALL, COMMON, UNCOMMON, RARE and NONE (no outlines will be displayed)) with the keybind (default being `U`)
   - Blocks can be blacklisted with the tag `additional_enchantments:ore_sight_blacklist`
-- There are two client side configurations
-  - One determines how far away ore lines get rendered as group (reducing this will improve performance)
-  - The other one determines how long block data is cached (reducing this will make outline updates happen faster)
 
 ## Bracewalk (Legs)
 - Default max. level: 4
@@ -135,6 +132,10 @@
   - The blocks are based on plant related material and the block tag `additional_enchantments:hunter_relevant` (e.g. flowers, crops or leaves)
 - Enchantment level increases the critical damage, the rate at which you gain hunter stacks and reduces the rate at which you lose them
   - It will also reduce the amount of stacks needed to be considered at full stacks
+- The max. hunter stacks are determined as following: `20 * (3 + Math.max(0, <maximum_enchantment_level> - <current_enchantment_level>)`
+  - Meaning if the max. enchantment level is `6` and the current level is `3` the max. stacks will be `120`
+  - This means at higher enchantment levels you will have fewer stacks (i.e. you will reach max. stacks more quickly)
+  - Higher enchantment levels will lose stacks more slowly
 
 # Misc
 
