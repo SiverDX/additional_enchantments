@@ -1,5 +1,7 @@
 package de.cadentem.additional_enchantments.mixin.client;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
@@ -16,7 +18,6 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,44 +33,23 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         addLayer(new HunterLayer(this));
     }
 
-    // Using `@WrapOperation` causes the hand to render black when `original.call()` is invoked (even if it's the only statement in the method)
-    @Redirect(method = "renderHand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/ModelPart;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V"))
-    private void additional_enchantments$handleTransparency(final ModelPart instance, final PoseStack poseStack, final VertexConsumer vertexConsumer, int packedLight, int packedOverlay, /* Method arguments */ final PoseStack methodPoseStack, final MultiBufferSource bufferSource, int methodPackedLight, final AbstractClientPlayer player) {
+    @WrapOperation(method = "renderHand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/ModelPart;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V", ordinal = 0))
+    private void additional_enchantments$handleTransparency(final ModelPart instance, final PoseStack poseStack, final VertexConsumer vertexConsumer, int packedLight, int packedOverlay, final Operation<Void> original, /* Method arguments */ final PoseStack methodPoseStack, final MultiBufferSource bufferSource, int methodPackedLight, final AbstractClientPlayer player) {
         int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel();
         AtomicBoolean wasRendered = new AtomicBoolean(false);
 
         if (enchantmentLevel > 0) {
             PlayerDataProvider.getCapability(player).ifPresent(data -> {
-                if (data.hunterStacks > 0) {
+                if (data.hasHunterStacks()) {
                     instance.visible = true;
-                    instance.render(poseStack, bufferSource.getBuffer(RenderType.entityTranslucent(player.getSkinTextureLocation())), packedLight, packedOverlay, 1, 1, 1, HunterLayer.getAlpha(data.hunterStacks, enchantmentLevel));
+                    instance.render(poseStack, bufferSource.getBuffer(RenderType.entityTranslucent(player.getSkinTextureLocation())), packedLight, packedOverlay, 1, 1, 1, HunterLayer.getAlpha(data.getHunterStacks(), enchantmentLevel));
                     wasRendered.set(true);
                 }
             });
         }
 
         if (!wasRendered.get()) {
-            instance.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+            original.call(instance, poseStack, vertexConsumer, packedLight, packedOverlay);
         }
     }
-
-//    @WrapOperation(method = "renderHand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/ModelPart;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V", ordinal = 0))
-//    private void additional_enchantments$handleTransparency(final ModelPart instance, final PoseStack poseStack, final VertexConsumer vertexConsumer, int packedLight, int packedOverlay, final Operation<Void> original, /* Method arguments */ final PoseStack methodPoseStack, final MultiBufferSource bufferSource, int methodPackedLight, final AbstractClientPlayer player) {
-//        int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel();
-//        AtomicBoolean wasRendered = new AtomicBoolean(false);
-//
-//        if (enchantmentLevel > 0) {
-//            PlayerDataProvider.getCapability(player).ifPresent(data -> {
-//                if (data.hunterStacks > 0) {
-//                    instance.visible = true;
-//                    instance.render(poseStack, bufferSource.getBuffer(RenderType.entityTranslucent(player.getSkinTextureLocation())), packedLight, packedOverlay, 1, 1, 1, HunterLayer.getAlpha(data.hunterStacks, enchantmentLevel));
-//                    wasRendered.set(true);
-//                }
-//            });
-//        }
-//
-//        if (!wasRendered.get()) {
-//            original.call(instance, poseStack, vertexConsumer, packedOverlay, packedOverlay);
-//        }
-//    }
 }

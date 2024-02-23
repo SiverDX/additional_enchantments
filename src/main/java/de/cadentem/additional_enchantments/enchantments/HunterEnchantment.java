@@ -63,9 +63,9 @@ public class HunterEnchantment extends ConfigurableEnchantment {
 
             if (enchantmentLevel > 0) {
                 if (/* Basically inside the block */ isBlockHunterRelevant(livingEntity.getFeetBlockState()) || /* Below feet */ isBlockHunterRelevant(livingEntity.getBlockStateOn())) {
-                    if (livingEntity instanceof Player) {
+                    if (livingEntity instanceof Player player) {
                         PlayerDataProvider.getCapability(livingEntity).ifPresent(data -> {
-                            data.increaseHunterStacks(enchantmentLevel);
+                            data.increaseHunterStacks(player, enchantmentLevel);
                             data.isOnHunterBlock = true;
                         });
                     }
@@ -77,11 +77,11 @@ public class HunterEnchantment extends ConfigurableEnchantment {
                         access.additional_enchantments$setWasInvisibilityModified(true);
                     }
                 } else {
-                    if (livingEntity instanceof Player) {
-                        PlayerDataProvider.getCapability(livingEntity).ifPresent(data -> {
-                            data.reduceHunterStacks(livingEntity, enchantmentLevel);
+                    if (livingEntity instanceof Player player) {
+                        PlayerDataProvider.getCapability(player).ifPresent(data -> {
+                            data.reduceHunterStacks(player, enchantmentLevel);
 
-                            if (data.hunterStacks > 0) {
+                            if (data.hasHunterStacks()) {
                                 invisibilityValid.set(true);
                             }
 
@@ -89,8 +89,8 @@ public class HunterEnchantment extends ConfigurableEnchantment {
                         });
                     }
                 }
-            } else if (livingEntity instanceof Player) {
-                PlayerDataProvider.getCapability(livingEntity).ifPresent(data -> data.hunterStacks = 0);
+            } else if (livingEntity instanceof Player player) {
+                PlayerDataProvider.getCapability(player).ifPresent(data -> data.clearHunterStacks(player));
             }
 
             if (!invisibilityValid.get()) {
@@ -129,8 +129,7 @@ public class HunterEnchantment extends ConfigurableEnchantment {
                 if (data.hasMaxHunterStacks(enchantmentLevel)) {
                     event.setDamageModifier(event.getDamageModifier() + enchantmentLevel / 2f);
                     event.setResult(Event.Result.ALLOW);
-
-                    data.hunterStacks = 0;
+                    data.clearHunterStacks(player);
                 }
             });
         }
@@ -153,7 +152,7 @@ public class HunterEnchantment extends ConfigurableEnchantment {
                     int enchantmentLevel = EnchantmentHelper.getEnchantmentLevel(AEEnchantments.HUNTER.get(), player);
 
                     if (enchantmentLevel > 0) {
-                        event.modifyVisibility(event.getVisibilityModifier() + 1 - ((double) data.hunterStacks / HunterEnchantment.getMaxStacks(enchantmentLevel)));
+                        event.modifyVisibility(event.getVisibilityModifier() + 1 - ((double) data.getHunterStacks() / HunterEnchantment.getMaxStacks(enchantmentLevel)));
                     }
                 }
             });

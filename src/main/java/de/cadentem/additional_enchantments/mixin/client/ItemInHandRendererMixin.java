@@ -5,6 +5,8 @@ import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.client.ClientProxy;
 import de.cadentem.additional_enchantments.enchantments.HunterEnchantment;
 import net.minecraft.client.renderer.ItemInHandRenderer;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,10 +28,11 @@ public class ItemInHandRendererMixin {
     @Unique
     private boolean additional_enchantments$shouldRenderHunterLayer(boolean isInvisible) {
         AtomicBoolean result = new AtomicBoolean(isInvisible);
+        Player localPlayer = ClientProxy.getLocalPlayer();
 
-        if (isInvisible && HunterEnchantment.getClientEnchantmentLevel() > 0) {
-            PlayerDataProvider.getCapability(ClientProxy.getLocalPlayer()).ifPresent(data -> {
-                if (data.hunterStacks > 0) {
+        if (localPlayer != null && isInvisible && HunterEnchantment.getClientEnchantmentLevel() > 0 && !localPlayer.hasEffect(MobEffects.INVISIBILITY)) {
+            PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
+                if (data.hasHunterStacks() || data.getHunterStacks() > 0) {
                     result.set(false);
                 }
             });

@@ -5,6 +5,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraftforge.common.Tags;
 
+@SuppressWarnings("deprecation")
 public class AEEnchantmentCategory {
     public static final EnchantmentCategory RANGED = EnchantmentCategory.create("ranged", AEEnchantmentCategory::isRanged);
 

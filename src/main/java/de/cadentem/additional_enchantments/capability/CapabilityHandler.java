@@ -74,11 +74,9 @@ public class CapabilityHandler {
 
     @SubscribeEvent // Only called server-side
     public static void handlePlayerDeath(final PlayerEvent.Clone event) {
-        if (event.isWasDeath()) { // FIXME :: called with `false` when entering end portal (copy persistent data)
-            event.getOriginal().reviveCaps();
-            PlayerDataProvider.getCapability(event.getEntity()).ifPresent(data -> PlayerDataProvider.getCapability(event.getOriginal()).ifPresent(oldData -> data.deserializeNBT(oldData.serializeNBT())));
-            event.getOriginal().invalidateCaps();
-        }
+        event.getOriginal().reviveCaps();
+        PlayerDataProvider.getCapability(event.getEntity()).ifPresent(data -> PlayerDataProvider.getCapability(event.getOriginal()).ifPresent(oldData -> data.deserializeNBT(oldData.serializeNBT(event.isWasDeath()))));
+        event.getOriginal().invalidateCaps();
     }
 
     @SubscribeEvent
@@ -111,7 +109,7 @@ public class CapabilityHandler {
     }
 
     public static void syncPlayerData(final Player player) {
-        PlayerDataProvider.getCapability(player).ifPresent(data -> syncPlayerData(player, data.serializeNBT()));
+        PlayerDataProvider.getCapability(player).ifPresent(data -> syncPlayerData(player, data.serializeNBT(false)));
     }
 
     public static void syncPlayerData(final Player player, final CompoundTag tag) {
