@@ -97,7 +97,7 @@ public class PlayerData {
     }
 
     public void increaseHunterStacks(final Player player, int enchantmentLevel) {
-        if (!player.getLevel().isClientSide()) {
+        if (!player.level().isClientSide()) {
             delayStacks = 10;
             CapabilityHandler.syncPlayerData(player);
         }
@@ -121,7 +121,7 @@ public class PlayerData {
     }
 
     private void setDelayStacks(final Player player) {
-        if (hunterStacks == 0 && player.getLevel().isClientSide()) {
+        if (hunterStacks == 0 && player.level().isClientSide()) {
             delayStacks = 10;
         }
     }

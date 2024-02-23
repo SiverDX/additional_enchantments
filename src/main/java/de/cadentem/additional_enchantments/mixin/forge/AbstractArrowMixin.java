@@ -1,6 +1,6 @@
 package de.cadentem.additional_enchantments.mixin.forge;
 
-import com.llamalad7.mixinextras.injector.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import de.cadentem.additional_enchantments.capability.ProjectileDataProvider;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.phys.HitResult;
