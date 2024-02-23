@@ -28,7 +28,7 @@ public class PlayerDataProvider implements ICapabilitySerializable<CompoundTag> 
 
     @Override
     public CompoundTag serializeNBT() {
-        return instance.orElseThrow(() -> new IllegalArgumentException("Capability instance was not present")).serializeNBT();
+        return instance.orElseThrow(() -> new IllegalArgumentException("Capability instance was not present")).serializeNBT(false);
     }
 
     @Override

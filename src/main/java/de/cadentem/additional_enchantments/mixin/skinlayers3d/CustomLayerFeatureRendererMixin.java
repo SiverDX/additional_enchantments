@@ -6,25 +6,25 @@ import com.llamalad7.mixinextras.sugar.Local;
 import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
 import de.cadentem.additional_enchantments.client.HunterLayer;
 import de.cadentem.additional_enchantments.enchantments.HunterEnchantment;
+import dev.tr7zw.skinlayers.renderlayers.CustomLayerFeatureRenderer;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.world.effect.MobEffects;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Pseudo
-@Mixin(targets = "dev.tr7zw.skinlayers.renderlayers.CustomLayerFeatureRenderer")
+@Mixin(CustomLayerFeatureRenderer.class)
 public abstract class CustomLayerFeatureRendererMixin {
     @ModifyExpressionValue(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/AbstractClientPlayer;isInvisible()Z"))
     private boolean additional_enchantments$allowRenderWhenTransparent(boolean isInvisible, @Local(argsOnly = true) final AbstractClientPlayer player) {
         AtomicBoolean result = new AtomicBoolean(isInvisible);
 
-        if (isInvisible && HunterEnchantment.getClientEnchantmentLevel(player) > 0) {
+        if (isInvisible && HunterEnchantment.getClientEnchantmentLevel(player) > 0 && !player.hasEffect(MobEffects.INVISIBILITY)) {
             PlayerDataProvider.getCapability(player).ifPresent(data -> {
-                if (data.hunterStacks > 0) {
+                if (data.hasHunterStacks()) {
                     result.set(false);
                 }
             });
@@ -33,17 +33,17 @@ public abstract class CustomLayerFeatureRendererMixin {
         return result.get();
     }
 
-    @ModifyConstant(method = "renderLayers(Lnet/minecraft/client/player/AbstractClientPlayer;Ldev/tr7zw/skinlayers/accessor/PlayerSettings;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V", constant = @Constant(floatValue = 1.0f, ordinal = 3), remap = false)
+    @ModifyConstant(method = "renderLayers", constant = @Constant(floatValue = 1.0f, ordinal = 3), remap = false)
     private float additional_enchantments$modifyAlpha(float alpha, @Local(argsOnly = true) final AbstractClientPlayer player) {
         AtomicDouble result = new AtomicDouble(alpha);
 
-        if (player.isInvisible()) {
+        if (player.isInvisible() && !player.hasEffect(MobEffects.INVISIBILITY)) {
             int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel(player);
 
             if (enchantmentLevel > 0) {
                 PlayerDataProvider.getCapability(player).ifPresent(data -> {
-                    if (data.hunterStacks > 0) {
-                        result.set(HunterLayer.getAlpha(data.hunterStacks, enchantmentLevel));
+                    if (data.hasHunterStacks()) {
+                        result.set(HunterLayer.getAlpha(data.getHunterStacks(), enchantmentLevel));
                     }
                 });
             }
