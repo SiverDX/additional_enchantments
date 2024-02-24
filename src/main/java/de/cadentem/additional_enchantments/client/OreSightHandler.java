@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class OreSightHandler {
-    private static Map<Integer, Boolean[]> SECTION_CACHE;
+    private static Map<Integer, Boolean[]> CHUNK_CACHE;
     private static Map<Long, Integer> BLOCK_CACHE;
     private static int CACHE_EXPIRE = 2;
 
@@ -56,7 +56,7 @@ public class OreSightHandler {
             return;
         }
 
-        if (SECTION_CACHE == null || BLOCK_CACHE == null || ClientConfig.CACHE_EXPIRE.get() != CACHE_EXPIRE) {
+        if (CHUNK_CACHE == null || BLOCK_CACHE == null || ClientConfig.CACHE_EXPIRE.get() != CACHE_EXPIRE) {
             CACHE_EXPIRE = ClientConfig.CACHE_EXPIRE.get();
             initCaches();
         }
@@ -89,7 +89,7 @@ public class OreSightHandler {
     }
 
     private static void initCaches() {
-        SECTION_CACHE = CacheBuilder.newBuilder()
+        CHUNK_CACHE = CacheBuilder.newBuilder()
                 .expireAfterWrite(CACHE_EXPIRE, TimeUnit.SECONDS)
                 .concurrencyLevel(1)
                 .<Integer, Boolean[]>build()
@@ -145,7 +145,7 @@ public class OreSightHandler {
 
                     mutablePosition.set(x, y, z);
 
-                    if (containsOres(currentChunk, section, sectionIndex, playerData.oreRarity)) {
+                    if (foundSection || containsOres(currentChunk, section, sectionIndex, playerData.oreRarity)) {
                         foundSection = true;
 
                         float xMin = (float) (x - camera.x());
@@ -208,7 +208,7 @@ public class OreSightHandler {
         }
 
         Integer key = chunk.getPos().hashCode();
-        Boolean[] containsOres = SECTION_CACHE.get(key);
+        Boolean[] containsOres = CHUNK_CACHE.get(key);
 
         if (containsOres == null || containsOres[sectionIndex] == null) {
             boolean containsOre = !section.hasOnlyAir() && section.maybeHas(state -> isRelevantRarity(state, configuration));
@@ -219,7 +219,7 @@ public class OreSightHandler {
                 }
 
                 containsOres[sectionIndex] = containsOre;
-                SECTION_CACHE.put(key, containsOres);
+                CHUNK_CACHE.put(key, containsOres);
             } else {
                 return containsOre;
             }
