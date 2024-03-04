@@ -32,6 +32,10 @@ public class ConfusionEnchantment extends ConfigurableEnchantment {
                 return mob.canAttack(livingEntity);
             });
 
+            if (entities.isEmpty()) {
+                return;
+            }
+
             LivingEntity retaliationTarget = entities.get(mob.getRandom().nextInt(entities.size()));
 
             mob.setLastHurtByMob(retaliationTarget);
