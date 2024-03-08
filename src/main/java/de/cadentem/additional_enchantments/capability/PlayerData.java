@@ -133,6 +133,7 @@ public class PlayerData {
         tag.putInt("explosionType", explosionType.ordinal());
         tag.putInt("homingTypeFilter", homingTypeFilter.ordinal());
         tag.putInt("homingPriority", homingPriority.ordinal());
+        tag.putInt("displayType", displayType.ordinal());
         tag.putInt("itemFilter", itemFilter.ordinal());
         tag.putInt("oreRarity", oreRarity.ordinal());
         tag.putInt("voidingState", voidingState.ordinal());
@@ -145,6 +146,7 @@ public class PlayerData {
         explosionType = Explosion.BlockInteraction.values()[tag.getInt("explosionType")];
         homingTypeFilter = HomingEnchantment.TypeFilter.values()[tag.getInt("homingTypeFilter")];
         homingPriority = HomingEnchantment.Priority.values()[tag.getInt("homingPriority")];
+        displayType = PerceptionEnchantment.DisplayType.values()[tag.getInt("displayType")];
         itemFilter = Rarity.values()[tag.getInt("itemFilter")];
         oreRarity = OreSightEnchantment.OreRarity.values()[tag.getInt("oreRarity")];
         voidingState = VoidingEnchantment.State.values()[tag.getInt("voidingState")];
