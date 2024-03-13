@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Mixin(value = PlayerRenderer.class, priority = 1500)
-public class PlayerRenderMixin {
+@Mixin(value = PlayerRenderer.class, priority = 1500, remap = false)
+public abstract class PlayerRenderMixin {
     @TargetHandler(mixin = "dev.tr7zw.skinlayers.mixin.PlayerRendererMixin", name = "renderHand")
     @Redirect(method = "@MixinSquared:Handler", at = @At(value = "INVOKE", target = "Ldev/tr7zw/skinlayers/api/Mesh;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V"))
     private void handleTransparecny(final Mesh instance, final PoseStack poseStack, final VertexConsumer vertexConsumer, int packedLight, int packedOverlay, /* Method arguments */ final PoseStack methodPoseStack, final MultiBufferSource bufferSource, int methodPackedLight, final AbstractClientPlayer player) {

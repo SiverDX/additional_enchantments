@@ -27,9 +27,9 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
@@ -39,16 +39,10 @@ import java.util.concurrent.TimeUnit;
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class OreSightHandler {
     private static Map<Integer, Boolean[]> CHUNK_CACHE;
-    private static Map<Long, Integer> BLOCK_CACHE;
+    private static Map<Long, Vec3i> BLOCK_CACHE;
     private static int CACHE_EXPIRE = 2;
 
-    private static final Vec3i[] COLORS = new Vec3i[]{
-            new Vec3i(255, 255, 255),
-            new Vec3i(165, 42, 42),
-            new Vec3i(255, 215, 0),
-            new Vec3i(64, 224, 208),
-            new Vec3i(0, 0, 0)
-    };
+    public static final Vec3i NO_COLOR = new Vec3i(-1, -1, -1);
 
     @SubscribeEvent
     public static void handleOreSightEnchantment(final RenderLevelStageEvent event) {
@@ -98,7 +92,7 @@ public class OreSightHandler {
         BLOCK_CACHE = CacheBuilder.newBuilder()
                 .expireAfterWrite(CACHE_EXPIRE, TimeUnit.SECONDS)
                 .concurrencyLevel(1)
-                .<Long, Integer>build()
+                .<Long, Vec3i>build()
                 .asMap();
     }
 
@@ -156,25 +150,23 @@ public class OreSightHandler {
                         float zMax = (float) (1 + z - camera.z());
 
                         if (cullingFrustum.getIntersection().testAab(xMin, yMin, zMin, xMax, yMax, zMax)) {
-                            OreSightEnchantment.OreRarity rarity = getRarity(currentChunk, mutablePosition);
+                            Vec3i color = getColor(currentChunk, mutablePosition);
 
-                            if (rarity != OreSightEnchantment.OreRarity.NONE) {
-                                if (rarity.ordinal() >= playerData.oreRarity.ordinal()) {
-                                    boolean[] renderSides = new boolean[Direction.values().length];
+                            if (color != NO_COLOR) {
+                                boolean[] renderSides = new boolean[Direction.values().length];
 
-                                    for (Direction direction : Direction.values()) {
-                                        BlockPos relative = mutablePosition.relative(direction, 1);
+                                for (Direction direction : Direction.values()) {
+                                    BlockPos relative = mutablePosition.relative(direction, 1);
 
-                                        if (isWithin(relative, minChunkX, minChunkY, minChunkZ, maxChunkX, maxChunkY, maxChunkZ)) {
-                                            renderSides[direction.ordinal()] = rarity != getRarity(currentChunk, relative);
-                                        } else {
-                                            // Outside of enchantment range, render to "close" the shape
-                                            renderSides[direction.ordinal()] = true;
-                                        }
+                                    if (isWithin(relative, minChunkX, minChunkY, minChunkZ, maxChunkX, maxChunkY, maxChunkZ)) {
+                                        renderSides[direction.ordinal()] = color != getColor(currentChunk, relative);
+                                    } else {
+                                        // Outside of enchantment range, render to "close" the shape
+                                        renderSides[direction.ordinal()] = true;
                                     }
-
-                                    drawLines(bufferBuilder, poseStack.last().pose(), poseStack.last().normal(), xMin, yMin, zMin, xMax, yMax, zMax, renderSides, COLORS[rarity.ordinal()]);
                                 }
+
+                                drawLines(bufferBuilder, poseStack.last().pose(), poseStack.last().normal(), xMin, yMin, zMin, xMax, yMax, zMax, renderSides, color);
                             }
                         }
                     }
@@ -211,7 +203,7 @@ public class OreSightHandler {
         Boolean[] containsOres = CHUNK_CACHE.get(key);
 
         if (containsOres == null || containsOres[sectionIndex] == null) {
-            boolean containsOre = !section.hasOnlyAir() && section.maybeHas(state -> isRelevantRarity(state, configuration));
+            boolean containsOre = !section.hasOnlyAir() && section.maybeHas(state -> getColor(state) != NO_COLOR);
 
             if (CACHE_EXPIRE > 0) {
                 if (containsOres == null) {
@@ -228,65 +220,43 @@ public class OreSightHandler {
         return containsOres[sectionIndex];
     }
 
-    private static OreSightEnchantment.OreRarity getRarity(final LevelChunk chunk, final BlockPos position) {
+    private static @NotNull Vec3i getColor(final LevelChunk chunk, final BlockPos position) {
         Long key = position.asLong();
-        Integer ordinal = BLOCK_CACHE.get(key);
+        Vec3i color = BLOCK_CACHE.get(key);
 
-        if (ordinal == null) {
-            OreSightEnchantment.OreRarity rarity;
-
+        if (color == null) {
             if (isWithin(position, chunk.getPos().getMinBlockX(), position.getY(), chunk.getPos().getMinBlockZ(), chunk.getPos().getMaxBlockX(), position.getY(), chunk.getPos().getMaxBlockZ())) {
-                rarity = getRarity(chunk.getBlockState(position));
+                color = getColor(chunk.getBlockState(position));
             } else {
                 Player localPlayer = ClientProxy.getLocalPlayer();
 
                 if (localPlayer != null) {
-                    rarity = getRarity(localPlayer.level().getBlockState(position));
+                    color = getColor(localPlayer.level().getBlockState(position));
                 } else {
-                    return OreSightEnchantment.OreRarity.NONE;
+                    return NO_COLOR;
                 }
             }
 
-            ordinal = rarity.ordinal();
-
             if (CACHE_EXPIRE > 0) {
-                BLOCK_CACHE.put(key, ordinal);
+                BLOCK_CACHE.put(key, color);
             }
         }
 
-        return OreSightEnchantment.OreRarity.values()[ordinal];
+        return color;
     }
 
-    private static OreSightEnchantment.OreRarity getRarity(final BlockState state) {
-        OreSightEnchantment.OreRarity rarity;
+    private static @NotNull Vec3i getColor(final BlockState state) {
+        Vec3i color;
 
         if (state.isAir()) {
-            rarity = OreSightEnchantment.OreRarity.NONE;
+            color = NO_COLOR;
         } else if (state.is(AEBlockTags.ORE_SIGHT_BLACKLIST)) {
-            rarity = OreSightEnchantment.OreRarity.NONE;
-        } else if (state.is(AEBlockTags.RARE_ORE)) {
-            rarity = OreSightEnchantment.OreRarity.RARE;
-        } else if (state.is(AEBlockTags.UNCOMMON_ORE)) {
-            rarity = OreSightEnchantment.OreRarity.UNCOMMON;
-        } else if (state.is(AEBlockTags.COMMON_ORE)) {
-            rarity = OreSightEnchantment.OreRarity.COMMON;
-        } else if (state.is(Tags.Blocks.ORES)) {
-            rarity = OreSightEnchantment.OreRarity.ALL;
+            color = NO_COLOR;
         } else {
-            rarity = OreSightEnchantment.OreRarity.NONE;
+            color = ClientConfig.getColor(state);
         }
 
-        return rarity;
-    }
-
-    private static boolean isRelevantRarity(final BlockState state, final OreSightEnchantment.OreRarity configuration) {
-        OreSightEnchantment.OreRarity rarity = getRarity(state);
-
-        if (rarity == OreSightEnchantment.OreRarity.NONE) {
-            return false;
-        }
-
-        return rarity.ordinal() >= configuration.ordinal();
+        return color;
     }
 
     private static void drawLines(final BufferBuilder bufferBuilder, final Matrix4f lastPose, final Matrix3f normal, final float minX, float minY, float minZ, float maxX, float maxY, float maxZ, final boolean[] renderSides, final Vec3i color) {
