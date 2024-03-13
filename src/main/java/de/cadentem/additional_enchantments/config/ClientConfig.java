@@ -104,7 +104,7 @@ public class ClientConfig {
                 "3;#" + AEBlockTags.RARE_ORE.location() + ";64;224;208"
         );
 
-        ORE_SIGHT_CONFIGS_INTERNAL = BUILDER.comment("Color configuration for ore sight - syntax: [<block_tag>;<red>;<green>;<blue>], e.g. [#forge:ores/gold;255;215;0] or [minecraft:ancient_debris;160,32,240]").defineList("ore_sight_configs", defaultConfig, ClientConfig::validateOreSightConfig);
+        ORE_SIGHT_CONFIGS_INTERNAL = BUILDER.comment("Color configuration for ore sight - syntax: [<rarity>;<block>;<red>;<green>;<blue>], e.g. [1;#forge:ores/gold;255;215;0] or [7;minecraft:ancient_debris;160,32,240]").defineList("ore_sight_configs", defaultConfig, ClientConfig::validateOreSightConfig);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }
@@ -131,7 +131,7 @@ public class ClientConfig {
             if (config == null) {
                 AE.LOG.warn("Ore Sight config is invalid likely due to non-existent block or tag [{}]", data);
             } else {
-                newConfigs.add(config);
+                newConfigs.add(config); // TODO :: check if said rarity was already added?
             }
         });
 
@@ -142,12 +142,20 @@ public class ClientConfig {
         AE.LOG.info("Reloaded Ore Sight configuration: [{}]", ORE_SIGHT_CONFIGS);
     }
 
-    public static int getMaxRarity() {
+    public static int getNextRarity(int current) {
         if (ORE_SIGHT_CONFIGS == null || ORE_SIGHT_CONFIGS.isEmpty()) {
             return PlayerData.DISPLAY_NONE;
         }
 
-        return ORE_SIGHT_CONFIGS.get(0).rarity;
+        for (int i = ORE_SIGHT_CONFIGS.size() - 1; i >= 0; i--) {
+            OreSightConfig config = ORE_SIGHT_CONFIGS.get(i);
+
+            if (config.rarity > current) {
+                return config.rarity;
+            }
+        }
+
+        return PlayerData.DISPLAY_NONE;
     }
 
     public static @NotNull Vec3i getColor(final BlockState state, int displayRarity) {
@@ -156,7 +164,7 @@ public class ClientConfig {
         }
 
         for (OreSightConfig config : ORE_SIGHT_CONFIGS) {
-            if (displayRarity <= config.rarity && config.test(state)) {
+            if (config.rarity >= displayRarity && config.test(state)) {
                 return config.color;
             }
         }
