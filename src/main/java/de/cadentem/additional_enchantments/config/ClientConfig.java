@@ -10,12 +10,10 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.TagsUpdatedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(Dist.CLIENT)
 public class ClientConfig {
     public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec SPEC;
@@ -51,8 +48,7 @@ public class ClientConfig {
             Vec3i color = new Vec3i(Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]));
 
             if (rawLocation.startsWith("#")) {
-                rawLocation = rawLocation.substring(1);
-                TagKey<Block> tag = TagKey.create(Registry.BLOCK_REGISTRY, ResourceLocation.tryParse(rawLocation));
+                TagKey<Block> tag = TagKey.create(Registry.BLOCK_REGISTRY, ResourceLocation.tryParse(rawLocation.substring(1)));
 
                 if (!ForgeRegistries.BLOCKS.tags().isKnownTagName(tag)) {
                     return null;
@@ -89,9 +85,14 @@ public class ClientConfig {
         SPEC = BUILDER.build();
     }
 
-    @SubscribeEvent
-    public static void reloadConfig(final TagsUpdatedEvent event) {
+    public static void reloadConfigFromTags(final TagsUpdatedEvent ignored) {
         reloadConfig();
+    }
+
+    public static void reloadConfigFromEdit(final ModConfigEvent.Reloading event) {
+        if (event.getConfig().getSpec() == SPEC) {
+            reloadConfig();
+        }
     }
 
     public static void reloadConfig() {
@@ -104,7 +105,7 @@ public class ClientConfig {
             OreSightConfig config = OreSightConfig.fromString(data);
 
             if (config == null) {
-                AE.LOG.warn("Ore Sight config is invalid likely due to non-existant block or tag [{}]", data);
+                AE.LOG.warn("Ore Sight config is invalid likely due to non-existent block or tag [{}]", data);
             } else {
                 newConfigs.add(config);
             }

@@ -8,6 +8,7 @@ import de.cadentem.additional_enchantments.config.ClientConfig;
 import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.network.NetworkHandler;
 import de.cadentem.additional_enchantments.registry.*;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -47,6 +48,8 @@ public class AE {
     @SubscribeEvent
     public void clientSetup(final FMLClientSetupEvent event) {
         event.enqueueWork(ClientRegistry::registerItemProperties);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientConfig::reloadConfigFromEdit);
+        MinecraftForge.EVENT_BUS.addListener(ClientConfig::reloadConfigFromTags);
     }
 
     @SubscribeEvent
