@@ -61,7 +61,7 @@ public class OreSightHandler {
             int enchantmentLevel = OreSightEnchantment.getClientEnchantmentLevel();
 
             if (enchantmentLevel > 0) {
-                PlayerDataProvider.getCapability(localPlayer).ifPresent(playerData -> {
+                PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
                     PoseStack poseStack = event.getPoseStack();
                     poseStack.pushPose();
                     RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -71,7 +71,7 @@ public class OreSightHandler {
                     BufferBuilder bufferBuilder = tesselator.getBuilder();
                     bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
 
-                    drawLines(localPlayer, enchantmentLevel + 1, playerData, poseStack, bufferBuilder, event.getLevelRenderer());
+                    drawLines(localPlayer, enchantmentLevel + 1, data, poseStack, bufferBuilder, event.getLevelRenderer());
 
                     tesselator.end();
                     poseStack.popPose();
@@ -99,8 +99,8 @@ public class OreSightHandler {
     /**
      * Referenced off of <a href="https://github.com/TelepathicGrunt/Bumblezone/blob/31cc8dc7066fc19dd0b880f66d64460cee4d356b/common/src/main/java/com/telepathicgrunt/the_bumblezone/items/essence/LifeEssence.java#L132">TelepathicGrunt</a>
      */
-    private static void drawLines(final LocalPlayer localPlayer, int radius, final PlayerData playerData, final PoseStack poseStack, final BufferBuilder bufferBuilder, final LevelRenderer levelRenderer) {
-        if (playerData.oreRarity == OreSightEnchantment.OreRarity.NONE) {
+    private static void drawLines(final LocalPlayer localPlayer, int radius, final PlayerData data, final PoseStack poseStack, final BufferBuilder bufferBuilder, final LevelRenderer levelRenderer) {
+        if (data.displayRarity == PlayerData.DISPLAY_NONE) {
             return;
         }
 
@@ -139,7 +139,7 @@ public class OreSightHandler {
 
                     mutablePosition.set(x, y, z);
 
-                    if (foundSection || containsOres(currentChunk, section, sectionIndex, playerData.oreRarity)) {
+                    if (foundSection || containsOres(currentChunk, section, sectionIndex, data.displayRarity)) {
                         foundSection = true;
 
                         float xMin = (float) (x - camera.x());
@@ -150,7 +150,7 @@ public class OreSightHandler {
                         float zMax = (float) (1 + z - camera.z());
 
                         if (cullingFrustum.getIntersection().testAab(xMin, yMin, zMin, xMax, yMax, zMax)) {
-                            Vec3i color = getColor(currentChunk, mutablePosition);
+                            Vec3i color = getColor(currentChunk, mutablePosition, data.displayRarity);
 
                             if (color != NO_COLOR) {
                                 boolean[] renderSides = new boolean[Direction.values().length];
@@ -159,7 +159,7 @@ public class OreSightHandler {
                                     BlockPos relative = mutablePosition.relative(direction, 1);
 
                                     if (isWithin(relative, minChunkX, minChunkY, minChunkZ, maxChunkX, maxChunkY, maxChunkZ)) {
-                                        renderSides[direction.ordinal()] = color != getColor(currentChunk, relative);
+                                        renderSides[direction.ordinal()] = color != getColor(currentChunk, relative, data.displayRarity);
                                     } else {
                                         // Outside of enchantment range, render to "close" the shape
                                         renderSides[direction.ordinal()] = true;
@@ -194,16 +194,12 @@ public class OreSightHandler {
         return position.getX() >= xMin && position.getX() <= xMax && position.getY() >= yMin && position.getY() <= yMax && position.getZ() >= zMin && position.getZ() <= zMax;
     }
 
-    private static boolean containsOres(final LevelChunk chunk, final LevelChunkSection section, int sectionIndex, final OreSightEnchantment.OreRarity configuration) {
-        if (configuration == OreSightEnchantment.OreRarity.NONE) {
-            return false;
-        }
-
+    private static boolean containsOres(final LevelChunk chunk, final LevelChunkSection section, int sectionIndex, final int displayRarity) {
         Integer key = chunk.getPos().hashCode();
         Boolean[] containsOres = CHUNK_CACHE.get(key);
 
         if (containsOres == null || containsOres[sectionIndex] == null) {
-            boolean containsOre = !section.hasOnlyAir() && section.maybeHas(state -> getColor(state) != NO_COLOR);
+            boolean containsOre = !section.hasOnlyAir() && section.maybeHas(state -> getColor(state, displayRarity) != NO_COLOR);
 
             if (CACHE_EXPIRE > 0) {
                 if (containsOres == null) {
@@ -220,18 +216,18 @@ public class OreSightHandler {
         return containsOres[sectionIndex];
     }
 
-    private static @NotNull Vec3i getColor(final LevelChunk chunk, final BlockPos position) {
+    private static @NotNull Vec3i getColor(final LevelChunk chunk, final BlockPos position, int displayRarity) {
         Long key = position.asLong();
         Vec3i color = BLOCK_CACHE.get(key);
 
         if (color == null) {
             if (isWithin(position, chunk.getPos().getMinBlockX(), position.getY(), chunk.getPos().getMinBlockZ(), chunk.getPos().getMaxBlockX(), position.getY(), chunk.getPos().getMaxBlockZ())) {
-                color = getColor(chunk.getBlockState(position));
+                color = getColor(chunk.getBlockState(position), displayRarity);
             } else {
                 Player localPlayer = ClientProxy.getLocalPlayer();
 
                 if (localPlayer != null) {
-                    color = getColor(localPlayer.level().getBlockState(position));
+                    color = getColor(localPlayer.level().getBlockState(position), displayRarity);
                 } else {
                     return NO_COLOR;
                 }
@@ -245,7 +241,7 @@ public class OreSightHandler {
         return color;
     }
 
-    private static @NotNull Vec3i getColor(final BlockState state) {
+    private static @NotNull Vec3i getColor(final BlockState state, int displayRarity) {
         Vec3i color;
 
         if (state.isAir()) {
@@ -253,7 +249,7 @@ public class OreSightHandler {
         } else if (state.is(AEBlockTags.ORE_SIGHT_BLACKLIST)) {
             color = NO_COLOR;
         } else {
-            color = ClientConfig.getColor(state);
+            color = ClientConfig.getColor(state, displayRarity);
         }
 
         return color;
@@ -319,5 +315,10 @@ public class OreSightHandler {
     private static void drawLine(final BufferBuilder bufferBuilder, final Matrix4f lastPose, final Matrix3f normal, float fromX, float fromY, float fromZ, float toX, float toY, float toZ, int normalX, int normalY, int normalZ, final Vec3i color) {
         bufferBuilder.vertex(lastPose, fromX, fromY, fromZ).color(color.getX(), color.getY(), color.getZ(), 255).normal(normal, normalX, normalY, normalZ).endVertex();
         bufferBuilder.vertex(lastPose, toX, toY, toZ).color(color.getX(), color.getY(), color.getZ(), 255).normal(normal, normalX, normalY, normalZ).endVertex();
+    }
+
+    public static void clearCache() {
+        CHUNK_CACHE.clear();
+        BLOCK_CACHE.clear();
     }
 }

@@ -1,7 +1,11 @@
 package de.cadentem.additional_enchantments.capability;
 
+import de.cadentem.additional_enchantments.config.ClientConfig;
 import de.cadentem.additional_enchantments.config.ServerConfig;
-import de.cadentem.additional_enchantments.enchantments.*;
+import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
+import de.cadentem.additional_enchantments.enchantments.HunterEnchantment;
+import de.cadentem.additional_enchantments.enchantments.PerceptionEnchantment;
+import de.cadentem.additional_enchantments.enchantments.VoidingEnchantment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.player.Player;
@@ -9,13 +13,16 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Explosion;
 
 public class PlayerData {
+    public static final int DISPLAY_ALL = 0;
+    public static final int DISPLAY_NONE = -1;
+
     public MobEffectCategory effectFilter = MobEffectCategory.HARMFUL;
     public Explosion.BlockInteraction explosionType = Explosion.BlockInteraction.DESTROY;
     public HomingEnchantment.TypeFilter homingTypeFilter = HomingEnchantment.TypeFilter.ANY;
     public HomingEnchantment.Priority homingPriority = HomingEnchantment.Priority.CLOSEST;
     public PerceptionEnchantment.DisplayType displayType = PerceptionEnchantment.DisplayType.ALL;
     public Rarity itemFilter = Rarity.COMMON;
-    public OreSightEnchantment.OreRarity oreRarity = OreSightEnchantment.OreRarity.ALL;
+    public int displayRarity = DISPLAY_ALL;
     public VoidingEnchantment.State voidingState = VoidingEnchantment.State.ENABLED;
 
     // Not synced
@@ -57,7 +64,11 @@ public class PlayerData {
     }
 
     public void cycleOreRarity() {
-        oreRarity = (OreSightEnchantment.OreRarity) cycle(oreRarity);
+        displayRarity++;
+
+        if (displayRarity > ClientConfig.getMaxRarity()) {
+            displayRarity = DISPLAY_NONE;
+        }
     }
 
     public void cycleVoiding() {
@@ -135,7 +146,7 @@ public class PlayerData {
         tag.putInt("homingPriority", homingPriority.ordinal());
         tag.putInt("displayType", displayType.ordinal());
         tag.putInt("itemFilter", itemFilter.ordinal());
-        tag.putInt("oreRarity", oreRarity.ordinal());
+        tag.putInt("displayRarity", displayRarity);
         tag.putInt("voidingState", voidingState.ordinal());
 
         return tag;
@@ -148,7 +159,7 @@ public class PlayerData {
         homingPriority = HomingEnchantment.Priority.values()[tag.getInt("homingPriority")];
         displayType = PerceptionEnchantment.DisplayType.values()[tag.getInt("displayType")];
         itemFilter = Rarity.values()[tag.getInt("itemFilter")];
-        oreRarity = OreSightEnchantment.OreRarity.values()[tag.getInt("oreRarity")];
+        displayRarity = tag.getInt("displayRarity");
         voidingState = VoidingEnchantment.State.values()[tag.getInt("voidingState")];
     }
 }
