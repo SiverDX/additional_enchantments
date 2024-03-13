@@ -116,7 +116,6 @@ public class ServerConfig {
             }
 
             enchantmentConfigurations.put(enchantment, enchantmentConfiguration);
-
             BUILDER.pop();
         }
 

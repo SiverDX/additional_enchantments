@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class OreSightEnchantment extends ConfigurableEnchantment {
-    public enum OreRarity {
+    public enum OreRarity { // FIXME :: allow other ways to cycle color display
         ALL,
         COMMON,
         UNCOMMON,
