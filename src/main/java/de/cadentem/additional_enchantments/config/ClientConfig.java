@@ -177,15 +177,15 @@ public class ClientConfig {
             String[] data = string.split(";");
 
             if (data.length == 5) {
-                if (!ResourceLocation.isValidResourceLocation(data[0])) {
-                    return false;
-                }
-
                 try {
-                    if (Integer.parseInt(data[1]) < 0) {
+                    if (Integer.parseInt(data[0]) < 0) {
                         return false;
                     }
                 } catch (NumberFormatException ignored) {
+                    return false;
+                }
+
+                if (!ResourceLocation.isValidResourceLocation(data[1].startsWith("#") ? data[1].substring(1) : data[1])) {
                     return false;
                 }
 
