@@ -64,11 +64,7 @@ public class PlayerData {
     }
 
     public void cycleOreRarity() {
-        displayRarity++;
-
-        if (displayRarity > ClientConfig.getMaxRarity()) {
-            displayRarity = DISPLAY_NONE;
-        }
+        displayRarity = ClientConfig.getNextRarity(displayRarity);
     }
 
     public void cycleVoiding() {

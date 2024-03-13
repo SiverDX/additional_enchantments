@@ -11,6 +11,22 @@
 ### Known problems
 - The player transparency rendering of the `Hunter` enchantment has some issues with transparent blocks (e.g. water)
 
+# Configuration
+- All enchantments are configurable
+- There might be some enchantment-related extra configuration
+
+## Client
+There is a configuration for the time the `Ore Sight` cache is kept (affects how quickly the lines appear or disappear)
+
+There is also a configuration for the colors of to be rendered (and blocks to be grouped) - format: `[<rarity>;<block>;<red>;<green>;<blue>]` 
+- `rarity`: 
+  - Affects the hotkey which can be used to only render certain rarities (and hide others)
+  - It also affects the color chosen for the block - the config entry with the highest rarity will be tested first (and its color will be chosen)
+- `block`: Can be a block tag if it starts with `#` (e.g. `#forge:ores/gold`) or it can be a block (e.g. `minecraft:ancient_debris`)
+- `red`, `green`, `blue`: Colors to be used (between `0` and `255`)
+
+The server can prevent blocks from being rendered by adding said blocks to the blacklist (`additional_enchantments:ore_sight_blacklist`)
+
 # Enchantments
 ### Enchantment Categories
 - **Melee**: Sword, Axe and Trident
@@ -18,10 +34,6 @@
 - **Ranged and Trident**: Entries from **Ranged** and Tridents
   - Note that these are enchantments for projectiles, meaning for Tridents they only apply when thrown (and are therefor incompatible with the `Riptide` enchantment)
 - **Digger**: Vanilla category and contains things like pickaxes or shovels
-
-### Configuration
-- All enchantments are configurable
-- There might be some enchantment-related extra configuration
 
 ## Faster Attacks (Melee)
 - Default max. level: 4
@@ -115,11 +127,8 @@
   - The groups are based on three block tags: `additional_enchantments:common_ore`, `additional_enchantments:uncommon_ore` and `additional_enchantments:rare_ore`
   - If the block is a `forge:ores` but not part of a rarity group it will be outlined with a white color
 - Enchantment level increases the range
-- It's possible to switch between the rarities (ALL, COMMON, UNCOMMON, RARE and NONE (no outlines will be displayed)) with the keybind (default being `U`)
-  - Blocks can be blacklisted with the tag `additional_enchantments:ore_sight_blacklist`
-- There are two client side configurations
-  - One determines how far away ore lines get rendered as group (reducing this will improve performance)
-  - The other one determines how long block data is cached (reducing this will make outline updates happen faster)
+- It's possible to decide which outlines to display with the keybind (default being `U`)
+- Blocks can be blacklisted with the tag `additional_enchantments:ore_sight_blacklist`
 
 ## Bracewalk (Legs)
 - Default max. level: 4
