@@ -1,6 +1,7 @@
 package de.cadentem.additional_enchantments.enchantments;
 
 import de.cadentem.additional_enchantments.capability.ProjectileDataProvider;
+import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.enchantments.base.AEEnchantmentCategory;
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
@@ -26,8 +27,12 @@ public class StraightShotEnchantment extends ConfigurableEnchantment {
             int level = livingOwner.getMainHandItem().getEnchantmentLevel(AEEnchantments.STRAIGHT_SHOT.get());
 
             if (level > 0) {
-                projectile.setNoGravity(true);
-                ProjectileDataProvider.getCapability(projectile).ifPresent(data -> data.straightShotEnchantmentLevel = level);
+                ProjectileDataProvider.getCapability(projectile).ifPresent(data -> {
+                    projectile.setNoGravity(true);
+
+                    data.straightShotEnchantmentLevel = level;
+                    data.gravityTime = 20 * ServerConfig.GRAVITY_SECONDS.get();
+                });
             }
         }
     }
