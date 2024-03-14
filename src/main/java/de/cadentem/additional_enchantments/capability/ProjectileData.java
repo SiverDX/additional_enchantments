@@ -32,6 +32,7 @@ public class ProjectileData {
     public int explosiveTipEnchantmentLevel;
 
     public int straightShotEnchantmentLevel;
+    public int gravityTime;
 
     public void handleHomingMovement(final Projectile instance) {
         if (homingTarget == null) {
@@ -179,6 +180,7 @@ public class ProjectileData {
         tag.putInt("explosiveTipEnchantmentLevel", explosiveTipEnchantmentLevel);
         tag.putInt("straightShotEnchantmentLevel", straightShotEnchantmentLevel);
         tag.putInt("homingTargetId", homingTargetId);
+        tag.putInt("gravityTime", gravityTime);
 
         if (hasAddedEffects()) {
             ListTag effects = new ListTag();
@@ -199,6 +201,7 @@ public class ProjectileData {
         explosiveTipEnchantmentLevel = tag.getInt("explosiveTipEnchantmentLevel");
         straightShotEnchantmentLevel = tag.getInt("straightShotEnchantmentLevel");
         homingTargetId = tag.getInt("homingTargetId");
+        gravityTime = tag.getInt("gravityTime");
 
         ListTag effects = tag.getList("addedEffects", ListTag.TAG_COMPOUND);
 

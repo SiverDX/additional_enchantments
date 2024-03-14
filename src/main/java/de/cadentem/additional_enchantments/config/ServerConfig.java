@@ -39,6 +39,9 @@ public class ServerConfig {
     // Explosive Tip
     public static ForgeConfigSpec.DoubleValue EXPLOSIVE_TIP_RADIUS_MULTIPLIER;
 
+    // Straight Shot
+    public static ForgeConfigSpec.IntValue GRAVITY_SECONDS;
+
     // Faster Attacks
     public static ForgeConfigSpec.DoubleValue FASTER_ATTACKS_MULTIPLIER;
 
@@ -107,6 +110,7 @@ public class ServerConfig {
                 }
                 case AEEnchantments.HUNTER_ID -> HUNTER_STACK_REDUCTION = BUILDER.comment("Determines how much enchantment levels affect the speed of losing stacks - when (tick_count % (level / <reduction>)) is equal to 0 the stacks will reduce by 1").defineInRange("hunter_stack_reduction", 3, 1, 15);
                 case AEEnchantments.EXPLOSIVE_TIP_ID -> EXPLOSIVE_TIP_RADIUS_MULTIPLIER = BUILDER.comment("Multiplier to the enchantment level which will determine the explosion radius (level * <multiplier>) (result will at least by 0.1)").defineInRange("explosive_tip_radius_multiplier", 1d, 0d, 100d);
+                case AEEnchantments.STRAIGHT_SHOT_ID -> GRAVITY_SECONDS = BUILDER.comment("The amount of seconds the projectile will have no gravity for - this is to prevent tridents from never returning e.g.").defineInRange("gravity_seconds", 10, 0, 60);
                 case AEEnchantments.FASTER_ATTACKS_ID -> FASTER_ATTACKS_MULTIPLIER = BUILDER.comment("Multiplier to the enchantment level which will determine the attack speed bonus (level * <multiplier>) (result will apply as multiply_base)").defineInRange("faster_attacks_multiplier", 0.15d, 0d, 10d);
                 case AEEnchantments.SHATTER_ID -> {
                     SHATTER_CHANCE_BASE = BUILDER.comment("Base chance for the projectile to shatter and deal area of effect damage (1 means 100%)").defineInRange("shatter_chance_base", 0.3d, 0d, 1d);

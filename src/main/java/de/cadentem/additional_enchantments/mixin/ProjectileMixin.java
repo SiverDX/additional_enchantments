@@ -18,6 +18,14 @@ public abstract class ProjectileMixin {
         Projectile instance = (Projectile) (Object) this;
 
         ProjectileDataProvider.getCapability(instance).ifPresent(data -> {
+            if (data.straightShotEnchantmentLevel > 0) {
+                if (instance.isNoGravity() && data.gravityTime == 0) {
+                    instance.setNoGravity(false);
+                } else {
+                    data.gravityTime--;
+                }
+            }
+
             if (data.homingEnchantmentLevel == 0) {
                 return;
             }
