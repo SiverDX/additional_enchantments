@@ -28,7 +28,8 @@ public abstract class PlayerRenderMixin {
             PlayerDataProvider.getCapability(player).ifPresent(data -> {
                 if (data.hasHunterStacks()) {
                     instance.setVisible(true);
-                    instance.render(null, poseStack, vertexConsumer, packedLight, packedOverlay, 1, 1, 1, HunterLayer.getAlpha(data.getHunterStacks(), enchantmentLevel));
+                    int alpha = (int) (HunterLayer.getAlpha(data.getHunterStacks(), enchantmentLevel) * 255);
+                    instance.render(null, poseStack, vertexConsumer, packedLight, packedOverlay, alpha << 24);
                     wasRendered.set(true);
                 }
             });

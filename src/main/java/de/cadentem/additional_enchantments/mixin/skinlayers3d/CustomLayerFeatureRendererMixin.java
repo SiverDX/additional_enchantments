@@ -1,6 +1,5 @@
 package de.cadentem.additional_enchantments.mixin.skinlayers3d;
 
-import com.google.common.util.concurrent.AtomicDouble;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
@@ -15,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Mixin(CustomLayerFeatureRenderer.class)
 public abstract class CustomLayerFeatureRendererMixin {
@@ -33,9 +33,9 @@ public abstract class CustomLayerFeatureRendererMixin {
         return result.get();
     }
 
-    @ModifyConstant(method = "renderLayers", constant = @Constant(floatValue = 1.0f, ordinal = 3), remap = false)
-    private float additional_enchantments$modifyAlpha(float alpha, @Local(argsOnly = true) final AbstractClientPlayer player) {
-        AtomicDouble result = new AtomicDouble(alpha);
+    @ModifyConstant(method = "renderLayers", constant = @Constant(intValue = -1), remap = false)
+    private int additional_enchantments$modifyAlpha(int color, @Local(argsOnly = true) final AbstractClientPlayer player) {
+        AtomicInteger result = new AtomicInteger(color);
 
         if (player.isInvisible() && !player.hasEffect(MobEffects.INVISIBILITY)) {
             int enchantmentLevel = HunterEnchantment.getClientEnchantmentLevel(player);
@@ -43,12 +43,13 @@ public abstract class CustomLayerFeatureRendererMixin {
             if (enchantmentLevel > 0) {
                 PlayerDataProvider.getCapability(player).ifPresent(data -> {
                     if (data.hasHunterStacks()) {
-                        result.set(HunterLayer.getAlpha(data.getHunterStacks(), enchantmentLevel));
+                        int alpha = (int) HunterLayer.getAlpha(data.getHunterStacks(), enchantmentLevel) * 255;
+                        result.set(alpha << 24);
                     }
                 });
             }
         }
 
-        return result.floatValue();
+        return result.intValue();
     }
 }

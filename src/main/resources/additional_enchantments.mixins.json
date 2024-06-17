@@ -23,9 +23,7 @@
     "client.ModelBakeryMixin",
     "client.LevelRendererAccess",
     "client.LevelRendererMixin",
-    "client.PlayerRendererMixin",
-    "skinlayers3d.CustomLayerFeatureRendererMixin",
-    "skinlayers3d.PlayerRenderMixin"
+    "client.PlayerRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
