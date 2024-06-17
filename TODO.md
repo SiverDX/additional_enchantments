@@ -1,1 +1,2 @@
-turtle shell breaks invisibility in 3rd person?
+- turtle shell breaks invisibility in 3rd person?
+- hand 3d parts are not affected by hunter invisibility in first person?
