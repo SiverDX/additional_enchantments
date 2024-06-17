@@ -91,6 +91,16 @@ public class ClientConfig {
 
             return config;
         }
+
+        @Override
+        public String toString() {
+            return "OreSightConfig{" +
+                    "color=" + color +
+                    ", rarity=" + rarity +
+                    ", tag=" + tag +
+                    ", block=" + block +
+                    '}';
+        }
     }
 
     static {

@@ -1,0 +1,1 @@
+turtle shell breaks invisibility in 3rd person?
