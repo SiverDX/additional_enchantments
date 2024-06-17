@@ -43,8 +43,10 @@ public abstract class CustomLayerFeatureRendererMixin {
             if (enchantmentLevel > 0) {
                 PlayerDataProvider.getCapability(player).ifPresent(data -> {
                     if (data.hasHunterStacks()) {
-                        int alpha = (int) HunterLayer.getAlpha(data.getHunterStacks(), enchantmentLevel) * 255;
-                        result.set(alpha << 24);
+                        int alpha = (int) (HunterLayer.getAlpha(data.getHunterStacks(), enchantmentLevel) * 255) << 24;
+                        int newColor = color & 0x00FFFFFF; // remove alpha
+                        newColor = alpha | newColor; // set new alpha
+                        result.set(newColor);
                     }
                 });
             }

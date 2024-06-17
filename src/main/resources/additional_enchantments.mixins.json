@@ -8,8 +8,8 @@
   "mixins": [
     "AbstractArrowAccess",
     "EnderManMixin",
-    "ExplosionMixin",
     "ExperienceOrbMixin",
+    "ExplosionMixin",
     "LivingEntityMixin",
     "ProjectileMixin",
     "SwellGoalMixin",
@@ -18,11 +18,13 @@
   "client": [
     "client.FrustumAccess",
     "client.ItemInHandRendererMixin",
-    "client.MinecraftMixin",
-    "client.ModelBakeryMixin",
     "client.LevelRendererAccess",
     "client.LevelRendererMixin",
-    "client.PlayerRendererMixin"
+    "client.MinecraftMixin",
+    "client.ModelBakeryMixin",
+    "client.PlayerRendererMixin",
+    "skinlayers3d.CustomLayerFeatureRendererMixin",
+    "skinlayers3d.PlayerRenderMixin"
   ],
   "injectors": {
     "defaultRequire": 1
