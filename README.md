@@ -18,10 +18,11 @@
 ## Client
 There is a configuration for the time the `Ore Sight` cache is kept (affects how quickly the lines appear or disappear)
 
-There is also a configuration for the colors of to be rendered (and blocks to be grouped) - format: `[<rarity>;<block>;<red>;<green>;<blue>]` 
-- `rarity`: 
+There is also a configuration for the colors of to be rendered (and blocks to be grouped) - format: `[<rarity>;<block>;<red>;<green>;<blue>]`
+- `rarity`:
   - Affects the hotkey which can be used to only render certain rarities (and hide others)
   - It also affects the color chosen for the block - the config entry with the highest rarity will be tested first (and its color will be chosen)
+  - This also means that if you define two rarities for the same block the color with the higher rarity will be displayed
 - `block`: Can be a block tag if it starts with `#` (e.g. `#forge:ores/gold`) or it can be a block (e.g. `minecraft:ancient_debris`)
 - `red`, `green`, `blue`: Colors to be used (between `0` and `255`)
 
@@ -42,7 +43,7 @@ The server can prevent blocks from being rendered by adding said blocks to the b
 
 ## Plague (Melee)
 - Default max. level: 6
-- Applies a plague effect to entities which deals magic damage
+- Applies a poison effect to entities which deals magic damage
   - Also has a chance to spread to nearby targets (does not affect players or Tamable Animals owned by players)
   - Targets can be blacklisted with the tag `additional_enchantments:plague_blacklist`
 - Enchantment level increases the duration, damage, application chance and reduces the time between damage ticks
@@ -53,7 +54,7 @@ The server can prevent blocks from being rendered by adding said blocks to the b
 - Default max. level: 6
 - Applies a wither effect to entities which deals wither damage
 - Enchantment level increases the duration, damage, application chance and reduces the time between damage ticks
-- Not compatible with the `Plague` enchantment
+- Not compatible with the `Poison` enchantment
 
 ## Confusion (Melee)
 - Default max. level: 5
@@ -124,8 +125,6 @@ The server can prevent blocks from being rendered by adding said blocks to the b
 ## Ore Sight (Helmet)
 - Default max. level: 5
 - Outlines nearby ore blocks (even through walls) with different colors based on their rarity group
-  - The groups are based on three block tags: `additional_enchantments:common_ore`, `additional_enchantments:uncommon_ore` and `additional_enchantments:rare_ore`
-  - If the block is a `forge:ores` but not part of a rarity group it will be outlined with a white color
 - Enchantment level increases the range
 - It's possible to decide which outlines to display with the keybind (default being `U`)
 - Blocks can be blacklisted with the tag `additional_enchantments:ore_sight_blacklist`
@@ -144,10 +143,6 @@ The server can prevent blocks from being rendered by adding said blocks to the b
   - The blocks are based on plant related material and the block tag `additional_enchantments:hunter_relevant` (e.g. flowers, crops or leaves)
 - Enchantment level increases the critical damage, the rate at which you gain hunter stacks and reduces the rate at which you lose them
   - It will also reduce the amount of stacks needed to be considered at full stacks
-- The max. hunter stacks are determined as following: `20 * (3 + Math.max(0, <maximum_enchantment_level> - <current_enchantment_level>)`
-  - Meaning if the max. enchantment level is `6` and the current level is `3` the max. stacks will be `120`
-  - This means at higher enchantment levels you will have fewer stacks (i.e. you will reach max. stacks more quickly)
-  - Higher enchantment levels will lose stacks more slowly
 
 # Misc
 
