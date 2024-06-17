@@ -22,6 +22,7 @@ There is also a configuration for the colors of to be rendered (and blocks to be
 - `rarity`: 
   - Affects the hotkey which can be used to only render certain rarities (and hide others)
   - It also affects the color chosen for the block - the config entry with the highest rarity will be tested first (and its color will be chosen)
+  - This also means that if you define two rarities for the same block the color with the higher rarity will be displayed
 - `block`: Can be a block tag if it starts with `#` (e.g. `#forge:ores/gold`) or it can be a block (e.g. `minecraft:ancient_debris`)
 - `red`, `green`, `blue`: Colors to be used (between `0` and `255`)
 
@@ -124,8 +125,6 @@ The server can prevent blocks from being rendered by adding said blocks to the b
 ## Ore Sight (Helmet)
 - Default max. level: 5
 - Outlines nearby ore blocks (even through walls) with different colors based on their rarity group
-  - The groups are based on three block tags: `additional_enchantments:common_ore`, `additional_enchantments:uncommon_ore` and `additional_enchantments:rare_ore`
-  - If the block is a `forge:ores` but not part of a rarity group it will be outlined with a white color
 - Enchantment level increases the range
 - It's possible to decide which outlines to display with the keybind (default being `U`)
 - Blocks can be blacklisted with the tag `additional_enchantments:ore_sight_blacklist`

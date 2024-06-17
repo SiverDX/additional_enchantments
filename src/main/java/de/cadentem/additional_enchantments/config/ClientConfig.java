@@ -4,8 +4,8 @@ import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.capability.PlayerData;
 import de.cadentem.additional_enchantments.client.OreSightHandler;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
-import net.minecraft.core.Registry;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
@@ -72,7 +72,7 @@ public class ClientConfig {
             OreSightConfig config;
 
             if (isTag) {
-                TagKey<Block> tag = TagKey.create(Registry.BLOCK_REGISTRY, location);
+                TagKey<Block> tag = TagKey.create(Registries.BLOCK, location);
 
                 if (!ForgeRegistries.BLOCKS.tags().isKnownTagName(tag)) {
                     return null;
