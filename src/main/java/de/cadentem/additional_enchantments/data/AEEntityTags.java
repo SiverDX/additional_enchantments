@@ -14,11 +14,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.CompletableFuture;
 
 public class AEEntityTags extends EntityTypeTagsProvider {
-    public static final TagKey<EntityType<?>> HOMING_BLACKLIST = new TagKey<>(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "homing_blacklist"));
-    public static final TagKey<EntityType<?>> SHATTER_AOE_BLACKLIST = new TagKey<>(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "shatter_aoe_blacklist"));
-    public static final TagKey<EntityType<?>> PERCEPTION_BLACKLIST = new TagKey<>(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "perception_blacklist"));
-    public static final TagKey<EntityType<?>> CONFUSION_BLACKLIST = new TagKey<>(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "confusion_blacklist"));
-    public static final TagKey<EntityType<?>> PLAGUE_BLACKLIST = new TagKey<>(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "plague_blacklist"));
+    public static final TagKey<EntityType<?>> HOMING_BLACKLIST = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "homing_blacklist"));
+    public static final TagKey<EntityType<?>> SHATTER_AOE_BLACKLIST = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "shatter_aoe_blacklist"));
+    public static final TagKey<EntityType<?>> PERCEPTION_BLACKLIST = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "perception_blacklist"));
+    public static final TagKey<EntityType<?>> CONFUSION_BLACKLIST = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "confusion_blacklist"));
+    public static final TagKey<EntityType<?>> PLAGUE_BLACKLIST = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(AE.MODID, "plague_blacklist"));
 
     public AEEntityTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, final ExistingFileHelper fileHelper) {
         super(output, lookupProvider, AE.MODID, fileHelper);
