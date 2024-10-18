@@ -1,6 +1,7 @@
 package de.cadentem.additional_enchantments.core.entity;
 
 import de.cadentem.additional_enchantments.config.ServerConfig;
+import de.cadentem.additional_enchantments.data.AEEntityTags;
 import de.cadentem.additional_enchantments.registry.AEEntityTypes;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
@@ -73,18 +74,22 @@ public class ShardArrow extends AbstractArrow {
                 sendParticles();
 
                 // Cannot handle the damage while gathering entities due to possible `ConcurrentModificationException`
-                serverLevel.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(2 + enchantmentLevel), livingEntity -> {
+                serverLevel.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(2 + enchantmentLevel), target -> {
                     Entity owner = getOwner();
 
                     if (owner == null) {
                         return true;
                     }
 
-                    if (livingEntity == owner || livingEntity.isAlliedTo(owner)) {
+                    if (target == owner || target.isAlliedTo(owner)) {
                         return false;
                     }
 
-                    return !(owner instanceof LivingEntity livingOwner) || !(livingEntity instanceof TamableAnimal tamable) || !tamable.isOwnedBy(livingOwner);
+                    if (target.getType().is(AEEntityTags.SHATTER_AOE_BLACKLIST)) {
+                        return false;
+                    }
+
+                    return !(owner instanceof LivingEntity livingOwner) || !(target instanceof TamableAnimal tamable) || !tamable.isOwnedBy(livingOwner);
                 }).forEach(livingEntity -> livingEntity.hurt(livingEntity.damageSources().indirectMagic(this, getOwner()), damage));
 
                 discard();
