@@ -11,11 +11,11 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class AEEntityTags extends EntityTypeTagsProvider {
-    public static final TagKey<EntityType<?>> HOMING_BLACKLIST = new TagKey<>(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "homing_blacklist"));
-    public static final TagKey<EntityType<?>> SHATTER_AOE_BLACKLIST = new TagKey<>(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "shatter_aoe_blacklist"));
-    public static final TagKey<EntityType<?>> PERCEPTION_BLACKLIST = new TagKey<>(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "perception_blacklist"));
-    public static final TagKey<EntityType<?>> CONFUSION_BLACKLIST = new TagKey<>(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "confusion_blacklist"));
-    public static final TagKey<EntityType<?>> PLAGUE_BLACKLIST = new TagKey<>(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "plague_blacklist"));
+    public static final TagKey<EntityType<?>> HOMING_BLACKLIST = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "homing_blacklist"));
+    public static final TagKey<EntityType<?>> SHATTER_AOE_BLACKLIST = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "shatter_aoe_blacklist"));
+    public static final TagKey<EntityType<?>> PERCEPTION_BLACKLIST = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "perception_blacklist"));
+    public static final TagKey<EntityType<?>> CONFUSION_BLACKLIST = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "confusion_blacklist"));
+    public static final TagKey<EntityType<?>> PLAGUE_BLACKLIST = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(AE.MODID, "plague_blacklist"));
 
     public AEEntityTags(final DataGenerator generator, @Nullable final ExistingFileHelper fileHelper) {
         super(generator, AE.MODID, fileHelper);
