@@ -107,8 +107,9 @@ public class VisionHandler {
         if (maxRange == 0) {
             clear();
             return;
-        } else if (displayType != null && displayType != newDisplayType) {
-            // Display type changed - they might use different ranges
+        }
+
+        if (newDisplayType != displayType || newEnchantmentLevel != enchantmentLevel) {
             clear();
         }
 
