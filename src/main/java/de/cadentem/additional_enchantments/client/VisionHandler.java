@@ -61,7 +61,7 @@ public class VisionHandler {
     private static boolean isSearching;
     private static boolean hasPendingUpdate;
 
-    // FIXME :: doesn't seem to be enough
+    // Doesn't seem to work 100% of the time
     private static boolean searchedTooEarly;
 
     private record Data(Block block, double range, VisionConfig.Type displayType, float x, float y, float z, int color) {
@@ -99,9 +99,9 @@ public class VisionHandler {
         double maxRange;
 
         if (newDisplayType == VisionConfig.Type.TREASURE_FINDER) {
-            maxRange = Math.max(VisionConfig.getMaxRange(newEnchantmentLevel), ServerConfig.getTreasureRange(newEnchantmentLevel));
+            maxRange = Math.max(VisionConfig.getMaxRange(newDisplayType, newEnchantmentLevel), ServerConfig.getTreasureRange(newEnchantmentLevel));
         } else {
-            maxRange = VisionConfig.getMaxRange(newEnchantmentLevel);
+            maxRange = VisionConfig.getMaxRange(newDisplayType, newEnchantmentLevel);
         }
 
         if (maxRange == 0) {
@@ -216,19 +216,19 @@ public class VisionHandler {
             return;
         }
 
-        double searchRange = VisionConfig.getMaxRange(enchantmentLevel) + EXTENDED_SEARCH_RANGE;
+        double searchRange = VisionConfig.getMaxRange(displayType, enchantmentLevel) + EXTENDED_SEARCH_RANGE;
 
         if (lastScanCenter != null && player.position().distanceToSqr(lastScanCenter) > searchRange * searchRange) {
             return;
         }
 
-        VisionConfig.VisionData oldData = VisionConfig.get(enchantmentLevel, oldState.getBlock());
+        VisionConfig.VisionData oldData = VisionConfig.get(displayType, enchantmentLevel, oldState.getBlock());
 
         if (!RENDER_DATA.isEmpty() && oldData != null && oldData.range() > 0) {
             REMOVAL.add(position);
         }
 
-        VisionConfig.VisionData newData = VisionConfig.get(enchantmentLevel, newBlock);
+        VisionConfig.VisionData newData = VisionConfig.get(displayType, enchantmentLevel, newBlock);
 
         if (newData != null && newData.range() > 0) {
             RENDER_DATA.add(new Data(newBlock, newData.range(), displayType, position.getX(), position.getY(), position.getZ(), toARGB(newData.color())));
@@ -297,12 +297,12 @@ public class VisionHandler {
                         }
 
                         Block block = state.getBlock();
-                        VisionConfig.VisionData vision = VisionConfig.get(enchantmentLevel, block);
+                        VisionConfig.VisionData vision = VisionConfig.get(displayType, enchantmentLevel, block);
 
                         if (vision != null && vision.range() > 0) {
                             SEARCH_RESULT.add(new Data(block, vision.range(), displayType, x, y, z, toARGB(vision.color())));
-                        } else if (state.is(AEBlockTags.TREASURES) && hasLoot(player.level(), BlockPos.containing(x, y, z))) {
-                            SEARCH_RESULT.add(new Data(block, ServerConfig.getTreasureRange(enchantmentLevel), VisionConfig.Type.TREASURE_FINDER, x, y, z, toARGB(ServerConfig.getTreasureColor())));
+                        } else if (displayType == VisionConfig.Type.TREASURE_FINDER && state.is(AEBlockTags.TREASURES) && hasLoot(player.level(), BlockPos.containing(x, y, z))) {
+                            SEARCH_RESULT.add(new Data(block, ServerConfig.getTreasureRange(enchantmentLevel), displayType, x, y, z, toARGB(ServerConfig.getTreasureColor())));
                         }
                     }
 
@@ -337,7 +337,7 @@ public class VisionHandler {
                 // When searching too early all sections only contain air
                 searchedTooEarly = false;
 
-                VisionConfig.VisionData vision = VisionConfig.get(enchantmentLevel, state.getBlock());
+                VisionConfig.VisionData vision = VisionConfig.get(displayType, enchantmentLevel, state.getBlock());
 
                 if (vision != null && vision.range() > 0) {
                     return true;

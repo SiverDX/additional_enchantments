@@ -21,17 +21,25 @@ import java.util.List;
 import java.util.Map;
 
 public class VisionConfig {
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> RAW_ORE_VISION_ENTRIES;
+    // Ore Sight
+    public static ForgeConfigSpec.ConfigValue<List<? extends String>> RAW_ORE_SIGHT_ENTRIES;
+    private static final HashMap<Integer, Double> MAX_ORE_SIGHT_RANGE = new HashMap<>();
+    private static Map<Integer, Map<ResourceKey<Block>, VisionData>> ORE_SIGHT_DATA = new HashMap<>();
 
-    private static final HashMap<Integer, Double> MAX_RANGE_CACHE = new HashMap<>();
-    private static Map<Integer, Map<ResourceKey<Block>, VisionData>> VISION_DATA = new HashMap<>();
+    // Treasure Finder
+    public static ForgeConfigSpec.ConfigValue<List<? extends String>> RAW_TREASURE_FINDER_ENTRIES;
+    private static final HashMap<Integer, Double> MAX_TREASURE_FINDER_RANGE = new HashMap<>();
+    private static Map<Integer, Map<ResourceKey<Block>, VisionData>> TREASURE_FINDER_DATA = new HashMap<>();
 
     /** Used for the max. range */
     private static long lastUpdate;
     private static long lastReload;
 
-    public static @Nullable VisionConfig.VisionData get(final int enchantmentLevel, final Block block) {
-        Map<ResourceKey<Block>, VisionData> blocks = VISION_DATA.get(enchantmentLevel);
+    public static @Nullable VisionConfig.VisionData get(final Type type, final int enchantmentLevel, final Block block) {
+        Map<ResourceKey<Block>, VisionData> blocks = switch (type) {
+            case ORE_SIGHT -> ORE_SIGHT_DATA.get(enchantmentLevel);
+            case TREASURE_FINDER -> TREASURE_FINDER_DATA.get(enchantmentLevel);
+        };
 
         if (blocks == null) {
             return null;
@@ -41,16 +49,26 @@ public class VisionConfig {
         return blocks.get(block.builtInRegistryHolder().key());
     }
 
-    public static double getMaxRange(final int enchantmentLevel) {
+    public static double getMaxRange(final Type type, final int enchantmentLevel) {
+        HashMap<Integer, Double> ranges = switch (type) {
+            case ORE_SIGHT -> MAX_ORE_SIGHT_RANGE;
+            case TREASURE_FINDER -> MAX_TREASURE_FINDER_RANGE;
+        };
+
         if (lastUpdate < lastReload) {
             lastUpdate = System.currentTimeMillis();
-            MAX_RANGE_CACHE.remove(enchantmentLevel);
+            // Make sure to remove the old entry from both
+            MAX_ORE_SIGHT_RANGE.clear();
+            MAX_TREASURE_FINDER_RANGE.clear();
         }
 
-        return MAX_RANGE_CACHE.computeIfAbsent(enchantmentLevel, key -> {
+        return ranges.computeIfAbsent(enchantmentLevel, key -> {
             double currentRange = 0;
 
-            Map<ResourceKey<Block>, VisionData> blocks = VISION_DATA.get(enchantmentLevel);
+            Map<ResourceKey<Block>, VisionData> blocks = switch (type) {
+                case ORE_SIGHT -> ORE_SIGHT_DATA.get(enchantmentLevel);
+                case TREASURE_FINDER -> TREASURE_FINDER_DATA.get(enchantmentLevel);
+            };
 
             if (blocks == null) {
                 return currentRange;
@@ -89,9 +107,19 @@ public class VisionConfig {
             return;
         }
 
+        initializeData(access, Type.ORE_SIGHT);
+        initializeData(access, Type.TREASURE_FINDER);
+    }
+
+    private static void initializeData(final RegistryAccess access, final Type type) {
         Map<Integer, Map<ResourceKey<Block>, VisionData>> newEntries = new HashMap<>();
 
-        RAW_ORE_VISION_ENTRIES.get().forEach(entry -> {
+        List<? extends String> entries = switch (type) {
+            case ORE_SIGHT -> RAW_ORE_SIGHT_ENTRIES.get();
+            case TREASURE_FINDER -> RAW_TREASURE_FINDER_ENTRIES.get();
+        };
+
+        entries.forEach(entry -> {
             ParsedEntry parsed = ParsedEntry.fromString(entry);
 
             if (parsed.resource().startsWith("#")) {
@@ -110,10 +138,18 @@ public class VisionConfig {
             }
         });
 
-        VISION_DATA = newEntries;
-        lastReload = System.currentTimeMillis();
+        switch (type) {
+            case ORE_SIGHT -> {
+                ORE_SIGHT_DATA = newEntries;
+                AE.LOG.debug("Reloaded ore sight entries: {}", ORE_SIGHT_DATA);
+            }
+            case TREASURE_FINDER -> {
+                TREASURE_FINDER_DATA = newEntries;
+                AE.LOG.debug("Reloaded treasure finder entries: {}", TREASURE_FINDER_DATA);
+            }
+        }
 
-        AE.LOG.debug("Reloaded vision entries: {}", VISION_DATA);
+        lastReload = System.currentTimeMillis();
     }
 
     public enum Type {
@@ -127,7 +163,7 @@ public class VisionConfig {
         private static final int RESOURCE = 0;
         private static final int REQUIRED_LEVEL = 1;
         private static final int RANGE = 2;
-        private static final int COLOR = 4;
+        private static final int COLOR = 3;
 
         public VisionData data() {
             return new VisionData(range, color);

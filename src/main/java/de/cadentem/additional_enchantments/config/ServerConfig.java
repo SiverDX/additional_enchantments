@@ -152,14 +152,53 @@ public class ServerConfig {
                 case AEEnchantments.ORE_SIGHT_ID -> {
                     String lineOne = "Entries for ore vision (<block/tag>;<required_enchantment_level>;<range>;<range_per_level>;<color>\n";
                     String lineTwo = "(color can be a named color or a hex color in the format #RRGGBB)";
-                    VisionConfig.RAW_ORE_VISION_ENTRIES = BUILDER.comment(lineOne + lineTwo).defineList("ore_vision_entries", List.of(
-                            "#" + Tags.Blocks.ORES_DIAMOND.location() + ";1;32;8;aqua"
+                    VisionConfig.RAW_ORE_SIGHT_ENTRIES = BUILDER.comment(lineOne + lineTwo).defineList("ore_sight_entries", List.of(
+                            // Level 1
+                            "#" + Tags.Blocks.ORES_IRON.location() + ";1;24;white",
+                            "#" + Tags.Blocks.ORES_COPPER.location() + ";1;24;dark_green",
+                            "#" + Tags.Blocks.ORES_REDSTONE.location() + ";1;16;dark_red",
+                            // Level 2
+                            "#" + Tags.Blocks.ORES_IRON.location() + ";2;32;white",
+                            "#" + Tags.Blocks.ORES_REDSTONE.location() + ";2;24;dark_red",
+                            "#" + Tags.Blocks.ORES_GOLD.location() + ";2;24;gold",
+                            "#" + Tags.Blocks.ORES_LAPIS.location() + ";2;16;blue",
+                            // Level 3
+                            "#" + Tags.Blocks.ORES_GOLD.location() + ";3;32;gold",
+                            "#" + Tags.Blocks.ORES_LAPIS.location() + ";3;24;blue",
+                            "#" + Tags.Blocks.ORES_EMERALD.location() + ";3;16;green",
+                            "#" + Tags.Blocks.ORES_DIAMOND.location() + ";3;16;aqua",
+                            // Level 4
+                            "#" + Tags.Blocks.ORES_EMERALD.location() + ";4;24;green",
+                            "#" + Tags.Blocks.ORES_DIAMOND.location() + ";4;24;aqua",
+                            "#" + Tags.Blocks.ORES_NETHERITE_SCRAP.location() + ";4;16;white" // #3A2A24 - more fitting but less visible
                     ), object -> object instanceof String string && VisionConfig.ParsedEntry.validate(string));
                 }
                 case AEEnchantments.TREASURE_FINDER_ID -> {
-                    TREASURE_BASE_RANGE = BUILDER.comment("Base range for treasures (blocks with loot tables)").defineInRange("treasure_base_range", 16.0, 0, 128);
-                    TREASURE_RANGE_PER_LEVEL = BUILDER.comment("Range per level for treasures (blocks with loot tables)").defineInRange("treasure_range_per_level", 8.0, 0, 128);
-                    RAW_TREASURE_COLOR = BUILDER.comment("Color for treasures (blocks with loot tables)").define("treasure_color", "gold", object -> object instanceof String string && TextColor.parseColor(string) != null);
+                    TREASURE_BASE_RANGE = BUILDER.comment("Base range for treasures (containers with loot tables)").defineInRange("treasure_base_range", 16.0, 0, 128);
+                    TREASURE_RANGE_PER_LEVEL = BUILDER.comment("Range per level for treasures (containers with loot tables)").defineInRange("treasure_range_per_level", 8.0, 0, 128);
+                    RAW_TREASURE_COLOR = BUILDER.comment("Color for treasures (containers with loot tables)").define("treasure_color", "gold", object -> object instanceof String string && TextColor.parseColor(string) != null);
+                    String lineOne = "Entries for ore vision (<block/tag>;<required_enchantment_level>;<range>;<range_per_level>;<color>\n";
+                    String lineTwo = "(color can be a named color or a hex color in the format #RRGGBB)";
+                    VisionConfig.RAW_TREASURE_FINDER_ENTRIES = BUILDER.comment(lineOne + lineTwo).defineList("treasure_finder_entries", List.of(
+                            // Level 1
+                            "#" + Tags.Blocks.ORES_IRON.location() + ";1;24;white",
+                            "#" + Tags.Blocks.ORES_COPPER.location() + ";1;24;dark_green",
+                            "#" + Tags.Blocks.ORES_REDSTONE.location() + ";1;16;dark_red",
+                            // Level 2
+                            "#" + Tags.Blocks.ORES_IRON.location() + ";2;32;white",
+                            "#" + Tags.Blocks.ORES_REDSTONE.location() + ";2;24;dark_red",
+                            "#" + Tags.Blocks.ORES_GOLD.location() + ";2;24;gold",
+                            "#" + Tags.Blocks.ORES_LAPIS.location() + ";2;16;blue",
+                            // Level 3
+                            "#" + Tags.Blocks.ORES_GOLD.location() + ";3;32;gold",
+                            "#" + Tags.Blocks.ORES_LAPIS.location() + ";3;24;blue",
+                            "#" + Tags.Blocks.ORES_EMERALD.location() + ";3;16;green",
+                            "#" + Tags.Blocks.ORES_DIAMOND.location() + ";3;16;aqua",
+                            // Level 4
+                            "#" + Tags.Blocks.ORES_EMERALD.location() + ";4;24;green",
+                            "#" + Tags.Blocks.ORES_DIAMOND.location() + ";4;24;aqua",
+                            "#" + Tags.Blocks.ORES_NETHERITE_SCRAP.location() + ";4;16;white" // #3A2A24 - more fitting but less visible
+                    ), object -> object instanceof String string && VisionConfig.ParsedEntry.validate(string));
                 }
             }
 
