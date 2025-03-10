@@ -1,8 +1,10 @@
 package de.cadentem.additional_enchantments.config;
 
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
+import net.minecraft.network.chat.TextColor;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +54,33 @@ public class ServerConfig {
     public static ForgeConfigSpec.DoubleValue SHATTER_CHANCE_MULTIPLIER;
     public static ForgeConfigSpec.DoubleValue SHATTER_DAMAGE_MULTIPLIER;
 
+    // Treasure Finder
+    public static ForgeConfigSpec.DoubleValue TREASURE_BASE_RANGE;
+    public static ForgeConfigSpec.DoubleValue TREASURE_RANGE_PER_LEVEL;
+    private static ForgeConfigSpec.ConfigValue<String> RAW_TREASURE_COLOR;
+    private static int TREASURE_COLOR = -1;
+
+    public static double getTreasureRange(final int enchantmentLevel) {
+        return TREASURE_BASE_RANGE.get() + TREASURE_RANGE_PER_LEVEL.get() * enchantmentLevel;
+    }
+
+    public static int getTreasureColor() {
+        if (TREASURE_COLOR == -1) {
+            //noinspection DataFlowIssue -> color is present
+            TREASURE_COLOR = TextColor.parseColor(RAW_TREASURE_COLOR.get()).getValue();
+        }
+
+        return TREASURE_COLOR;
+    }
+
+    public static void updateFromConfig(final ModConfigEvent.Reloading event) {
+        if (event.getConfig().getSpec() != ServerConfig.SPEC) {
+            return;
+        }
+
+        TREASURE_COLOR = -1;
+    }
+
     public static final Map<String, EnchantmentConfiguration> enchantmentConfigurations = new HashMap<>();
 
     private static final Map<String, Integer> ENCHANTMENTS = new HashMap<>();
@@ -67,11 +96,12 @@ public class ServerConfig {
         ENCHANTMENTS.put(AEEnchantments.WITHER_ID, 6);
         ENCHANTMENTS.put(AEEnchantments.PERCEPTION_ID, 4);
         ENCHANTMENTS.put(AEEnchantments.CONFUSION_ID, 5);
-        ENCHANTMENTS.put(AEEnchantments.ORE_SIGHT_ID, 5);
+        ENCHANTMENTS.put(AEEnchantments.ORE_SIGHT_ID, 3);
         ENCHANTMENTS.put(AEEnchantments.HUNTER_ID, 6);
         ENCHANTMENTS.put(AEEnchantments.BRACEWALK_ID, 4);
         ENCHANTMENTS.put(AEEnchantments.HYDRO_SHOCK_ID, 5);
         ENCHANTMENTS.put(AEEnchantments.VOIDING_ID, 1);
+        ENCHANTMENTS.put(AEEnchantments.TREASURE_FINDER_ID, 3);
 
         for (String enchantment : ENCHANTMENTS.keySet()) {
             BUILDER.push(enchantment);
@@ -124,7 +154,12 @@ public class ServerConfig {
                     String lineTwo = "(color can be a named color or a hex color in the format #RRGGBB)";
                     VisionConfig.RAW_ORE_VISION_ENTRIES = BUILDER.comment(lineOne + lineTwo).defineList("ore_vision_entries", List.of(
                             "#" + Tags.Blocks.ORES_DIAMOND.location() + ";1;32;8;aqua"
-                    ), object -> object instanceof String string && VisionConfig.VisionData.validate(string));
+                    ), object -> object instanceof String string && VisionConfig.ParsedEntry.validate(string));
+                }
+                case AEEnchantments.TREASURE_FINDER_ID -> {
+                    TREASURE_BASE_RANGE = BUILDER.comment("Base range for treasures (blocks with loot tables)").defineInRange("treasure_base_range", 16.0, 0, 128);
+                    TREASURE_RANGE_PER_LEVEL = BUILDER.comment("Range per level for treasures (blocks with loot tables)").defineInRange("treasure_range_per_level", 8.0, 0, 128);
+                    RAW_TREASURE_COLOR = BUILDER.comment("Color for treasures (blocks with loot tables)").define("treasure_color", "gold", object -> object instanceof String string && TextColor.parseColor(string) != null);
                 }
             }
 

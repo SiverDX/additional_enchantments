@@ -15,16 +15,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OreSightEnchantment extends ConfigurableEnchantment {
+public class TreasureFinderEnchantment extends ConfigurableEnchantment {
     private static final Map<String, Pair<Integer, Integer>> CLIENT_CACHE = new HashMap<>();
 
-    public OreSightEnchantment() {
+    public TreasureFinderEnchantment() {
         super(Rarity.RARE, EnchantmentCategory.ARMOR_HEAD, EquipmentSlot.HEAD, AEEnchantments.ORE_SIGHT_ID);
     }
 
     @Override
     protected boolean checkCompatibility(@NotNull final Enchantment other) {
-        if (other == AEEnchantments.PERCEPTION.get() || other == AEEnchantments.TREASURE_FINDER.get()) {
+        if (other == AEEnchantments.PERCEPTION.get() || other == AEEnchantments.ORE_SIGHT.get()) {
             return false;
         }
 
@@ -42,7 +42,7 @@ public class OreSightEnchantment extends ConfigurableEnchantment {
 
         // Cache is being kept even when the player leaves
         if (data == null || Mth.abs(localPlayer.tickCount - data.getFirst()) > 20) {
-            data = Pair.of(localPlayer.tickCount, EnchantmentHelper.getEnchantmentLevel(AEEnchantments.ORE_SIGHT.get(), localPlayer));
+            data = Pair.of(localPlayer.tickCount, EnchantmentHelper.getEnchantmentLevel(AEEnchantments.TREASURE_FINDER.get(), localPlayer));
             CLIENT_CACHE.put(localPlayer.getStringUUID(), data);
         }
 

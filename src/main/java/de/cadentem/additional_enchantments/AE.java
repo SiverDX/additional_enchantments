@@ -7,10 +7,14 @@ import de.cadentem.additional_enchantments.client.ClientRegistry;
 import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.config.VisionConfig;
 import de.cadentem.additional_enchantments.network.NetworkHandler;
-import de.cadentem.additional_enchantments.registry.*;
+import de.cadentem.additional_enchantments.registry.AEEnchantments;
+import de.cadentem.additional_enchantments.registry.AEEntityTypes;
+import de.cadentem.additional_enchantments.registry.AEItems;
+import de.cadentem.additional_enchantments.registry.AELootModifiers;
+import de.cadentem.additional_enchantments.registry.AEMobEffects;
+import de.cadentem.additional_enchantments.registry.AEParticles;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.eventbus.EventBus;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -49,6 +53,7 @@ public class AE {
     public void clientSetup(final FMLClientSetupEvent event) {
         event.enqueueWork(ClientRegistry::registerItemProperties);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(VisionConfig::updateFromConfig);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ServerConfig::updateFromConfig);
         MinecraftForge.EVENT_BUS.addListener(VisionConfig::updateFromReload);
     }
 

@@ -11,4 +11,5 @@ public class AEParticles {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(Registries.PARTICLE_TYPE, AE.MODID);
 
     public static final RegistryObject<SimpleParticleType> PLAGUE = PARTICLE_TYPES.register("plague", () -> new SimpleParticleType(false));
+    public static final RegistryObject<SimpleParticleType> GLOW = PARTICLE_TYPES.register("glow", () -> new SimpleParticleType(false));
 }

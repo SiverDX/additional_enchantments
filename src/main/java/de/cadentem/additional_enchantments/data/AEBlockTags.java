@@ -22,10 +22,10 @@ public class AEBlockTags extends BlockTagsProvider {
     public static final TagKey<Block> COMMON_ORE = TagKey.create(Registries.BLOCK, new ResourceLocation(AE.MODID, "common_ore"));
     public static final TagKey<Block> UNCOMMON_ORE = TagKey.create(Registries.BLOCK, new ResourceLocation(AE.MODID, "uncommon_ore"));
     public static final TagKey<Block> RARE_ORE = TagKey.create(Registries.BLOCK, new ResourceLocation(AE.MODID, "rare_ore"));
-    public static final TagKey<Block> ORE_SIGHT_BLACKLIST = TagKey.create(Registries.BLOCK, new ResourceLocation(AE.MODID, "ore_sight_blacklist"));
     public static final TagKey<Block> HUNTER_RELEVANT = TagKey.create(Registries.BLOCK, new ResourceLocation(AE.MODID, "hunter_relevant"));
     public static final TagKey<Block> BRACEWALK = TagKey.create(Registries.BLOCK, new ResourceLocation(AE.MODID, "bracewalk"));
     public static final TagKey<Block> VOIDING = TagKey.create(Registries.BLOCK, new ResourceLocation(AE.MODID, "voiding"));
+    public static final TagKey<Block> TREASURES = TagKey.create(Registries.BLOCK, new ResourceLocation(AE.MODID, "treasures"));
 
     public AEBlockTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable final ExistingFileHelper fileHelper) {
         super(output, lookupProvider, AE.MODID, fileHelper);
@@ -95,6 +95,9 @@ public class AEBlockTags extends BlockTagsProvider {
                 .addTag(Tags.Blocks.SAND)
                 .addTag(Tags.Blocks.GRAVEL)
                 .addTag(Tags.Blocks.NETHERRACK);
+
+        tag(TREASURES)
+                .addTag(Tags.Blocks.CHESTS);
     }
 
     private ResourceLocation spelunkery(final String id) {

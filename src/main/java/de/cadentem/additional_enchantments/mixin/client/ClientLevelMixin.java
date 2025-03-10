@@ -1,6 +1,6 @@
 package de.cadentem.additional_enchantments.mixin.client;
 
-import de.cadentem.additional_enchantments.client.OreSightHandler;
+import de.cadentem.additional_enchantments.client.VisionHandler;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
@@ -14,6 +14,6 @@ public abstract class ClientLevelMixin {
     /** Update the ore vision handler while a search is pending or not scheduled */
     @Inject(method = "sendBlockUpdated", at = @At("HEAD"))
     private void dragonSurvival$updateBlockVision(final BlockPos position, final BlockState oldState, final BlockState newState, final int flags, final CallbackInfo callback) {
-        OreSightHandler.updateEntry(position, oldState, newState);
+        VisionHandler.updateEntry(position, oldState, newState);
     }
 }

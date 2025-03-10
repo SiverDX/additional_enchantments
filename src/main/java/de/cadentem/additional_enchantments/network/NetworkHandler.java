@@ -12,5 +12,6 @@ public class NetworkHandler {
     public static void register() {
         CHANNEL.registerMessage(0, SyncPlayerData.class, SyncPlayerData::encode, SyncPlayerData::decode, SyncPlayerData::handle);
         CHANNEL.registerMessage(1, SyncProjectileData.class, SyncProjectileData::encode, SyncProjectileData::decode, SyncProjectileData::handle);
+        CHANNEL.registerMessage(2, SyncLootTable.class, SyncLootTable::encode, SyncLootTable::decode, SyncLootTable::handle);
     }
 }

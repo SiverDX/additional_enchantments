@@ -46,6 +46,7 @@ public class ClientRegistry {
     @SubscribeEvent
     public static void registerParticles(final RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(AEParticles.PLAGUE.get(), PlagueParticle.Provider::new);
+        event.registerSpriteSet(AEParticles.GLOW.get(), CustomGlowParticle.Provider::new);
     }
 
     @SubscribeEvent

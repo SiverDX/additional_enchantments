@@ -30,7 +30,11 @@ public class PerceptionEnchantment extends ConfigurableEnchantment {
 
     @Override
     protected boolean checkCompatibility(@NotNull final Enchantment other) {
-        return other != AEEnchantments.ORE_SIGHT.get() && super.checkCompatibility(other);
+        if (other == AEEnchantments.ORE_SIGHT.get() || other == AEEnchantments.TREASURE_FINDER.get()) {
+            return false;
+        }
+
+        return super.checkCompatibility(other);
     }
 
     public static int getClientEnchantmentLevel() {
