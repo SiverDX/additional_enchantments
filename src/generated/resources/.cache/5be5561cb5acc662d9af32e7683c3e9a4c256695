@@ -1,8 +1,5 @@
-// 1.20.1	2025-03-10T14:24:08.5607177	Tags for minecraft:block mod id additional_enchantments
+// 1.20.1	2025-03-10T23:46:03.7578207	Tags for minecraft:block mod id additional_enchantments
 431f9fb03d67d660a8d026cb1058f68edb7f1bcf data/additional_enchantments/tags/blocks/bracewalk.json
-c994cb8ab6d6c86d371d7de7d66c8456bab8ec85 data/additional_enchantments/tags/blocks/common_ore.json
 e6b203e5139ccd2d3a25b6ae9b401768df91af8a data/additional_enchantments/tags/blocks/hunter_relevant.json
-35df1bfa58397dd096f6d17d29a3af29af0a6139 data/additional_enchantments/tags/blocks/rare_ore.json
 0ddba9dcb9a0e019d6415f95d15b67173286c12f data/additional_enchantments/tags/blocks/treasures.json
-fa0d0d7e42a8d56c6349af93b3277a56deb12704 data/additional_enchantments/tags/blocks/uncommon_ore.json
 fecc10ddfa988ea9e9dddc2eee05475ce37eeaa0 data/additional_enchantments/tags/blocks/voiding.json
