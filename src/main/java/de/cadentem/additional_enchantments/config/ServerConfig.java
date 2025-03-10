@@ -2,8 +2,10 @@ package de.cadentem.additional_enchantments.config;
 
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.Tags;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ServerConfig {
@@ -116,6 +118,13 @@ public class ServerConfig {
                     SHATTER_CHANCE_BASE = BUILDER.comment("Base chance for the projectile to shatter and deal area of effect damage (1 means 100%)").defineInRange("shatter_chance_base", 0.3d, 0d, 1d);
                     SHATTER_CHANCE_MULTIPLIER = BUILDER.comment("Multiplier to the enchantment level to determine the bonus to the base chance (level * <chance_multiplier>)").defineInRange("shatter_chance_modifier", 0.1d, 0d, 1d);
                     SHATTER_DAMAGE_MULTIPLIER = BUILDER.comment("Multiplier to the enchantment level to determine the area of effect damage (level * <damage_multiplier>)").defineInRange("shatter_damage_multiplier", 0.5d, 0d, 10d);
+                }
+                case AEEnchantments.ORE_SIGHT_ID -> {
+                    String lineOne = "Entries for ore vision (<block/tag>;<required_enchantment_level>;<range>;<range_per_level>;<color>\n";
+                    String lineTwo = "(color can be a named color or a hex color in the format #RRGGBB)";
+                    VisionConfig.RAW_ORE_VISION_ENTRIES = BUILDER.comment(lineOne + lineTwo).defineList("ore_vision_entries", List.of(
+                            "#" + Tags.Blocks.ORES_DIAMOND.location() + ";1;32;8;aqua"
+                    ), object -> object instanceof String string && VisionConfig.VisionData.validate(string));
                 }
             }
 

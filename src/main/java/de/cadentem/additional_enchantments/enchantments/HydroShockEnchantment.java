@@ -48,7 +48,7 @@ public class HydroShockEnchantment extends ConfigurableEnchantment {
             int enchantmentLevel;
 
             if (event.getSource().getDirectEntity() instanceof TridentAccess trident) {
-                enchantmentLevel = trident.getTridentItem().getEnchantmentLevel(AEEnchantments.HYDRO_SHOCK.get());
+                enchantmentLevel = trident.additional_enchantments$getTridentItem().getEnchantmentLevel(AEEnchantments.HYDRO_SHOCK.get());
                 wasThrown = true;
             } else {
                 enchantmentLevel = livingAttacker.getMainHandItem().getEnchantmentLevel(AEEnchantments.HYDRO_SHOCK.get());

@@ -1,6 +1,5 @@
 package de.cadentem.additional_enchantments.capability;
 
-import de.cadentem.additional_enchantments.config.ClientConfig;
 import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
 import de.cadentem.additional_enchantments.enchantments.HunterEnchantment;
@@ -13,16 +12,12 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Explosion;
 
 public class PlayerData {
-    public static final int DISPLAY_ALL = 0;
-    public static final int DISPLAY_NONE = -1;
-
     public MobEffectCategory effectFilter = MobEffectCategory.HARMFUL;
     public Explosion.BlockInteraction explosionType = Explosion.BlockInteraction.DESTROY;
     public HomingEnchantment.TypeFilter homingTypeFilter = HomingEnchantment.TypeFilter.ANY;
     public HomingEnchantment.Priority homingPriority = HomingEnchantment.Priority.CLOSEST;
     public PerceptionEnchantment.DisplayType displayType = PerceptionEnchantment.DisplayType.ALL;
     public Rarity itemFilter = Rarity.COMMON;
-    public int displayRarity = DISPLAY_ALL;
     public VoidingEnchantment.State voidingState = VoidingEnchantment.State.ENABLED;
 
     // Not synced
@@ -61,10 +56,6 @@ public class PlayerData {
 
     public void cycleItemFilter() {
         itemFilter = (Rarity) cycle(itemFilter);
-    }
-
-    public void cycleOreRarity() {
-        displayRarity = ClientConfig.getNextRarity(displayRarity);
     }
 
     public void cycleVoiding() {
@@ -142,7 +133,6 @@ public class PlayerData {
         tag.putInt("homingPriority", homingPriority.ordinal());
         tag.putInt("displayType", displayType.ordinal());
         tag.putInt("itemFilter", itemFilter.ordinal());
-        tag.putInt("displayRarity", displayRarity);
         tag.putInt("voidingState", voidingState.ordinal());
 
         return tag;
@@ -155,7 +145,6 @@ public class PlayerData {
         homingPriority = HomingEnchantment.Priority.values()[tag.getInt("homingPriority")];
         displayType = PerceptionEnchantment.DisplayType.values()[tag.getInt("displayType")];
         itemFilter = Rarity.values()[tag.getInt("itemFilter")];
-        displayRarity = tag.getInt("displayRarity");
         voidingState = VoidingEnchantment.State.values()[tag.getInt("voidingState")];
     }
 }

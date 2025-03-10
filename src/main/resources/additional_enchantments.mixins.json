@@ -10,6 +10,7 @@
     "EnderManMixin",
     "ExperienceOrbMixin",
     "ExplosionMixin",
+    "HolderSet$NamedAccess",
     "LivingEntityMixin",
     "ProjectileMixin",
     "SwellGoalMixin",
@@ -17,9 +18,9 @@
     "forge.AbstractArrowMixin"
   ],
   "client": [
+    "client.ClientLevelMixin",
     "client.FrustumAccess",
     "client.ItemInHandRendererMixin",
-    "client.LevelRendererAccess",
     "client.LevelRendererMixin",
     "client.MinecraftMixin",
     "client.ModelBakeryMixin",

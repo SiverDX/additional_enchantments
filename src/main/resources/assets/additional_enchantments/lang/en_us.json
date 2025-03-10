@@ -4,7 +4,6 @@
   "keybind.additional_enchantments.cycle_homing": "Cycle [Homing] configuration",
   "keybind.additional_enchantments.cycle_explosive_tip": "Cycle [Explosive Tip] configuration",
   "keybind.additional_enchantments.cycle_perception": "Cycle [Perception] configuration",
-  "keybind.additional_enchantments.ore_sight": "Cycle [Ore Sight] configuration",
   "keybind.additional_enchantments.voiding": "Cycle [Voiding] configuration",
 
   "message.additional_enchantments.cycled_configuration": "Enchantment [%1$s] configuration changed to [%2$s]",

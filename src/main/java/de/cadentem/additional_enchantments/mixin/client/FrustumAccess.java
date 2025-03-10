@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Frustum.class)
 public interface FrustumAccess {
-    @Accessor("intersection")
-    FrustumIntersection getIntersection();
+    /** Skip the need to create an AABB */
+    @Invoker("cubeInFrustum")
+    boolean additional_enchantments$cubeInFrustum(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
 }

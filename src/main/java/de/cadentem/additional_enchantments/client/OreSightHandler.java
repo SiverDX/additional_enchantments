@@ -1,125 +1,228 @@
 package de.cadentem.additional_enchantments.client;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import de.cadentem.additional_enchantments.capability.PlayerData;
-import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
-import de.cadentem.additional_enchantments.config.ClientConfig;
-import de.cadentem.additional_enchantments.data.AEBlockTags;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import de.cadentem.additional_enchantments.config.VisionConfig;
 import de.cadentem.additional_enchantments.enchantments.OreSightEnchantment;
 import de.cadentem.additional_enchantments.mixin.client.FrustumAccess;
-import de.cadentem.additional_enchantments.mixin.client.LevelRendererAccess;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
-import net.minecraft.core.Vec3i;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class OreSightHandler {
-    private static Map<Integer, Boolean[]> CHUNK_CACHE;
-    private static Map<Long, Vec3i> BLOCK_CACHE;
-    private static int CACHE_EXPIRE = 2;
+    /** Extend the search as a buffer while the background thread is searching */
+    private static final int EXTENDED_SEARCH_RANGE = 16;
 
-    public static final Vec3i NO_COLOR = new Vec3i(-1, -1, -1);
+    private static Cache<LevelChunkSection, Boolean[]> CHUNK_CACHE;
+
+    private static final List<Data> RENDER_DATA = new ArrayList<>();
+    private static final List<Data> SEARCH_RESULT = new ArrayList<>();
+    private static final List<BlockPos> REMOVAL = new ArrayList<>();
+
+    private static int enchantmentLevel;
+    private static Vec3 lastScanCenter;
+
+    private static boolean isSearching;
+    private static boolean hasPendingUpdate;
+
+    private record Data(Block block, double range, VisionConfig.Type displayType, float x, float y, float z, int color) {
+        public boolean isInRange(final Vec3 position, final double visibleRange) {
+            return position.distanceToSqr(x + 0.5, y + 0.5, z + 0.5) <= visibleRange * visibleRange;
+        }
+
+        public void render(final VertexConsumer buffer, final PoseStack.Pose pose) {
+            drawLines(buffer, pose, x, y, z, x + 1, y + 1, z + 1, color);
+        }
+    }
 
     @SubscribeEvent
-    public static void handleOreSightEnchantment(final RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+    public static void handleBlockVision(final RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS) {
             return;
         }
 
-        if (CHUNK_CACHE == null || BLOCK_CACHE == null || ClientConfig.CACHE_EXPIRE.get() != CACHE_EXPIRE) {
-            CACHE_EXPIRE = ClientConfig.CACHE_EXPIRE.get();
-            initCaches();
-        }
+        LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
+        enchantmentLevel = OreSightEnchantment.getClientEnchantmentLevel();
 
-        LocalPlayer localPlayer = Minecraft.getInstance().player;
-
-        if (localPlayer != null) {
-            int enchantmentLevel = OreSightEnchantment.getClientEnchantmentLevel();
-
-            if (enchantmentLevel > 0) {
-                PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
-                    PoseStack poseStack = event.getPoseStack();
-                    poseStack.pushPose();
-                    RenderSystem.setShader(GameRenderer::getPositionColorShader);
-                    RenderSystem.disableDepthTest();
-
-                    Tesselator tesselator = Tesselator.getInstance();
-                    BufferBuilder bufferBuilder = tesselator.getBuilder();
-                    bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
-
-                    drawLines(localPlayer, enchantmentLevel + 1, data, poseStack, bufferBuilder, event.getLevelRenderer());
-
-                    tesselator.end();
-                    poseStack.popPose();
-                    RenderSystem.enableDepthTest();
-                    RenderType.cutout().clearRenderState();
-                });
-            }
-        }
-    }
-
-    private static void initCaches() {
-        CHUNK_CACHE = CacheBuilder.newBuilder()
-                .expireAfterWrite(CACHE_EXPIRE, TimeUnit.SECONDS)
-                .concurrencyLevel(1)
-                .<Integer, Boolean[]>build()
-                .asMap();
-
-        BLOCK_CACHE = CacheBuilder.newBuilder()
-                .expireAfterWrite(CACHE_EXPIRE, TimeUnit.SECONDS)
-                .concurrencyLevel(1)
-                .<Long, Vec3i>build()
-                .asMap();
-    }
-
-    /**
-     * Referenced off of <a href="https://github.com/TelepathicGrunt/Bumblezone/blob/31cc8dc7066fc19dd0b880f66d64460cee4d356b/common/src/main/java/com/telepathicgrunt/the_bumblezone/items/essence/LifeEssence.java#L132">TelepathicGrunt</a>
-     */
-    private static void drawLines(final LocalPlayer localPlayer, int radius, final PlayerData data, final PoseStack poseStack, final BufferBuilder bufferBuilder, final LevelRenderer levelRenderer) {
-        if (data.displayRarity == PlayerData.DISPLAY_NONE) {
+        if (enchantmentLevel == 0) {
+            clear();
             return;
         }
+
+        initCache();
+
+        if (!isSearching && hasPendingUpdate) {
+            RENDER_DATA.clear();
+            RENDER_DATA.addAll(SEARCH_RESULT);
+            SEARCH_RESULT.clear();
+
+            REMOVAL.clear();
+            hasPendingUpdate = false;
+        }
+
+        double maxRange = VisionConfig.getMaxRange(enchantmentLevel);
+
+        if (!isSearching && isOutsideRange(maxRange)) {
+            lastScanCenter = player.position();
+            isSearching = true;
+
+            Util.backgroundExecutor().submit(() -> {
+                collect(player, maxRange + EXTENDED_SEARCH_RANGE);
+                isSearching = false;
+                hasPendingUpdate = true;
+            });
+        }
+
+        if (RENDER_DATA.isEmpty()) {
+            return;
+        }
+
+        PoseStack pose = event.getPoseStack();
+        pose.pushPose();
 
         Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        BlockPos startPosition = localPlayer.blockPosition();
+//        pose.mulPose(event.getModelViewMatrix());
+        pose.translate(-camera.x(), -camera.y(), -camera.z());
+
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.disableDepthTest();
+
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.getBuilder();
+        buffer.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+
+        for (int index = 0; index < RENDER_DATA.size(); index++) {
+            Data data = RENDER_DATA.get(index);
+
+            if (wasRemoved(data)) {
+                // It's more efficient to remove these here (than iterating through all current entries)
+                // Since this list would usually be rather small
+                RENDER_DATA.remove(index);
+                index--;
+                continue;
+            }
+
+            if (data.range() == 0 || !data.isInRange(player.getEyePosition(), data.range())) {
+                continue;
+            }
+
+            if (((FrustumAccess) event.getFrustum()).additional_enchantments$cubeInFrustum(data.x(), data.y(), data.z(), data.x() + 1, data.y() + 1, data.z() + 1)) {
+                if (data.displayType() == VisionConfig.Type.OUTLINE) {
+                    data.render(buffer, pose.last());
+                    continue;
+                }
+
+                if (Minecraft.getInstance().isPaused()) {
+                    // Newly added particles will only render once the game is un-paused
+                    // Meaning if we don't skip here, all the added particles will be shown at once
+                    continue;
+                }
+
+                if (data.displayType() == VisionConfig.Type.PARTICLE && player.tickCount % 10 == 0) {
+                    // Increase the bounding box to make the particles more visible for blocks in walls etc.
+                    // TODO :: Maybe there is a somewhat reasonable way to only show particles / focus particles on non-occluded faces?
+                    // TODO :: currently also spawns particles behind blocks (even though it doesn't have a x-ray "feature") - unsure if it's a problem
+//                    double xPos = PARTICLE_POSITION.getCoordinate(data.x(), data.x() + 0.5, 2, player.getRandom());
+//                    double yPos = PARTICLE_POSITION.getCoordinate(data.y(), data.y() + 0.5, 2, player.getRandom());
+//                    double zPos = PARTICLE_POSITION.getCoordinate(data.z(), data.z() + 0.5, 2, player.getRandom());
+//                    player.level().addParticle(DSParticles.GLOW.get(), xPos, yPos, zPos, BuiltInRegistries.BLOCK.getId(data.block()), 0, /* Color offset */ 0);
+                }
+            }
+        }
+
+        tesselator.end();
+        pose.popPose();
+
+        RenderSystem.enableDepthTest();
+        RenderType.cutout().clearRenderState();
+    }
+
+    @SubscribeEvent
+    public static void clearData(final EntityLeaveLevelEvent event) {
+        if (event.getEntity() == Minecraft.getInstance().player) {
+            clear();
+        }
+    }
+
+    public static void updateEntry(final BlockPos position, final BlockState oldState, final BlockState newState) {
+        LocalPlayer player = Minecraft.getInstance().player;
+
+        if (player == null || enchantmentLevel == 0) {
+            return;
+        }
+
+        Block newBlock = newState.getBlock();
+
+        if (oldState.getBlock() == newBlock) {
+            // There is no block state property support
+            return;
+        }
+
+        double searchRange = VisionConfig.getMaxRange(enchantmentLevel);
+
+        // Subtract extended range so that they are considered part of the buffered data
+        if (lastScanCenter != null && player.position().distanceToSqr(lastScanCenter) - EXTENDED_SEARCH_RANGE * EXTENDED_SEARCH_RANGE > searchRange * searchRange) {
+            return;
+        }
+
+        VisionConfig.VisionData oldData = VisionConfig.get(oldState.getBlock());
+
+        if (!RENDER_DATA.isEmpty() && oldData != null && oldData.calculateRange(enchantmentLevel) > 0) {
+            REMOVAL.add(position);
+        }
+
+        VisionConfig.VisionData newData = VisionConfig.get(newBlock);
+        double range = newData != null ? newData.calculateRange(enchantmentLevel) : 0;
+
+        if (range > 0) {
+            RENDER_DATA.add(new Data(newBlock, range, /* FIXME */ VisionConfig.Type.OUTLINE, position.getX(), position.getY(), position.getZ(), toARGB(newData.color())));
+        }
+    }
+
+    private static void collect(final Player player, double searchRange) {
+        BlockPos startPosition = player.blockPosition();
         ChunkPos currentChunkPosition = new ChunkPos(startPosition);
         LevelChunk currentChunk = null;
 
-        int minChunkX = startPosition.getX() - radius;
-        int maxChunkX = startPosition.getX() + radius;
-        int minChunkY = Math.max(localPlayer.level().getMinBuildHeight(), startPosition.getY() - radius);
-        int maxChunkY = Math.min(localPlayer.level().getMaxBuildHeight(), startPosition.getY() + radius);
-        int minChunkZ = startPosition.getZ() - radius;
-        int maxChunkZ = startPosition.getZ() + radius;
+        int minChunkX = (int) (startPosition.getX() - searchRange);
+        int maxChunkX = (int) (startPosition.getX() + searchRange);
+        int minChunkY = (int) Math.max(player.level().getMinBuildHeight(), startPosition.getY() - searchRange);
+        int maxChunkY = (int) Math.min(player.level().getMaxBuildHeight(), startPosition.getY() + searchRange);
+        int minChunkZ = (int) (startPosition.getZ() - searchRange);
+        int maxChunkZ = (int) (startPosition.getZ() + searchRange);
 
         boolean foundSection = false;
-
         BlockPos.MutableBlockPos mutablePosition = BlockPos.ZERO.mutable();
-        FrustumAccess cullingFrustum = (FrustumAccess) ((LevelRendererAccess) levelRenderer).getCullingFrustum();
 
         for (int x = minChunkX; x <= maxChunkX; x++) {
             for (int z = minChunkZ; z <= maxChunkZ; z++) {
@@ -128,7 +231,7 @@ public class OreSightHandler {
 
                 if (currentChunk == null || currentChunkPosition.x != sectionX || currentChunkPosition.z != sectionZ) {
                     currentChunkPosition = new ChunkPos(sectionX, sectionZ);
-                    currentChunk = localPlayer.level().getChunk(sectionX, sectionZ);
+                    currentChunk = player.level().getChunk(sectionX, sectionZ);
                 }
 
                 foundSection = false;
@@ -139,35 +242,21 @@ public class OreSightHandler {
 
                     mutablePosition.set(x, y, z);
 
-                    if (foundSection || containsOres(currentChunk, section, sectionIndex, data.displayRarity)) {
+                    if (foundSection || containsOres(currentChunk, section, sectionIndex)) {
                         foundSection = true;
 
-                        float xMin = (float) (x - camera.x());
-                        float yMin = (float) (y - camera.y());
-                        float zMin = (float) (z - camera.z());
-                        float yMax = (float) (1 + y - camera.y());
-                        float xMax = (float) (1 + x - camera.x());
-                        float zMax = (float) (1 + z - camera.z());
+                        BlockState state = getState(currentChunk, mutablePosition);
 
-                        if (cullingFrustum.getIntersection().testAab(xMin, yMin, zMin, xMax, yMax, zMax)) {
-                            Vec3i color = getColor(currentChunk, mutablePosition, data.displayRarity);
+                        if (state.isAir()) {
+                            continue;
+                        }
 
-                            if (color != NO_COLOR) {
-                                boolean[] renderSides = new boolean[Direction.values().length];
+                        Block block = state.getBlock();
+                        VisionConfig.VisionData vision = VisionConfig.get(block);
+                        double range = vision != null ? vision.calculateRange(enchantmentLevel) : 0;
 
-                                for (Direction direction : Direction.values()) {
-                                    BlockPos relative = mutablePosition.relative(direction, 1);
-
-                                    if (isWithin(relative, minChunkX, minChunkY, minChunkZ, maxChunkX, maxChunkY, maxChunkZ)) {
-                                        renderSides[direction.ordinal()] = color != getColor(currentChunk, relative, data.displayRarity);
-                                    } else {
-                                        // Outside of enchantment range, render to "close" the shape
-                                        renderSides[direction.ordinal()] = true;
-                                    }
-                                }
-
-                                drawLines(bufferBuilder, poseStack.last().pose(), poseStack.last().normal(), xMin, yMin, zMin, xMax, yMax, zMax, renderSides, color);
-                            }
+                        if (range > 0) {
+                            SEARCH_RESULT.add(new Data(block, range, /* FIXME */ VisionConfig.Type.OUTLINE, x, y, z, toARGB(vision.color())));
                         }
                     }
 
@@ -194,131 +283,115 @@ public class OreSightHandler {
         return position.getX() >= xMin && position.getX() <= xMax && position.getY() >= yMin && position.getY() <= yMax && position.getZ() >= zMin && position.getZ() <= zMax;
     }
 
-    private static boolean containsOres(final LevelChunk chunk, final LevelChunkSection section, int sectionIndex, final int displayRarity) {
-        Integer key = chunk.getPos().hashCode();
-        Boolean[] containsOres = CHUNK_CACHE.get(key);
+    private static boolean containsOres(final LevelChunk chunk, final LevelChunkSection section, int sectionIndex) {
+        Boolean[] cachedSection = CHUNK_CACHE.getIfPresent(section);
 
-        if (containsOres == null || containsOres[sectionIndex] == null) {
-            boolean containsOre = !section.hasOnlyAir() && section.maybeHas(state -> getColor(state, displayRarity) != NO_COLOR);
+        if (cachedSection == null || cachedSection[sectionIndex] == null) {
+            boolean containsRelevantBlock = !section.hasOnlyAir() && section.maybeHas(state -> {
+                VisionConfig.VisionData vision = VisionConfig.get(state.getBlock());
+                return vision != null && vision.calculateRange(enchantmentLevel) > 0;
+            });
 
-            if (CACHE_EXPIRE > 0) {
-                if (containsOres == null) {
-                    containsOres = new Boolean[chunk.getSections().length];
-                }
-
-                containsOres[sectionIndex] = containsOre;
-                CHUNK_CACHE.put(key, containsOres);
-            } else {
-                return containsOre;
+            if (cachedSection == null) {
+                cachedSection = new Boolean[chunk.getSections().length];
             }
+
+            cachedSection[sectionIndex] = containsRelevantBlock;
+            CHUNK_CACHE.put(section, cachedSection);
         }
 
-        return containsOres[sectionIndex];
+        return cachedSection[sectionIndex];
     }
 
-    private static @NotNull Vec3i getColor(final LevelChunk chunk, final BlockPos position, int displayRarity) {
-        Long key = position.asLong();
-        Vec3i color = BLOCK_CACHE.get(key);
-
-        if (color == null) {
-            if (isWithin(position, chunk.getPos().getMinBlockX(), position.getY(), chunk.getPos().getMinBlockZ(), chunk.getPos().getMaxBlockX(), position.getY(), chunk.getPos().getMaxBlockZ())) {
-                color = getColor(chunk.getBlockState(position), displayRarity);
-            } else {
-                Player localPlayer = ClientProxy.getLocalPlayer();
-
-                if (localPlayer != null) {
-                    color = getColor(localPlayer.level().getBlockState(position), displayRarity);
-                } else {
-                    return NO_COLOR;
-                }
-            }
-
-            if (CACHE_EXPIRE > 0) {
-                BLOCK_CACHE.put(key, color);
-            }
-        }
-
-        return color;
-    }
-
-    private static @NotNull Vec3i getColor(final BlockState state, int displayRarity) {
-        Vec3i color;
-
-        if (state.isAir()) {
-            color = NO_COLOR;
-        } else if (state.is(AEBlockTags.ORE_SIGHT_BLACKLIST)) {
-            color = NO_COLOR;
+    private static BlockState getState(final LevelChunk chunk, final BlockPos position) {
+        if (isWithin(position, chunk.getPos().getMinBlockX(), position.getY(), chunk.getPos().getMinBlockZ(), chunk.getPos().getMaxBlockX(), position.getY(), chunk.getPos().getMaxBlockZ())) {
+            return chunk.getBlockState(position);
         } else {
-            color = ClientConfig.getColor(state, displayRarity);
-        }
-
-        return color;
-    }
-
-    private static void drawLines(final BufferBuilder bufferBuilder, final Matrix4f lastPose, final Matrix3f normal, final float minX, float minY, float minZ, float maxX, float maxY, float maxZ, final boolean[] renderSides, final Vec3i color) {
-        boolean renderNegativeY = renderSides[Direction.DOWN.ordinal()];
-        boolean renderPositiveY = renderSides[Direction.UP.ordinal()];
-        boolean renderNegativeZ = renderSides[Direction.NORTH.ordinal()];
-        boolean renderPositiveZ = renderSides[Direction.SOUTH.ordinal()];
-        boolean renderNegativeX = renderSides[Direction.WEST.ordinal()];
-        boolean renderPositiveX = renderSides[Direction.EAST.ordinal()];
-
-        if (renderNegativeY && renderNegativeZ) {
-            drawLine(bufferBuilder, lastPose, normal, minX, minY, minZ, maxX, minY, minZ, 1, 0, 0, color);
-        }
-
-        if (renderNegativeX && renderNegativeZ) {
-            drawLine(bufferBuilder, lastPose, normal, minX, minY, minZ, minX, maxY, minZ, 0, 1, 0, color);
-        }
-
-        if (renderNegativeX && renderNegativeY) {
-            drawLine(bufferBuilder, lastPose, normal, minX, minY, minZ, minX, minY, maxZ, 0, 0, 1, color);
-        }
-
-        if (renderPositiveX && renderNegativeZ) {
-            drawLine(bufferBuilder, lastPose, normal, maxX, minY, minZ, maxX, maxY, minZ, 0, 1, 0, color);
-        }
-
-        if (renderPositiveY && renderNegativeZ) {
-            drawLine(bufferBuilder, lastPose, normal, maxX, maxY, minZ, minX, maxY, minZ, -1, 0, 0, color);
-        }
-
-        if (renderPositiveY && renderNegativeX) {
-            drawLine(bufferBuilder, lastPose, normal, minX, maxY, minZ, minX, maxY, maxZ, 0, 0, 1, color);
-        }
-
-        if (renderPositiveZ && renderNegativeX) {
-            drawLine(bufferBuilder, lastPose, normal, minX, maxY, maxZ, minX, minY, maxZ, 0, -1, 0, color);
-        }
-
-        if (renderPositiveZ && renderNegativeY) {
-            drawLine(bufferBuilder, lastPose, normal, minX, minY, maxZ, maxX, minY, maxZ, 1, 0, 0, color);
-        }
-
-        if (renderPositiveX && renderNegativeY) {
-            drawLine(bufferBuilder, lastPose, normal, maxX, minY, maxZ, maxX, minY, minZ, 0, 0, -1, color);
-        }
-
-        if (renderPositiveY && renderPositiveZ) {
-            drawLine(bufferBuilder, lastPose, normal, minX, maxY, maxZ, maxX, maxY, maxZ, 1, 0, 0, color);
-        }
-
-        if (renderPositiveX && renderPositiveZ) {
-            drawLine(bufferBuilder, lastPose, normal, maxX, minY, maxZ, maxX, maxY, maxZ, 0, 1, 0, color);
-        }
-
-        if (renderPositiveX && renderPositiveY) {
-            drawLine(bufferBuilder, lastPose, normal, maxX, maxY, minZ, maxX, maxY, maxZ, 0, 0, 1, color);
+            // Block is outside the current chunk
+            Player player = Minecraft.getInstance().player;
+            //noinspection DataFlowIssue -> player is present
+            return player.level().getBlockState(position);
         }
     }
 
-    private static void drawLine(final BufferBuilder bufferBuilder, final Matrix4f lastPose, final Matrix3f normal, float fromX, float fromY, float fromZ, float toX, float toY, float toZ, int normalX, int normalY, int normalZ, final Vec3i color) {
-        bufferBuilder.vertex(lastPose, fromX, fromY, fromZ).color(color.getX(), color.getY(), color.getZ(), 255).normal(normal, normalX, normalY, normalZ).endVertex();
-        bufferBuilder.vertex(lastPose, toX, toY, toZ).color(color.getX(), color.getY(), color.getZ(), 255).normal(normal, normalX, normalY, normalZ).endVertex();
+    private static boolean wasRemoved(final Data data) {
+        for (int i = 0; i < REMOVAL.size(); i++) {
+            BlockPos position = REMOVAL.get(i);
+
+            if (position.getX() == data.x() && position.getY() == data.y() && position.getZ() == data.z()) {
+                REMOVAL.remove(i);
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public static void clearCache() {
-        CHUNK_CACHE.clear();
-        BLOCK_CACHE.clear();
+    /**
+     * Returns 'true' if the player moved at least half the distance of their visible range
+     * away from the last position that was used as the search origin for the block data
+     */
+    private static boolean isOutsideRange(double visibleRange) {
+        if (lastScanCenter == null) {
+            return true;
+        }
+
+        Player player = Minecraft.getInstance().player;
+        //noinspection DataFlowIssue -> player is present
+        Vec3 currentPosition = player.position();
+
+        double halfRange = visibleRange / 2;
+        return currentPosition.distanceToSqr(lastScanCenter) > halfRange * halfRange;
+    }
+
+    private static void drawLines(final VertexConsumer buffer, final PoseStack.Pose pose, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final int color) {
+        drawLine(buffer, pose, minX, minY, minZ, maxX, minY, minZ, 1, 0, 0, color);
+        drawLine(buffer, pose, minX, minY, minZ, minX, maxY, minZ, 0, 1, 0, color);
+        drawLine(buffer, pose, minX, minY, minZ, minX, minY, maxZ, 0, 0, 1, color);
+        drawLine(buffer, pose, maxX, minY, minZ, maxX, maxY, minZ, 0, 1, 0, color);
+        drawLine(buffer, pose, maxX, maxY, minZ, minX, maxY, minZ, -1, 0, 0, color);
+        drawLine(buffer, pose, minX, maxY, minZ, minX, maxY, maxZ, 0, 0, 1, color);
+        drawLine(buffer, pose, minX, maxY, maxZ, minX, minY, maxZ, 0, -1, 0, color);
+        drawLine(buffer, pose, minX, minY, maxZ, maxX, minY, maxZ, 1, 0, 0, color);
+        drawLine(buffer, pose, maxX, minY, maxZ, maxX, minY, minZ, 0, 0, -1, color);
+        drawLine(buffer, pose, minX, maxY, maxZ, maxX, maxY, maxZ, 1, 0, 0, color);
+        drawLine(buffer, pose, maxX, minY, maxZ, maxX, maxY, maxZ, 0, 1, 0, color);
+        drawLine(buffer, pose, maxX, maxY, minZ, maxX, maxY, maxZ, 0, 0, 1, color);
+    }
+
+    private static void drawLine(final VertexConsumer buffer, final PoseStack.Pose pose, float fromX, float fromY, float fromZ, float toX, float toY, float toZ, int normalX, int normalY, int normalZ, final int color) {
+        buffer.vertex(pose.pose(), fromX, fromY, fromZ).color(color).normal(pose.normal(), normalX, normalY, normalZ).endVertex();
+        buffer.vertex(pose.pose(), toX, toY, toZ).color(color).normal(pose.normal(), normalX, normalY, normalZ).endVertex();
+    }
+
+    private static void clear() {
+        if (CHUNK_CACHE == null) {
+            // There is nothing to clean up
+            return;
+        }
+
+        RENDER_DATA.clear();
+        SEARCH_RESULT.clear();
+        REMOVAL.clear();
+
+        lastScanCenter = null;
+        isSearching = false;
+        hasPendingUpdate = false;
+
+        CHUNK_CACHE.invalidateAll();
+        CHUNK_CACHE = null;
+    }
+
+    private static int toARGB(int rgb) {
+        return 0xFF << 24 | rgb;
+    }
+
+    private static void initCache() {
+        if (CHUNK_CACHE == null) {
+            CHUNK_CACHE = CacheBuilder.newBuilder()
+                    .expireAfterWrite(5, TimeUnit.SECONDS)
+                    .concurrencyLevel(1)
+                    .build();
+        }
     }
 }
