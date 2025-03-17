@@ -138,6 +138,7 @@ public class VisionHandler {
         }
 
         if (RENDER_DATA.isEmpty()) {
+            REMOVAL.clear();
             return;
         }
 
@@ -191,6 +192,9 @@ public class VisionHandler {
             }
         }
 
+        // Any remaining removal entries are not in the to-be-rendered list
+        REMOVAL.clear();
+
         tesselator.end();
         pose.popPose();
 
@@ -217,16 +221,21 @@ public class VisionHandler {
             return;
         }
 
+        // Check if the block update happened within range
         double searchRange = VisionConfig.getMaxRange(displayType, enchantmentLevel) + EXTENDED_SEARCH_RANGE;
 
-        if (lastScanCenter != null && player.position().distanceToSqr(lastScanCenter) > searchRange * searchRange) {
+        if (player.position().distanceToSqr(position.getCenter()) > searchRange * searchRange) {
             return;
         }
 
-        VisionConfig.VisionData oldData = VisionConfig.get(displayType, enchantmentLevel, oldState.getBlock());
-
-        if (!RENDER_DATA.isEmpty() && oldData != null && oldData.range() > 0) {
+        if (oldState.is(AEBlockTags.TREASURES)) {
             REMOVAL.add(position);
+        } else {
+            VisionConfig.VisionData oldData = VisionConfig.get(displayType, enchantmentLevel, oldState.getBlock());
+
+            if (oldData != null && oldData.range() > 0) {
+                REMOVAL.add(position);
+            }
         }
 
         VisionConfig.VisionData newData = VisionConfig.get(displayType, enchantmentLevel, newBlock);

@@ -39,7 +39,6 @@ public class ConfusionEnchantment extends ConfigurableEnchantment {
             LivingEntity retaliationTarget = entities.get(mob.getRandom().nextInt(entities.size()));
 
             mob.setLastHurtByMob(retaliationTarget);
-            mob.setLastHurtByPlayer(null);
             mob.setTarget(retaliationTarget);
         }
     }

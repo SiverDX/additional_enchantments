@@ -25,20 +25,24 @@ public class VisionConfig {
     public static ForgeConfigSpec.ConfigValue<List<? extends String>> RAW_ORE_SIGHT_ENTRIES;
     private static final HashMap<Integer, Double> MAX_ORE_SIGHT_RANGE = new HashMap<>();
     private static Map<Integer, Map<ResourceKey<Block>, VisionData>> ORE_SIGHT_DATA = new HashMap<>();
+    private static int MAX_ORE_SIGHT_LEVEL;
 
     // Treasure Finder
     public static ForgeConfigSpec.ConfigValue<List<? extends String>> RAW_TREASURE_FINDER_ENTRIES;
     private static final HashMap<Integer, Double> MAX_TREASURE_FINDER_RANGE = new HashMap<>();
     private static Map<Integer, Map<ResourceKey<Block>, VisionData>> TREASURE_FINDER_DATA = new HashMap<>();
+    private static int MAX_TREASURE_FINDER_LEVEL;
 
     /** Used for the max. range */
     private static long lastUpdate;
     private static long lastReload;
 
     public static @Nullable VisionConfig.VisionData get(final Type type, final int enchantmentLevel, final Block block) {
+        int limitedLevel = limitEnchantmentLevel(type, enchantmentLevel);
+
         Map<ResourceKey<Block>, VisionData> blocks = switch (type) {
-            case ORE_SIGHT -> ORE_SIGHT_DATA.get(enchantmentLevel);
-            case TREASURE_FINDER -> TREASURE_FINDER_DATA.get(enchantmentLevel);
+            case ORE_SIGHT -> ORE_SIGHT_DATA.get(limitedLevel);
+            case TREASURE_FINDER -> TREASURE_FINDER_DATA.get(limitedLevel);
         };
 
         if (blocks == null) {
@@ -62,13 +66,19 @@ public class VisionConfig {
             MAX_TREASURE_FINDER_RANGE.clear();
         }
 
+        int limitedLevel = limitEnchantmentLevel(type, enchantmentLevel);
+
         return ranges.computeIfAbsent(enchantmentLevel, key -> {
+            Map<ResourceKey<Block>, VisionData> blocks = switch (type) {
+                case ORE_SIGHT -> ORE_SIGHT_DATA.get(limitedLevel);
+                case TREASURE_FINDER -> TREASURE_FINDER_DATA.get(limitedLevel);
+            };
+
             double currentRange = 0;
 
-            Map<ResourceKey<Block>, VisionData> blocks = switch (type) {
-                case ORE_SIGHT -> ORE_SIGHT_DATA.get(enchantmentLevel);
-                case TREASURE_FINDER -> TREASURE_FINDER_DATA.get(enchantmentLevel);
-            };
+            if (type == Type.TREASURE_FINDER) {
+                currentRange = ServerConfig.getTreasureRange(enchantmentLevel);
+            }
 
             if (blocks == null) {
                 return currentRange;
@@ -102,10 +112,23 @@ public class VisionConfig {
         reload(player.level().registryAccess());
     }
 
+    /** In case there is a mod that increases the enchantment level and the user has not added any configuration for it */
+    private static int limitEnchantmentLevel(final Type type, final int enchantmentLevel) {
+        int maxLevel = switch (type) {
+            case ORE_SIGHT -> MAX_ORE_SIGHT_LEVEL;
+            case TREASURE_FINDER -> MAX_TREASURE_FINDER_LEVEL;
+        };
+
+        return Math.min(enchantmentLevel, maxLevel);
+    }
+
     private static void reload(final RegistryAccess access) {
         if (!ServerConfig.SPEC.isLoaded()) {
             return;
         }
+
+        MAX_ORE_SIGHT_LEVEL = 0;
+        MAX_TREASURE_FINDER_LEVEL = 0;
 
         initializeData(access, Type.ORE_SIGHT);
         initializeData(access, Type.TREASURE_FINDER);
@@ -141,10 +164,12 @@ public class VisionConfig {
         switch (type) {
             case ORE_SIGHT -> {
                 ORE_SIGHT_DATA = newEntries;
+                MAX_ORE_SIGHT_LEVEL = newEntries.keySet().stream().max(Integer::compareTo).orElse(0);
                 AE.LOG.debug("Reloaded ore sight entries: {}", ORE_SIGHT_DATA);
             }
             case TREASURE_FINDER -> {
                 TREASURE_FINDER_DATA = newEntries;
+                MAX_TREASURE_FINDER_LEVEL = newEntries.keySet().stream().max(Integer::compareTo).orElse(0);
                 AE.LOG.debug("Reloaded treasure finder entries: {}", TREASURE_FINDER_DATA);
             }
         }

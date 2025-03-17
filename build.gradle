@@ -73,6 +73,10 @@ dependencies {
     /* --- Compatibility --- */
     compileOnly fg.deobf("dev:skinlayers3d:forge-1.6.6-mc1.20.1")
 
+    /* --- Test --- */
+//    runtimeOnly fg.deobf("curse.maven:oculus-581495:6020952") // 1.8.0
+//    runtimeOnly fg.deobf("curse.maven:embeddium-908741:5681725") // 0.3.31
+
     /* --- Mixin Configuration --- */
     implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-common:${mixin_squared_version}"))
     implementation(jarJar("com.github.bawnorton.mixinsquared:mixinsquared-forge:${mixin_squared_version}")) {
