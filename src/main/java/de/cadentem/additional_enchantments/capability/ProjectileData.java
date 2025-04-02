@@ -162,11 +162,11 @@ public class ProjectileData {
     }
 
     private boolean isInvalidProjectile(final Projectile projectile) {
-        if (projectile instanceof AbstractArrowAccess arrow && arrow.isInGround()) {
+        if (projectile instanceof AbstractArrowAccess arrow && arrow.additional_enchantments$isInGround()) {
             return true;
         }
 
-        if (projectile instanceof TridentAccess trident && trident.didDealDamage()) {
+        if (projectile instanceof TridentAccess trident && trident.additional_enchantments$didDealDamage()) {
             return true;
         }
 

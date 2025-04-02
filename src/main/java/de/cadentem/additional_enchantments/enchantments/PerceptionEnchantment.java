@@ -1,9 +1,9 @@
 package de.cadentem.additional_enchantments.enchantments;
 
-import com.mojang.datafixers.util.Pair;
 import de.cadentem.additional_enchantments.client.ClientProxy;
 import de.cadentem.additional_enchantments.enchantments.base.ConfigurableEnchantment;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -30,7 +30,11 @@ public class PerceptionEnchantment extends ConfigurableEnchantment {
 
     @Override
     protected boolean checkCompatibility(@NotNull final Enchantment other) {
-        return other != AEEnchantments.ORE_SIGHT.get() && super.checkCompatibility(other);
+        if (other == AEEnchantments.ORE_SIGHT.get() || other == AEEnchantments.TREASURE_FINDER.get()) {
+            return false;
+        }
+
+        return super.checkCompatibility(other);
     }
 
     public static int getClientEnchantmentLevel() {
@@ -43,11 +47,11 @@ public class PerceptionEnchantment extends ConfigurableEnchantment {
         Pair<Integer, Integer> data = CLIENT_CACHE.get(localPlayer.getStringUUID());
 
         // Cache is being kept even when the player leaves
-        if (data == null || Mth.abs(localPlayer.tickCount - data.getFirst()) > 20) {
+        if (data == null || Mth.abs(localPlayer.tickCount - data.first()) > 20) {
             data = Pair.of(localPlayer.tickCount, EnchantmentHelper.getEnchantmentLevel(AEEnchantments.PERCEPTION.get(), localPlayer));
             CLIENT_CACHE.put(localPlayer.getStringUUID(), data);
         }
 
-        return data.getSecond();
+        return data.second();
     }
 }

@@ -4,10 +4,15 @@ import com.mojang.logging.LogUtils;
 import de.cadentem.additional_enchantments.capability.PlayerData;
 import de.cadentem.additional_enchantments.capability.ProjectileData;
 import de.cadentem.additional_enchantments.client.ClientRegistry;
-import de.cadentem.additional_enchantments.config.ClientConfig;
 import de.cadentem.additional_enchantments.config.ServerConfig;
+import de.cadentem.additional_enchantments.config.VisionConfig;
 import de.cadentem.additional_enchantments.network.NetworkHandler;
-import de.cadentem.additional_enchantments.registry.*;
+import de.cadentem.additional_enchantments.registry.AEEnchantments;
+import de.cadentem.additional_enchantments.registry.AEEntityTypes;
+import de.cadentem.additional_enchantments.registry.AEItems;
+import de.cadentem.additional_enchantments.registry.AELootModifiers;
+import de.cadentem.additional_enchantments.registry.AEMobEffects;
+import de.cadentem.additional_enchantments.registry.AEParticles;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -37,7 +42,6 @@ public class AE {
         AEParticles.PARTICLE_TYPES.register(modEventBus);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
     }
 
     @SubscribeEvent
@@ -48,8 +52,9 @@ public class AE {
     @SubscribeEvent
     public void clientSetup(final FMLClientSetupEvent event) {
         event.enqueueWork(ClientRegistry::registerItemProperties);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientConfig::reloadConfigFromEdit);
-        MinecraftForge.EVENT_BUS.addListener(ClientConfig::reloadConfigFromTags);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(VisionConfig::updateFromConfig);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ServerConfig::updateFromConfig);
+        MinecraftForge.EVENT_BUS.addListener(VisionConfig::updateFromReload);
     }
 
     @SubscribeEvent

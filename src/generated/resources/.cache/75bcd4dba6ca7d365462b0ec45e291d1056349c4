@@ -1,7 +1,5 @@
-// 1.19.2	2024-02-10T18:36:28.161601	Tags for minecraft:block
+// 1.19.2	2025-04-02T18:24:12.6587	Tags for minecraft:block
 431f9fb03d67d660a8d026cb1058f68edb7f1bcf data/additional_enchantments/tags/blocks/bracewalk.json
-c994cb8ab6d6c86d371d7de7d66c8456bab8ec85 data/additional_enchantments/tags/blocks/common_ore.json
 e6b203e5139ccd2d3a25b6ae9b401768df91af8a data/additional_enchantments/tags/blocks/hunter_relevant.json
-35df1bfa58397dd096f6d17d29a3af29af0a6139 data/additional_enchantments/tags/blocks/rare_ore.json
-fa0d0d7e42a8d56c6349af93b3277a56deb12704 data/additional_enchantments/tags/blocks/uncommon_ore.json
+0ddba9dcb9a0e019d6415f95d15b67173286c12f data/additional_enchantments/tags/blocks/treasures.json
 fecc10ddfa988ea9e9dddc2eee05475ce37eeaa0 data/additional_enchantments/tags/blocks/voiding.json

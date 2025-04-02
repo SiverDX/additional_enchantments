@@ -1,7 +1,22 @@
 package de.cadentem.additional_enchantments.registry;
 
 import de.cadentem.additional_enchantments.AE;
-import de.cadentem.additional_enchantments.enchantments.*;
+import de.cadentem.additional_enchantments.enchantments.Bracewalk;
+import de.cadentem.additional_enchantments.enchantments.ConfusionEnchantment;
+import de.cadentem.additional_enchantments.enchantments.ExplosiveTipEnchantment;
+import de.cadentem.additional_enchantments.enchantments.FasterAttacksEnchantment;
+import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
+import de.cadentem.additional_enchantments.enchantments.HunterEnchantment;
+import de.cadentem.additional_enchantments.enchantments.HydroShockEnchantment;
+import de.cadentem.additional_enchantments.enchantments.OreSightEnchantment;
+import de.cadentem.additional_enchantments.enchantments.PerceptionEnchantment;
+import de.cadentem.additional_enchantments.enchantments.PlagueEnchantment;
+import de.cadentem.additional_enchantments.enchantments.ShatterEnchantment;
+import de.cadentem.additional_enchantments.enchantments.StraightShotEnchantment;
+import de.cadentem.additional_enchantments.enchantments.TippedEnchantment;
+import de.cadentem.additional_enchantments.enchantments.TreasureFinderEnchantment;
+import de.cadentem.additional_enchantments.enchantments.VoidingEnchantment;
+import de.cadentem.additional_enchantments.enchantments.WitherEnchantment;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -25,6 +40,7 @@ public class AEEnchantments {
     public static final String BRACEWALK_ID = "bracewalk";
     public static final String HYDRO_SHOCK_ID = "hydro_shock";
     public static final String VOIDING_ID = "voiding";
+    public static final String TREASURE_FINDER_ID = "treasure_finder";
 
     public static final RegistryObject<HomingEnchantment> HOMING = ENCHANTMENTS.register(HOMING_ID, HomingEnchantment::new);
     public static final RegistryObject<TippedEnchantment> TIPPED = ENCHANTMENTS.register(TIPPED_ID, TippedEnchantment::new);
@@ -41,4 +57,5 @@ public class AEEnchantments {
     public static final RegistryObject<Bracewalk> BRACEWALK = ENCHANTMENTS.register(BRACEWALK_ID, Bracewalk::new);
     public static final RegistryObject<HydroShockEnchantment> HYDRO_SHOCK = ENCHANTMENTS.register(HYDRO_SHOCK_ID, HydroShockEnchantment::new);
     public static final RegistryObject<VoidingEnchantment> VOIDING = ENCHANTMENTS.register(VOIDING_ID, VoidingEnchantment::new);
+    public static final RegistryObject<TreasureFinderEnchantment> TREASURE_FINDER = ENCHANTMENTS.register(TREASURE_FINDER_ID, TreasureFinderEnchantment::new);
 }

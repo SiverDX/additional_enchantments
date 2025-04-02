@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ThrownTrident.class)
 public interface TridentAccess {
     @Accessor("dealtDamage")
-    boolean didDealDamage();
+    boolean additional_enchantments$didDealDamage();
 
     @Accessor("tridentItem")
-    ItemStack getTridentItem();
+    ItemStack additional_enchantments$getTridentItem();
 }

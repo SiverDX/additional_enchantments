@@ -1,9 +1,13 @@
 package de.cadentem.additional_enchantments.config;
 
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
+import net.minecraft.network.chat.TextColor;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.Tags;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ServerConfig {
@@ -50,6 +54,33 @@ public class ServerConfig {
     public static ForgeConfigSpec.DoubleValue SHATTER_CHANCE_MULTIPLIER;
     public static ForgeConfigSpec.DoubleValue SHATTER_DAMAGE_MULTIPLIER;
 
+    // Treasure Finder
+    public static ForgeConfigSpec.DoubleValue TREASURE_BASE_RANGE;
+    public static ForgeConfigSpec.DoubleValue TREASURE_RANGE_PER_LEVEL;
+    private static ForgeConfigSpec.ConfigValue<String> RAW_TREASURE_COLOR;
+    private static int TREASURE_COLOR = -1;
+
+    public static double getTreasureRange(final int enchantmentLevel) {
+        return TREASURE_BASE_RANGE.get() + TREASURE_RANGE_PER_LEVEL.get() * enchantmentLevel;
+    }
+
+    public static int getTreasureColor() {
+        if (TREASURE_COLOR == -1) {
+            //noinspection DataFlowIssue -> color is present
+            TREASURE_COLOR = TextColor.parseColor(RAW_TREASURE_COLOR.get()).getValue();
+        }
+
+        return TREASURE_COLOR;
+    }
+
+    public static void updateFromConfig(final ModConfigEvent.Reloading event) {
+        if (event.getConfig().getSpec() != ServerConfig.SPEC) {
+            return;
+        }
+
+        TREASURE_COLOR = -1;
+    }
+
     public static final Map<String, EnchantmentConfiguration> enchantmentConfigurations = new HashMap<>();
 
     private static final Map<String, Integer> ENCHANTMENTS = new HashMap<>();
@@ -65,11 +96,12 @@ public class ServerConfig {
         ENCHANTMENTS.put(AEEnchantments.WITHER_ID, 6);
         ENCHANTMENTS.put(AEEnchantments.PERCEPTION_ID, 4);
         ENCHANTMENTS.put(AEEnchantments.CONFUSION_ID, 5);
-        ENCHANTMENTS.put(AEEnchantments.ORE_SIGHT_ID, 5);
+        ENCHANTMENTS.put(AEEnchantments.ORE_SIGHT_ID, 4);
         ENCHANTMENTS.put(AEEnchantments.HUNTER_ID, 6);
         ENCHANTMENTS.put(AEEnchantments.BRACEWALK_ID, 4);
         ENCHANTMENTS.put(AEEnchantments.HYDRO_SHOCK_ID, 5);
         ENCHANTMENTS.put(AEEnchantments.VOIDING_ID, 1);
+        ENCHANTMENTS.put(AEEnchantments.TREASURE_FINDER_ID, 4);
 
         for (String enchantment : ENCHANTMENTS.keySet()) {
             BUILDER.push(enchantment);
@@ -116,6 +148,57 @@ public class ServerConfig {
                     SHATTER_CHANCE_BASE = BUILDER.comment("Base chance for the projectile to shatter and deal area of effect damage (1 means 100%)").defineInRange("shatter_chance_base", 0.3d, 0d, 1d);
                     SHATTER_CHANCE_MULTIPLIER = BUILDER.comment("Multiplier to the enchantment level to determine the bonus to the base chance (level * <chance_multiplier>)").defineInRange("shatter_chance_modifier", 0.1d, 0d, 1d);
                     SHATTER_DAMAGE_MULTIPLIER = BUILDER.comment("Multiplier to the enchantment level to determine the area of effect damage (level * <damage_multiplier>)").defineInRange("shatter_damage_multiplier", 0.5d, 0d, 10d);
+                }
+                case AEEnchantments.ORE_SIGHT_ID -> {
+                    String lineOne = "Entries for ore vision (<block/tag>;<required_enchantment_level>;<range>;<range_per_level>;<color>\n";
+                    String lineTwo = "(color can be a named color or a hex color in the format #RRGGBB)";
+                    VisionConfig.RAW_ORE_SIGHT_ENTRIES = BUILDER.comment(lineOne + lineTwo).defineList("ore_sight_entries", List.of(
+                            // Level 1
+                            "#" + Tags.Blocks.ORES_IRON.location() + ";1;24;white",
+                            "#" + Tags.Blocks.ORES_COPPER.location() + ";1;24;dark_green",
+                            "#" + Tags.Blocks.ORES_REDSTONE.location() + ";1;16;dark_red",
+                            // Level 2
+                            "#" + Tags.Blocks.ORES_IRON.location() + ";2;32;white",
+                            "#" + Tags.Blocks.ORES_REDSTONE.location() + ";2;24;dark_red",
+                            "#" + Tags.Blocks.ORES_GOLD.location() + ";2;24;gold",
+                            "#" + Tags.Blocks.ORES_LAPIS.location() + ";2;16;blue",
+                            // Level 3
+                            "#" + Tags.Blocks.ORES_GOLD.location() + ";3;32;gold",
+                            "#" + Tags.Blocks.ORES_LAPIS.location() + ";3;24;blue",
+                            "#" + Tags.Blocks.ORES_EMERALD.location() + ";3;16;green",
+                            "#" + Tags.Blocks.ORES_DIAMOND.location() + ";3;16;aqua",
+                            // Level 4
+                            "#" + Tags.Blocks.ORES_EMERALD.location() + ";4;24;green",
+                            "#" + Tags.Blocks.ORES_DIAMOND.location() + ";4;24;aqua",
+                            "#" + Tags.Blocks.ORES_NETHERITE_SCRAP.location() + ";4;16;white" // #3A2A24 - more fitting but less visible
+                    ), object -> object instanceof String string && VisionConfig.ParsedEntry.validate(string));
+                }
+                case AEEnchantments.TREASURE_FINDER_ID -> {
+                    TREASURE_BASE_RANGE = BUILDER.comment("Base range for treasures (containers with loot tables)").defineInRange("treasure_base_range", 16.0, 0, 128);
+                    TREASURE_RANGE_PER_LEVEL = BUILDER.comment("Range per level for treasures (containers with loot tables)").defineInRange("treasure_range_per_level", 8.0, 0, 128);
+                    RAW_TREASURE_COLOR = BUILDER.comment("Color for treasures (containers with loot tables)").define("treasure_color", "gold", object -> object instanceof String string && TextColor.parseColor(string) != null);
+                    String lineOne = "Entries for ore vision (<block/tag>;<required_enchantment_level>;<range>;<range_per_level>;<color>\n";
+                    String lineTwo = "(color can be a named color or a hex color in the format #RRGGBB)";
+                    VisionConfig.RAW_TREASURE_FINDER_ENTRIES = BUILDER.comment(lineOne + lineTwo).defineList("treasure_finder_entries", List.of(
+                            // Level 1
+                            "#" + Tags.Blocks.ORES_IRON.location() + ";1;24;white",
+                            "#" + Tags.Blocks.ORES_COPPER.location() + ";1;24;dark_green",
+                            "#" + Tags.Blocks.ORES_REDSTONE.location() + ";1;16;dark_red",
+                            // Level 2
+                            "#" + Tags.Blocks.ORES_IRON.location() + ";2;32;white",
+                            "#" + Tags.Blocks.ORES_REDSTONE.location() + ";2;24;dark_red",
+                            "#" + Tags.Blocks.ORES_GOLD.location() + ";2;24;gold",
+                            "#" + Tags.Blocks.ORES_LAPIS.location() + ";2;16;blue",
+                            // Level 3
+                            "#" + Tags.Blocks.ORES_GOLD.location() + ";3;32;gold",
+                            "#" + Tags.Blocks.ORES_LAPIS.location() + ";3;24;blue",
+                            "#" + Tags.Blocks.ORES_EMERALD.location() + ";3;16;green",
+                            "#" + Tags.Blocks.ORES_DIAMOND.location() + ";3;16;aqua",
+                            // Level 4
+                            "#" + Tags.Blocks.ORES_EMERALD.location() + ";4;24;green",
+                            "#" + Tags.Blocks.ORES_DIAMOND.location() + ";4;24;aqua",
+                            "#" + Tags.Blocks.ORES_NETHERITE_SCRAP.location() + ";4;16;white" // #3A2A24 - more fitting but less visible
+                    ), object -> object instanceof String string && VisionConfig.ParsedEntry.validate(string));
                 }
             }
 

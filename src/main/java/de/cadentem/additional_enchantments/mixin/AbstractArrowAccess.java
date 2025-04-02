@@ -7,5 +7,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(AbstractArrow.class)
 public interface AbstractArrowAccess {
     @Accessor("inGround")
-    boolean isInGround();
+    boolean additional_enchantments$isInGround();
 }

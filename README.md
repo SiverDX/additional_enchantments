@@ -1,9 +1,6 @@
 ![](https://i.imgur.com/6l64DCT.png "Logo")
-# FAQ
-### General
-- Duplicate keybinds work but only make sense if multiple player-configurable enchantments cannot be active at the same time
-  - e.g. multiple bow-related enchantments or armor enchantments + main hand enchantments
 
+# FAQ
 ### Versions / Loaders
 - Fabric is not planned
 - Backports are not being considered at the moment
@@ -14,19 +11,6 @@
 # Configuration
 - All enchantments are configurable
 - There might be some enchantment-related extra configuration
-
-## Client
-There is a configuration for the time the `Ore Sight` cache is kept (affects how quickly the lines appear or disappear)
-
-There is also a configuration for the colors of to be rendered (and blocks to be grouped) - format: `[<rarity>;<block>;<red>;<green>;<blue>]`
-- `rarity`:
-  - Affects the hotkey which can be used to only render certain rarities (and hide others)
-  - It also affects the color chosen for the block - the config entry with the highest rarity will be tested first (and its color will be chosen)
-  - This also means that if you define two rarities for the same block the color with the higher rarity will be displayed
-- `block`: Can be a block tag if it starts with `#` (e.g. `#forge:ores/gold`) or it can be a block (e.g. `minecraft:ancient_debris`)
-- `red`, `green`, `blue`: Colors to be used (between `0` and `255`)
-
-The server can prevent blocks from being rendered by adding said blocks to the blacklist (`additional_enchantments:ore_sight_blacklist`)
 
 # Enchantments
 ### Enchantment Categories
@@ -121,13 +105,28 @@ The server can prevent blocks from being rendered by adding said blocks to the b
   - If `Shift` is pressed it will cycle through options for items, filtering them by rarity (COMMON, UNCOMMON, RARE, EPIC)
   - Entities can be blacklisted with the tag `additional_enchantments:perception_blacklist`
   - It's configurable whether invisible entities are outlined or not (`true` by default)
+- Not compatible with the `Ore Sight` or `Treasure Finder` enchantment
 
 ## Ore Sight (Helmet)
-- Default max. level: 5
-- Outlines nearby ore blocks (even through walls) with different colors based on their rarity group
-- Enchantment level increases the range
-- It's possible to decide which outlines to display with the keybind (default being `U`)
-- Blocks can be blacklisted with the tag `additional_enchantments:ore_sight_blacklist`
+- Default max. level: 4
+- Outlines nearby ore blocks (even through walls) with different colors
+- Blocks, required enchantment level, range and color are handled by the server configuration
+- Not compatible with the `Perception` or `Treasure Finder` enchantment
+
+**Note**: The required enchantment level is an explicit check
+- This means if you only configure up to enchantment level 4 and have some mod that increases the level to 5, it won't highlight anything anymore
+- This allows you to hide common ores at a higher enchantment level
+
+## Treasure Finder (Helmet)
+- Default max. level: 4
+- Spawns particle at the position of nearby blocks
+- Has extra logic to also spawn particles around treasure blocks - meaning containers with loot tables that have yet to generate said loot
+- Blocks, required enchantment level, range and color are handled by the server configuration
+- Not compatible with the `Perception` or `Ore Sight` enchantment
+
+**Note**: The required enchantment level is an explicit check
+- This means if you only configure up to enchantment level 4 and have some mod that increases the level to 5, it won't highlight anything anymore
+- This allows you to hide common ores at a higher enchantment level
 
 ## Bracewalk (Legs)
 - Default max. level: 4

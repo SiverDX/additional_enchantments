@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Frustum.class)
 public interface FrustumAccess {
+    /** Skip the need to create an AABB */
     @Invoker("cubeInFrustum")
-    boolean isCubeInFrustum(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax);
+    boolean additional_enchantments$cubeInFrustum(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
 }

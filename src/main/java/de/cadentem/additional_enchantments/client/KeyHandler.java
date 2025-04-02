@@ -22,7 +22,6 @@ public class KeyHandler {
     public static KeyMapping CYCLE_HOMING;
     public static KeyMapping CYCLE_EXPLOSIVE_TIP;
     public static KeyMapping CYCLE_PERCEPTION;
-    public static KeyMapping CYCLE_ORE_SIGHT;
     public static KeyMapping CYCLE_VOIDING;
 
     private static int LAST_PRESS_TICK;
@@ -90,17 +89,6 @@ public class KeyHandler {
                         playerDataChanged.set(true);
                     });
                 }
-            }
-        }
-
-        if (event.getKey() == CYCLE_ORE_SIGHT.getKey().getValue()) {
-            if (OreSightEnchantment.getClientEnchantmentLevel() > 0) {
-                PlayerDataProvider.getCapability(localPlayer).ifPresent(data -> {
-                    data.cycleOreRarity();
-                    localPlayer.sendSystemMessage(Component.translatable("message.additional_enchantments.cycled_configuration", "Ore Sight", data.displayRarity));
-                    playerDataChanged.set(true);
-                    OreSightHandler.clearCache();
-                });
             }
         }
 
