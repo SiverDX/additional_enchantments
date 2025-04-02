@@ -112,7 +112,8 @@ public class OreSightHandler {
         int minChunkX = startPosition.getX() - radius;
         int maxChunkX = startPosition.getX() + radius;
         int minChunkY = Math.max(localPlayer.getLevel().getMinBuildHeight(), startPosition.getY() - radius);
-        int maxChunkY = Math.min(localPlayer.getLevel().getMaxBuildHeight(), startPosition.getY() + radius);
+        // Max build height is non-inclusive (see LevelHeightAccessor#isOutsideBuildHeight)
+        int maxChunkY = Math.min(localPlayer.getLevel().getMaxBuildHeight() - 1, startPosition.getY() + radius);
         int minChunkZ = startPosition.getZ() - radius;
         int maxChunkZ = startPosition.getZ() + radius;
 
