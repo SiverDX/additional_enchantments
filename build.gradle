@@ -86,7 +86,9 @@ dependencies {
 
     /* --- Compatibility --- */
     implementation fg.deobf("dev:skinlayers3d:forge-1.6.6-mc1.19.2")
-    compileOnly fg.deobf("curse.maven:oculus-581495:6020961") // 1.6.9a
+
+    implementation fg.deobf("curse.maven:embeddium-908741:5539178") // 0.3.18.1
+    implementation fg.deobf("curse.maven:oculus-581495:6020961") // 1.6.9a
 
     /* --- Test --- */
 
