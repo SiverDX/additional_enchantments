@@ -20,6 +20,8 @@ public class ServerConfig {
     // Tipped
     public static ForgeConfigSpec.DoubleValue TIPPED_DURATION_BASE;
     public static ForgeConfigSpec.DoubleValue TIPPED_DURATION_MULTIPLIER;
+    public static ForgeConfigSpec.BooleanValue TIPPED_SCALE_COOLDOWN_WITH_LEVEL;
+    public static ForgeConfigSpec.IntValue TIPPED_COOLDOWN;
 
     // Wither
     public static ForgeConfigSpec.DoubleValue WITHER_CHANCE_MULTIPLIER;
@@ -123,6 +125,8 @@ public class ServerConfig {
                 case AEEnchantments.TIPPED_ID -> {
                     TIPPED_DURATION_BASE = BUILDER.comment("Base duration (in seconds) for the applied effect").defineInRange("tipped_duration_base", 3d, 0d, 60d);
                     TIPPED_DURATION_MULTIPLIER = BUILDER.comment("How much the enchantment level affect the duration (1 * <multiplier>) (result will be in seconds)").defineInRange("tipped_duration_multiplier", 2d, 0d, 10d);
+                    TIPPED_SCALE_COOLDOWN_WITH_LEVEL = BUILDER.comment("Determines if the cooldown should scale with enchantment level (i.e. increasing it)").define("tipped_scale_cooldown_with_level", true);
+                    TIPPED_COOLDOWN = BUILDER.comment("The cooldown (in ticks) before another arrow can apply its effects on the hit entity").defineInRange("tipped_cooldown", 0, 0, /* 1 hour */ 20 * 60 * 60);
                 }
                 case AEEnchantments.WITHER_ID -> {
                     WITHER_CHANCE_MULTIPLIER = BUILDER.comment("Chance for the effect to apply (level * <chance_multiplier>) (result of 1 means 100%)").defineInRange("wither_chance_multiplier", 0.1d, 0d, 1d);

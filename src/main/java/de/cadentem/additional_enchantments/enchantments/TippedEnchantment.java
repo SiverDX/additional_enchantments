@@ -1,7 +1,9 @@
 package de.cadentem.additional_enchantments.enchantments;
 
 import com.google.common.collect.Sets;
+import de.cadentem.additional_enchantments.capability.EntityDataProvider;
 import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
+import de.cadentem.additional_enchantments.capability.ProjectileData;
 import de.cadentem.additional_enchantments.capability.ProjectileDataProvider;
 import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.data.AEEffectTags;
@@ -42,14 +44,39 @@ public class TippedEnchantment extends ConfigurableEnchantment {
     @SubscribeEvent
     public static void applyEffectsToTarget(final LivingHurtEvent event) {
         if (event.getSource().getDirectEntity() instanceof Projectile projectile) {
-            ProjectileDataProvider.getCapability(projectile).ifPresent(data -> {
-                if (data.hasAddedEffects()) {
-                    for (MobEffectInstance effect : data.addedEffects) {
+            ProjectileDataProvider.getCapability(projectile).ifPresent(projectileData -> {
+                if (projectileData.hasAddedEffects()) {
+                    if (!canApplyEffects(projectileData, event.getEntity())) {
+                        return;
+                    }
+
+                    for (MobEffectInstance effect : projectileData.addedEffects) {
                         event.getEntity().addEffect(new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier()));
                     }
                 }
             });
         }
+    }
+
+    private static boolean canApplyEffects(final ProjectileData projectileData, final LivingEntity target) {
+        if (ServerConfig.TIPPED_COOLDOWN.get() == 0) {
+            return true;
+        }
+
+        return EntityDataProvider.getCapability(target).map(entityData -> {
+            int tippedCooldown = ServerConfig.TIPPED_COOLDOWN.get();
+
+            if (ServerConfig.TIPPED_SCALE_COOLDOWN_WITH_LEVEL.get()) {
+                tippedCooldown = tippedCooldown * projectileData.tippedEnchantmentLevel;
+            }
+
+            if (entityData.tippedCooldown < tippedCooldown) {
+                return false;
+            } else {
+                entityData.tippedCooldown = tippedCooldown;
+                return true;
+            }
+        }).orElse(true);
     }
 
     public static void applyEffects(final Projectile projectile) {
