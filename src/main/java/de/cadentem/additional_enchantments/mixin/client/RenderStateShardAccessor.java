@@ -20,4 +20,9 @@ public interface RenderStateShardAccessor {
     static RenderStateShard.WriteMaskStateShard additional_enchantments$getColorWrite() {
         throw new AssertionError();
     }
+
+    @Accessor("CULL")
+    static RenderStateShard.CullStateShard additional_enchantments$getCull() {
+        throw new AssertionError();
+    }
 }

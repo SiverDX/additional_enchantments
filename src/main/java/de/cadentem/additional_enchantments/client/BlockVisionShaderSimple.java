@@ -152,15 +152,11 @@ public class BlockVisionShaderSimple {
         shader.getUniform("ModelViewMat").set(RenderSystem.getModelViewMatrix());
         shader.apply();
 
-        RenderSystem.enableDepthTest();
-        // Emulate vanilla cutout state: no blending and write depth
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.depthMask(false);
-        // Don't render both sides of transparent blocks (like plants)
-        RenderSystem.enableCull();
-        RenderSystem.enablePolygonOffset();
         // Prevents z-fighting issues
+        RenderSystem.enablePolygonOffset();
         RenderSystem.polygonOffset(-1, -1);
         //noinspection deprecation -> ignore
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
