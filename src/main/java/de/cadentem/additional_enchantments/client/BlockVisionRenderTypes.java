@@ -26,7 +26,7 @@ public final class BlockVisionRenderTypes {
                     .setTextureState(new RenderStateShard.TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
                     .setTransparencyState(RenderStateShardAccessor.additional_enchantments$getTranslucentTransparency())
                     .setDepthTestState(RenderStateShardAccessor.additional_enchantments$getLEqualDepthTest())
-                    .setCullState(RenderStateShardAccessor.additional_enchantments$getCull())
+                    .setCullState(RenderStateShardAccessor.additional_enchantments$getNoCull())
                     .setWriteMaskState(RenderStateShardAccessor.additional_enchantments$getColorWrite())
                     .createCompositeState(true);
 
@@ -52,7 +52,7 @@ public final class BlockVisionRenderTypes {
                     .setTextureState(new RenderStateShard.TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
                     .setTransparencyState(RenderStateShardAccessor.additional_enchantments$getTranslucentTransparency())
                     .setDepthTestState(RenderStateShardAccessor.additional_enchantments$getLEqualDepthTest())
-                    .setCullState(RenderStateShardAccessor.additional_enchantments$getCull())
+                    .setCullState(RenderStateShardAccessor.additional_enchantments$getNoCull())
                     .setWriteMaskState(RenderStateShardAccessor.additional_enchantments$getColorWrite())
                     .createCompositeState(true);
 
