@@ -36,6 +36,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -238,19 +239,10 @@ public class VisionHandler {
      * When shaders from Iris are enabled they won't appear on the {@link net.minecraftforge.client.event.RenderLevelStageEvent.Stage#AFTER_CUTOUT_BLOCKS} stage </br>
      * This also means we can't allow x-ray functionality for these because otherwise they'd render over entities
      */
+    @SuppressWarnings("removal") // ignore -> replaced later by AFTER_LEVEL render stage
     @SubscribeEvent
-    public static void handleShader(final RenderLevelStageEvent event) {
+    public static void handleShader(final RenderLevelLastEvent event) {
         if (Compat.isRenderingShadows()) {
-            return;
-        }
-
-        boolean isUsingShader = Compat.isShaderActive();
-
-        if (isUsingShader && event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            // Iris does not really support core shaders - the only stage they work at is after it has finished doing its rendering
-            return;
-        } else if (!isUsingShader && event.getStage() != RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS) {
-            // This stage allows rendering the shader through water
             return;
         }
 
