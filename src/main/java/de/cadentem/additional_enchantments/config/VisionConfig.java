@@ -3,6 +3,7 @@ package de.cadentem.additional_enchantments.config;
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.client.ClientProxy;
 import de.cadentem.additional_enchantments.mixin.HolderSet$NamedAccess;
+import de.cadentem.additional_enchantments.util.ColorUtils;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.TextColor;
@@ -16,6 +17,7 @@ import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,27 +159,41 @@ public class VisionConfig {
         TREASURE_FINDER
     }
 
-    public record VisionData(double range, int color) {}
+    public record VisionData(double range, List<Integer> colorsARGB, double colorShiftRate) {}
 
-    public record ParsedEntry(String resource, int requiredLevel, double range, int color) {
+    public record ParsedEntry(String resource, int requiredLevel, double range, List<Integer> colorsARGB, double colorShiftRate) {
         private static final int RESOURCE = 0;
         private static final int REQUIRED_LEVEL = 1;
         private static final int RANGE = 2;
         private static final int COLOR = 3;
+        private static final int ALPHA = 4;
+        private static final int COLOR_SHIFT_RATE = 5;
 
         public VisionData data() {
-            return new VisionData(range, color);
+            return new VisionData(range, colorsARGB, colorShiftRate);
         }
 
         public static ParsedEntry fromString(final String data) {
             String[] entries = data.split(";");
-            //noinspection DataFlowIssue -> color is present
             return new ParsedEntry(
                     entries[RESOURCE],
                     Integer.parseInt(entries[REQUIRED_LEVEL]),
                     Double.parseDouble(entries[RANGE]),
-                    TextColor.parseColor(entries[COLOR]).getValue()
+                    parseColors(entries[COLOR], entries.length > 4 ? Double.parseDouble(entries[ALPHA]) : 1),
+                    entries.length > 5 ? Double.parseDouble(entries[COLOR_SHIFT_RATE]) : 1
             );
+        }
+
+        private static List<Integer> parseColors(final String colorString, final double alpha) {
+            String[] entries = colorString.split("/");
+            List<Integer> colors = new ArrayList<>();
+
+            for (String entry : entries) {
+                //noinspection DataFlowIssue -> color should be present
+                colors.add(ColorUtils.withAlpha(TextColor.parseColor(entry).getValue(), (float) alpha));
+            }
+
+            return colors;
         }
 
         @SuppressWarnings("RedundantIfStatement") // ignore for clarity

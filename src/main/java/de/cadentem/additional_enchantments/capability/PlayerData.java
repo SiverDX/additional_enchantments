@@ -124,9 +124,8 @@ public class PlayerData {
         }
     }
 
-    public CompoundTag serializeNBT(boolean onlyPersistent) {
+    public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
-
         tag.putInt("effectFilter", effectFilter.ordinal());
         tag.putInt("explosionType", explosionType.ordinal());
         tag.putInt("homingTypeFilter", homingTypeFilter.ordinal());
@@ -134,7 +133,6 @@ public class PlayerData {
         tag.putInt("displayType", displayType.ordinal());
         tag.putInt("itemFilter", itemFilter.ordinal());
         tag.putInt("voidingState", voidingState.ordinal());
-
         return tag;
     }
 

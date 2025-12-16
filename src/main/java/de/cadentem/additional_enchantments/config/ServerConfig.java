@@ -56,11 +56,24 @@ public class ServerConfig {
     public static ForgeConfigSpec.DoubleValue SHATTER_CHANCE_MULTIPLIER;
     public static ForgeConfigSpec.DoubleValue SHATTER_DAMAGE_MULTIPLIER;
 
+    // Ore Sight
+    public static ForgeConfigSpec.EnumValue<OreSightDisplayType> ORE_SIGHT_DISPLAY_TYPE;
+
+    public enum OreSightDisplayType {
+        X_RAY_OUTLINE, GLOW
+    }
+
     // Treasure Finder
+    public static ForgeConfigSpec.EnumValue<TreasureDisplayType> TREASURE_DISPLAY_TYPE;
     public static ForgeConfigSpec.DoubleValue TREASURE_BASE_RANGE;
     public static ForgeConfigSpec.DoubleValue TREASURE_RANGE_PER_LEVEL;
+    public static ForgeConfigSpec.IntValue TREASURE_PARTICLE_RATE;
     private static ForgeConfigSpec.ConfigValue<String> RAW_TREASURE_COLOR;
     private static int TREASURE_COLOR = -1;
+
+    public enum TreasureDisplayType {
+        PARTICLES, GLOW
+    }
 
     public static double getTreasureRange(final int enchantmentLevel) {
         return TREASURE_BASE_RANGE.get() + TREASURE_RANGE_PER_LEVEL.get() * enchantmentLevel;
@@ -154,8 +167,9 @@ public class ServerConfig {
                     SHATTER_DAMAGE_MULTIPLIER = BUILDER.comment("Multiplier to the enchantment level to determine the area of effect damage (level * <damage_multiplier>)").defineInRange("shatter_damage_multiplier", 0.5d, 0d, 10d);
                 }
                 case AEEnchantments.ORE_SIGHT_ID -> {
-                    String lineOne = "Entries for ore vision (<block/tag>;<required_enchantment_level>;<range>;<range_per_level>;<color>\n";
-                    String lineTwo = "(color can be a named color or a hex color in the format #RRGGBB)";
+                    ORE_SIGHT_DISPLAY_TYPE = BUILDER.comment("Display type for ore vision").defineEnum("ore_sight_display_type", OreSightDisplayType.X_RAY_OUTLINE);
+                    String lineOne = "Entries for ore vision (<block/tag>;<required_enchantment_level>;<range>;<range_per_level>;<color>;<alpha>;<color_shift_rate>)\n";
+                    String lineTwo = "(color can be a named color or a hex color in the format #RRGGBB - it can be a list, split up as 'value1/value2/value3/...')";
                     VisionConfig.RAW_ORE_SIGHT_ENTRIES = BUILDER.comment(lineOne + lineTwo).defineList("ore_sight_entries", List.of(
                             // Level 1
                             "#" + Tags.Blocks.ORES_IRON.location() + ";1;24;white",
@@ -178,11 +192,13 @@ public class ServerConfig {
                     ), object -> object instanceof String string && VisionConfig.ParsedEntry.validate(string));
                 }
                 case AEEnchantments.TREASURE_FINDER_ID -> {
+                    TREASURE_DISPLAY_TYPE = BUILDER.comment("Display type for treasure finder").defineEnum("treasure_display_type", TreasureDisplayType.PARTICLES);
                     TREASURE_BASE_RANGE = BUILDER.comment("Base range for treasures (containers with loot tables)").defineInRange("treasure_base_range", 16.0, 0, 128);
                     TREASURE_RANGE_PER_LEVEL = BUILDER.comment("Range per level for treasures (containers with loot tables)").defineInRange("treasure_range_per_level", 8.0, 0, 128);
                     RAW_TREASURE_COLOR = BUILDER.comment("Color for treasures (containers with loot tables)").define("treasure_color", "gold", object -> object instanceof String string && TextColor.parseColor(string) != null);
-                    String lineOne = "Entries for ore vision (<block/tag>;<required_enchantment_level>;<range>;<range_per_level>;<color>\n";
-                    String lineTwo = "(color can be a named color or a hex color in the format #RRGGBB)";
+                    TREASURE_PARTICLE_RATE = BUILDER.comment("Particle rate for ore and treasures").defineInRange("treasure_particle_rate", 10, 1, 1000);
+                    String lineOne = "Entries for ore vision (<block/tag>;<required_enchantment_level>;<range>;<range_per_level>;<color>;<alpha>;<color_shift_rate>)\n";
+                    String lineTwo = "(color can be a named color or a hex color in the format #RRGGBB - it can be a list, split up as 'value1/value2/value3/...')\n";
                     VisionConfig.RAW_TREASURE_FINDER_ENTRIES = BUILDER.comment(lineOne + lineTwo).defineList("treasure_finder_entries", List.of(
                             // Level 1
                             "#" + Tags.Blocks.ORES_IRON.location() + ";1;24;white",

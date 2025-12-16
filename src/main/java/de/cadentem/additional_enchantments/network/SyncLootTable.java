@@ -45,7 +45,7 @@ public record SyncLootTable(ResourceLocation loot, long seed, BlockPos worldPosi
                         VisionHandler.removeTreasure(packet.worldPosition());
                     } else {
                         access.additional_enchantments$setLootTable(packet.loot(), packet.seed());
-                        VisionHandler.addTreasure(packet.worldPosition(), blockEntity.getBlockState().getBlock());
+                        VisionHandler.addTreasure(packet.worldPosition(), blockEntity.getBlockState());
                     }
                 }
             });

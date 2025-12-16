@@ -9,6 +9,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import de.cadentem.additional_enchantments.AE;
+import de.cadentem.additional_enchantments.compat.Compat;
 import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.config.VisionConfig;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
@@ -17,6 +19,7 @@ import de.cadentem.additional_enchantments.enchantments.TreasureFinderEnchantmen
 import de.cadentem.additional_enchantments.mixin.client.FrustumAccess;
 import de.cadentem.additional_enchantments.mixin.client.RandomizableContainerBlockEntityAccess;
 import de.cadentem.additional_enchantments.registry.AEParticles;
+import de.cadentem.additional_enchantments.util.ColorUtils;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -51,8 +54,12 @@ public class VisionHandler {
     private static Cache<LevelChunkSection, Boolean[]> CHUNK_CACHE;
 
     private static final List<Data> RENDER_DATA = new ArrayList<>();
+    private static final List<Data> SHADER_RENDER_DATA = new ArrayList<>();
     private static final List<Data> SEARCH_RESULT = new ArrayList<>();
     private static final List<BlockPos> REMOVAL = new ArrayList<>();
+
+    private static ServerConfig.OreSightDisplayType previousOreSightDisplayType;
+    private static ServerConfig.TreasureDisplayType previousTreasureDisplayType;
 
     private static int enchantmentLevel;
     private static VisionConfig.Type displayType;
@@ -64,19 +71,23 @@ public class VisionHandler {
     // Doesn't seem to work 100% of the time
     private static boolean searchedTooEarly;
 
-    private record Data(Block block, double range, VisionConfig.Type displayType, float x, float y, float z, int color) {
+    public record Data(BlockState state, VisionConfig.Type displayType, VisionConfig.VisionData visionData, float x, float y, float z) {
         public boolean isInRange(final Vec3 position, final double visibleRange) {
             return position.distanceToSqr(x + 0.5, y + 0.5, z + 0.5) <= visibleRange * visibleRange;
         }
 
-        public void render(final VertexConsumer buffer, final PoseStack.Pose pose) {
-            drawLines(buffer, pose, x, y, z, x + 1, y + 1, z + 1, color);
+        public int getColor() {
+            return ColorUtils.lerpColor(visionData().colorsARGB(), visionData().colorShiftRate(), 0);
         }
     }
 
     @SubscribeEvent
     public static void handleBlockVision(final RenderLevelStageEvent event) {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS) {
+            return;
+        }
+
+        if (Compat.isRenderingShadows()) {
             return;
         }
 
@@ -87,8 +98,18 @@ public class VisionHandler {
         if (newEnchantmentLevel == 0) {
             newEnchantmentLevel = TreasureFinderEnchantment.getClientEnchantmentLevel();
             newDisplayType = VisionConfig.Type.TREASURE_FINDER;
+
+            if (previousTreasureDisplayType != ServerConfig.TREASURE_DISPLAY_TYPE.get()) {
+                previousTreasureDisplayType = ServerConfig.TREASURE_DISPLAY_TYPE.get();
+                clear();
+            }
         } else {
             newDisplayType = VisionConfig.Type.ORE_SIGHT;
+
+            if (previousOreSightDisplayType != ServerConfig.ORE_SIGHT_DISPLAY_TYPE.get()) {
+                previousOreSightDisplayType = ServerConfig.ORE_SIGHT_DISPLAY_TYPE.get();
+                clear();
+            }
         }
 
         if (newEnchantmentLevel == 0) {
@@ -129,10 +150,13 @@ public class VisionHandler {
             lastScanCenter = player.position();
             isSearching = true;
 
+            AE.LOG.debug("Initialized search for ore sight / treasure finder at [{}]", lastScanCenter);
+
             Util.backgroundExecutor().submit(() -> {
                 collect(player, maxRange + EXTENDED_SEARCH_RANGE);
                 isSearching = false;
                 hasPendingUpdate = true;
+                AE.LOG.debug("Finished search for ore sight / treasure finder with [{}] entries", RENDER_DATA.size());
             });
         }
 
@@ -164,28 +188,35 @@ public class VisionHandler {
                 continue;
             }
 
-            if (data.range() == 0 || !data.isInRange(player.getEyePosition(), data.range())) {
+            if (data.visionData().range() == 0 || !data.isInRange(player.getEyePosition(), data.visionData().range())) {
                 continue;
             }
 
             if (((FrustumAccess) event.getFrustum()).additional_enchantments$cubeInFrustum(data.x(), data.y(), data.z(), data.x() + 1, data.y() + 1, data.z() + 1)) {
                 if (data.displayType() == VisionConfig.Type.ORE_SIGHT) {
-                    data.render(buffer, pose.last());
+                    if (ServerConfig.ORE_SIGHT_DISPLAY_TYPE.get() == ServerConfig.OreSightDisplayType.X_RAY_OUTLINE) {
+                        drawLines(buffer, pose.last(), data.x(), data.y(), data.z(), data.x() + 1, data.y() + 1, data.z() + 1, data.getColor());
+                    } else {
+                        SHADER_RENDER_DATA.add(data);
+                    }
+
                     continue;
                 }
 
-                if (Minecraft.getInstance().isPaused()) {
-                    // Newly added particles will only render once the game is un-paused
-                    // Meaning if we don't skip here, all the added particles will be shown at once
-                    continue;
-                }
-
-                if (data.displayType() == VisionConfig.Type.TREASURE_FINDER && player.tickCount % 10 == 0) {
-                    // Increase the bounding box to make the particles more visible for blocks in walls etc.
-                    double x = (data.x() + 0.5) + (player.getRandom().nextDouble() - 0.5) * 2;
-                    double y = (data.y() + 0.5) + (player.getRandom().nextDouble() - 0.5) * 2;
-                    double z = (data.z() + 0.5) + (player.getRandom().nextDouble() - 0.5) * 2;
-                    player.level.addParticle(AEParticles.GLOW.get(), x, y, z, data.color(), enchantmentLevel, 0);
+                if (data.displayType() == VisionConfig.Type.TREASURE_FINDER) {
+                    if (ServerConfig.TREASURE_DISPLAY_TYPE.get() == ServerConfig.TreasureDisplayType.PARTICLES) {
+                        // Newly added particles will only render once the game is un-paused
+                        // Meaning if we don't skip here, all the added particles will be shown at once
+                        if (!Minecraft.getInstance().isPaused() && player.tickCount % ServerConfig.TREASURE_PARTICLE_RATE.get() == 0) {
+                            // Increase the bounding box to make the particles more visible for blocks in walls etc.
+                            double x = (data.x() + 0.5) + (player.getRandom().nextDouble() - 0.5) * 2;
+                            double y = (data.y() + 0.5) + (player.getRandom().nextDouble() - 0.5) * 2;
+                            double z = (data.z() + 0.5) + (player.getRandom().nextDouble() - 0.5) * 2;
+                            player.level.addParticle(AEParticles.GLOW.get(), x, y, z, data.getColor(), enchantmentLevel, 0);
+                        }
+                    } else {
+                        SHADER_RENDER_DATA.add(data);
+                    }
                 }
             }
         }
@@ -195,6 +226,53 @@ public class VisionHandler {
 
         RenderSystem.enableDepthTest();
         RenderType.cutout().clearRenderState();
+    }
+
+    /**
+     * Renders effects that rely on core shaders </br>
+     * When shaders from Iris are enabled they won't appear on the {@link net.minecraftforge.client.event.RenderLevelStageEvent.Stage#AFTER_CUTOUT_BLOCKS} stage </br>
+     * This also means we can't allow x-ray functionality for these because otherwise they'd render over entities
+     */
+    @SubscribeEvent
+    public static void handleShader(final RenderLevelStageEvent event) {
+        if (Compat.isRenderingShadows()) {
+            return;
+        }
+
+        boolean isUsingShader = Compat.isShaderActive();
+
+        if (isUsingShader && event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+            // Iris does not really support core shaders - the only stage they work at is after it has finished doing its rendering
+            return;
+        } else if (!isUsingShader && event.getStage() != RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS) {
+            // This stage allows rendering the shader through water
+            return;
+        }
+
+        if (SHADER_RENDER_DATA.isEmpty()) {
+            return;
+        }
+
+        PoseStack pose = event.getPoseStack();
+        pose.pushPose();
+
+        Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        pose.mulPoseMatrix(event.getProjectionMatrix());
+        pose.translate(-camera.x(), -camera.y(), -camera.z());
+
+        BlockVisionShaderSimple.beginBatch();
+
+        for (Data data : SHADER_RENDER_DATA) {
+            pose.pushPose();
+            pose.translate(data.x(), data.y(), data.z());
+            BlockVisionShaderSimple.render(data, pose);
+            pose.popPose();
+        }
+
+        BlockVisionShaderSimple.endBatch();
+
+        pose.popPose();
+        SHADER_RENDER_DATA.clear();
     }
 
     @SubscribeEvent
@@ -231,22 +309,27 @@ public class VisionHandler {
         VisionConfig.VisionData newData = VisionConfig.get(displayType, enchantmentLevel, newBlock);
 
         if (newData != null && newData.range() > 0) {
-            RENDER_DATA.add(new Data(newBlock, newData.range(), displayType, position.getX(), position.getY(), position.getZ(), toARGB(newData.color())));
+            RENDER_DATA.add(new Data(newState, displayType, newData, position.getX(), position.getY(), position.getZ()));
         }
     }
 
-    public static void addTreasure(final BlockPos position, final Block block) {
-        RENDER_DATA.add(new Data(block, ServerConfig.getTreasureRange(enchantmentLevel), VisionConfig.Type.TREASURE_FINDER, position.getX(), position.getY(), position.getZ(), toARGB(ServerConfig.getTreasureColor())));
+    public static void addTreasure(final BlockPos position, final BlockState state) {
+        RENDER_DATA.add(new Data(
+                state,
+                VisionConfig.Type.TREASURE_FINDER,
+                new VisionConfig.VisionData(
+                        ServerConfig.getTreasureRange(enchantmentLevel),
+                        List.of(ColorUtils.withAlpha(ServerConfig.getTreasureColor(), 1)),
+                        1
+                ),
+                position.getX(), position.getY(), position.getZ()
+        ));
     }
 
     public static void removeTreasure(final BlockPos position) {
         if (!RENDER_DATA.isEmpty()) {
             REMOVAL.add(position);
         }
-    }
-
-    public static int toARGB(int rgb) {
-        return 0xFF << 24 | rgb;
     }
 
     private static void collect(final Player player, double searchRange) {
@@ -263,13 +346,14 @@ public class VisionHandler {
         int maxChunkZ = (int) (startPosition.getZ() + searchRange);
 
         BlockPos.MutableBlockPos mutablePosition = BlockPos.ZERO.mutable();
-        boolean foundXSection = false;
         searchedTooEarly = true;
 
         for (int x = minChunkX; x <= maxChunkX; x++) {
-            boolean foundZSection = false;
+            boolean foundXSection = false;
 
             for (int z = minChunkZ; z <= maxChunkZ; z++) {
+                boolean foundZSection = false;
+
                 int sectionX = SectionPos.blockToSectionCoord(x);
                 int sectionZ = SectionPos.blockToSectionCoord(z);
 
@@ -278,17 +362,14 @@ public class VisionHandler {
                     currentChunk = player.level.getChunk(sectionX, sectionZ);
                 }
 
-                boolean foundYSection = false;
-
                 for (int y = maxChunkY; y >= minChunkY; y--) {
                     int sectionIndex = currentChunk.getSectionIndex(y);
                     LevelChunkSection section = currentChunk.getSection(sectionIndex);
 
                     mutablePosition.set(x, y, z);
 
-                    if ((foundXSection || foundYSection || foundZSection) || hasRelevantBlock(currentChunk, section, sectionIndex)) {
+                    if (foundXSection || foundZSection || hasRelevantBlock(currentChunk, section, sectionIndex)) {
                         foundXSection = true;
-                        foundYSection = true;
                         foundZSection = true;
 
                         BlockState state = currentChunk.getBlockState(mutablePosition);
@@ -301,13 +382,20 @@ public class VisionHandler {
                         VisionConfig.VisionData vision = VisionConfig.get(displayType, enchantmentLevel, block);
 
                         if (vision != null && vision.range() > 0) {
-                            SEARCH_RESULT.add(new Data(block, vision.range(), displayType, x, y, z, toARGB(vision.color())));
+                            SEARCH_RESULT.add(new Data(state, displayType, vision, x, y, z));
                         } else if (displayType == VisionConfig.Type.TREASURE_FINDER && state.is(AEBlockTags.TREASURES) && hasLoot(player.level, new BlockPos(x, y, z))) {
-                            SEARCH_RESULT.add(new Data(block, ServerConfig.getTreasureRange(enchantmentLevel), displayType, x, y, z, toARGB(ServerConfig.getTreasureColor())));
+                            SEARCH_RESULT.add(new Data(
+                                    state,
+                                    displayType,
+                                    new VisionConfig.VisionData(
+                                            ServerConfig.getTreasureRange(enchantmentLevel),
+                                            List.of(ColorUtils.withAlpha(ServerConfig.getTreasureColor(), 1)),
+                                            1
+                                    ),
+                                    x, y, z
+                            ));
                         }
-                    }
-
-                    if (!foundYSection && y != minChunkY) {
+                    } else if (y != minChunkY) {
                         // Move to the next section (the bit shifting truncates the y value)
                         y = Math.max(minChunkY, SectionPos.sectionToBlockCoord(SectionPos.blockToSectionCoord(y)));
                     }
@@ -335,10 +423,9 @@ public class VisionHandler {
 
         if (cachedSection == null || cachedSection[sectionIndex] == null) {
             boolean containsRelevantBlock = !section.hasOnlyAir() && section.maybeHas(state -> {
+                VisionConfig.VisionData vision = VisionConfig.get(displayType, enchantmentLevel, state.getBlock());
                 // When searching too early all sections only contain air
                 searchedTooEarly = false;
-
-                VisionConfig.VisionData vision = VisionConfig.get(displayType, enchantmentLevel, state.getBlock());
 
                 if (vision != null && vision.range() > 0) {
                     return true;
