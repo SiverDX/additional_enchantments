@@ -56,15 +56,15 @@ public class PlayerDataProvider implements ICapabilitySerializable<CompoundTag> 
         return LazyOptional.empty();
     }
 
-    public static void removeCachedEntry(final Entity entity) {
-        if (entity.getLevel().isClientSide()) {
-            if (entity == ClientProxy.getLocalPlayer()) {
+    public static void removeCachedEntry(final Player player) {
+        if (player.getLevel().isClientSide()) {
+            if (player == ClientProxy.getLocalPlayer()) {
                 CLIENT_CACHE.clear();
             } else {
-                CLIENT_CACHE.remove(entity.getId());
+                CLIENT_CACHE.remove(player.getId());
             }
         } else {
-            SERVER_CACHE.remove(entity.getId());
+            SERVER_CACHE.remove(player.getId());
         }
     }
 }

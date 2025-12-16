@@ -12,6 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraftforge.common.capabilities.Capability;
@@ -31,19 +32,28 @@ import net.minecraftforge.network.PacketDistributor;
 @Mod.EventBusSubscriber
 public class CapabilityHandler {
     public static final Capability<PlayerData> PLAYER_DATA_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
-    public static final Capability<ProjectileData> PROJECTILE_DATA_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
     public static final ResourceLocation PLAYER_DATA = new ResourceLocation(AE.MODID, "player_data");
+
+    public static final Capability<ProjectileData> PROJECTILE_DATA_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
     public static final ResourceLocation PROJECTILE_DATA = new ResourceLocation(AE.MODID, "projectile_data");
+
+    // Currently data for living entities which are only relevant server-side
+    public static final Capability<EntityData> ENTITY_DATA_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+    public static final ResourceLocation ENTITY_DATA = new ResourceLocation(AE.MODID, "entity_data");
 
     @SubscribeEvent
     public static void attachCapability(final AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof Player player) {
-            if (player instanceof FakePlayer) {
-                return;
-            }
+        if (event.getObject() instanceof LivingEntity) {
+            event.addCapability(ENTITY_DATA, new EntityDataProvider());
+        }
 
-            event.addCapability(PLAYER_DATA, new PlayerDataProvider());
-        } else if (event.getObject() instanceof Projectile) {
+        if (event.getObject() instanceof Player player) {
+            if (!(player instanceof FakePlayer)) {
+                event.addCapability(PLAYER_DATA, new PlayerDataProvider());
+            }
+        }
+
+        if (event.getObject() instanceof Projectile) {
             event.addCapability(PROJECTILE_DATA, new ProjectileDataProvider());
         }
     }
@@ -83,10 +93,16 @@ public class CapabilityHandler {
     public static void removeCachedEntry(final EntityLeaveLevelEvent event) {
         Entity entity = event.getEntity();
 
+        if (entity instanceof LivingEntity livingEntity) {
+            EntityDataProvider.removeCachedEntry(livingEntity);
+        }
+
+        if (entity instanceof Player player) {
+            PlayerDataProvider.removeCachedEntry(player);
+        }
+
         if (entity instanceof Projectile) {
             ProjectileDataProvider.removeCachedEntry(entity);
-        } else if (entity instanceof Player) {
-            PlayerDataProvider.removeCachedEntry(entity);
         }
     }
 
