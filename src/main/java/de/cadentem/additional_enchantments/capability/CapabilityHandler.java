@@ -85,7 +85,7 @@ public class CapabilityHandler {
     @SubscribeEvent // Only called server-side
     public static void handlePlayerDeath(final PlayerEvent.Clone event) {
         event.getOriginal().reviveCaps();
-        PlayerDataProvider.getCapability(event.getEntity()).ifPresent(data -> PlayerDataProvider.getCapability(event.getOriginal()).ifPresent(oldData -> data.deserializeNBT(oldData.serializeNBT(event.isWasDeath()))));
+        PlayerDataProvider.getCapability(event.getEntity()).ifPresent(data -> PlayerDataProvider.getCapability(event.getOriginal()).ifPresent(oldData -> data.deserializeNBT(oldData.serializeNBT())));
         event.getOriginal().invalidateCaps();
     }
 
@@ -125,7 +125,7 @@ public class CapabilityHandler {
     }
 
     public static void syncPlayerData(final Player player) {
-        PlayerDataProvider.getCapability(player).ifPresent(data -> syncPlayerData(player, data.serializeNBT(false)));
+        PlayerDataProvider.getCapability(player).ifPresent(data -> syncPlayerData(player, data.serializeNBT()));
     }
 
     public static void syncPlayerData(final Player player, final CompoundTag tag) {

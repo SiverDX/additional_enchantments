@@ -3,6 +3,7 @@ package de.cadentem.additional_enchantments;
 import com.mojang.logging.LogUtils;
 import de.cadentem.additional_enchantments.capability.PlayerData;
 import de.cadentem.additional_enchantments.capability.ProjectileData;
+import de.cadentem.additional_enchantments.client.BlockVisionShaderSimple;
 import de.cadentem.additional_enchantments.client.ClientRegistry;
 import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.config.VisionConfig;
@@ -13,6 +14,10 @@ import de.cadentem.additional_enchantments.registry.AEItems;
 import de.cadentem.additional_enchantments.registry.AELootModifiers;
 import de.cadentem.additional_enchantments.registry.AEMobEffects;
 import de.cadentem.additional_enchantments.registry.AEParticles;
+import de.cadentem.additional_enchantments.util.ClientProxy;
+import de.cadentem.additional_enchantments.util.Proxy;
+import de.cadentem.additional_enchantments.util.ServerProxy;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -23,6 +28,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.slf4j.Logger;
 
 @Mod(AE.MODID)
@@ -30,7 +36,11 @@ public class AE {
     public static final String MODID = "additional_enchantments";
     public static final Logger LOG = LogUtils.getLogger();
 
+    public static Proxy PROXY;
+
     public AE() {
+        PROXY = FMLLoader.getDist() == Dist.CLIENT ? new ClientProxy() : new ServerProxy();
+
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.register(this);
 
@@ -54,6 +64,7 @@ public class AE {
         event.enqueueWork(ClientRegistry::registerItemProperties);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(VisionConfig::updateFromConfig);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ServerConfig::updateFromConfig);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(BlockVisionShaderSimple::registerShaders);
         MinecraftForge.EVENT_BUS.addListener(VisionConfig::updateFromReload);
     }
 

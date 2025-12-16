@@ -28,6 +28,7 @@
     "client.ModelBakeryMixin",
     "client.PlayerRendererMixin",
     "client.RandomizableContainerBlockEntityAccess",
+    "client.RenderStateShardAccessor",
     "skinlayers3d.CustomLayerFeatureRendererMixin",
     "skinlayers3d.PlayerRenderMixin"
   ],
