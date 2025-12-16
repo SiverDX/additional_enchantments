@@ -28,7 +28,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterShadersEvent;
 import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.io.IOException;
@@ -99,6 +98,7 @@ public class BlockVisionShaderSimple {
         rand.setSeed(seed);
 
         for (BakedQuad quad : model) {
+            // Match 1.21.1 behavior: do not multiply with baked quad tint on CPU; let shader use vertex color as provided
             buffer.putBulkData(lastPose, quad, red / 255f, green / 255f, blue / 255f, alpha / 255f, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, false);
         }
     }
@@ -150,14 +150,9 @@ public class BlockVisionShaderSimple {
         RenderSystem.setShader(() -> shader);
         shader.getUniform("ProjMat").set(RenderSystem.getProjectionMatrix());
         shader.getUniform("ModelViewMat").set(RenderSystem.getModelViewMatrix());
+        shader.getUniform("DepthBias").set(0.0115f);
         shader.apply();
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.depthMask(false);
-        // Prevents z-fighting issues
-        RenderSystem.enablePolygonOffset();
-        RenderSystem.polygonOffset(-1, -1);
         //noinspection deprecation -> ignore
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
     }
