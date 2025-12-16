@@ -257,7 +257,6 @@ public class VisionHandler {
         pose.pushPose();
 
         Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        pose.mulPoseMatrix(event.getProjectionMatrix());
         pose.translate(-camera.x(), -camera.y(), -camera.z());
 
         BlockVisionShaderSimple.beginBatch();
