@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.client;
+package de.cadentem.additional_enchantments.client.block_vision;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -7,37 +7,32 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import de.cadentem.additional_enchantments.AE;
+import de.cadentem.additional_enchantments.client.BlockVisionRenderTypes;
+import de.cadentem.additional_enchantments.client.VisionHandler;
 import de.cadentem.additional_enchantments.compat.ModCheck;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterShadersEvent;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.fml.common.Mod;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
-public class BlockVisionShaderSimple {
-    private static ShaderInstance shader;
-
+public class ShaderSimple {
     /**
      * When Iris is installed using this single buffer works fine </br>
      * The alternative (our own render types) have issues and don't render correctly </br>
@@ -54,6 +49,10 @@ public class BlockVisionShaderSimple {
         int red = FastColor.ARGB32.red(colorARGB);
         int green = FastColor.ARGB32.green(colorARGB);
         int blue = FastColor.ARGB32.blue(colorARGB);
+
+        if (alpha == 0) {
+            return;
+        }
 
         BlockPos position = new BlockPos(data.x(), data.y(), data.z());
         Level level = Objects.requireNonNull(Minecraft.getInstance().level);
@@ -90,7 +89,7 @@ public class BlockVisionShaderSimple {
             // Culled faces
             for (Direction direction : Direction.values()) {
                 putData(buffer, random, seed, model.getQuads(data.state(), direction, random, modelData, type), lastPose, red, green, blue, alpha);
-            }
+          }
         }
     }
 
@@ -127,31 +126,20 @@ public class BlockVisionShaderSimple {
         RenderSystem.polygonOffset(0, 0);
         RenderSystem.disablePolygonOffset();
 
-        shader.clear();
+        VisionHandler.getSimpleShader().clear();
 
         irisTesselator = null;
         irisBuffer = null;
     }
 
-    public static void registerShaders(final RegisterShadersEvent event) {
-        try {
-            event.registerShader(new ShaderInstance(event.getResourceManager(), new ResourceLocation(AE.MODID, "block_vision_simple"), DefaultVertexFormat.BLOCK), instance -> shader = instance);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static ShaderInstance getShader() {
-        return shader;
-    }
 
     @SuppressWarnings("DataFlowIssue") // Shader variables should be present
     private static void prepare() {
-        RenderSystem.setShader(() -> shader);
-        shader.getUniform("ProjMat").set(RenderSystem.getProjectionMatrix());
-        shader.getUniform("ModelViewMat").set(RenderSystem.getModelViewMatrix());
-        shader.getUniform("DepthBias").set(0.0115f);
-        shader.apply();
+        RenderSystem.setShader(VisionHandler::getSimpleShader);
+        VisionHandler.getSimpleShader().getUniform("ProjMat").set(RenderSystem.getProjectionMatrix());
+        VisionHandler.getSimpleShader().getUniform("ModelViewMat").set(RenderSystem.getModelViewMatrix());
+        VisionHandler.getSimpleShader().getUniform("DepthBias").set(0.0115f);
+        VisionHandler.getSimpleShader().apply();
 
         if (irisTesselator != null) {
             RenderSystem.enableDepthTest();

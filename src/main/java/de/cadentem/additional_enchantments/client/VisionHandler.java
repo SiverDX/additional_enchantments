@@ -9,6 +9,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import de.cadentem.additional_enchantments.AE;
+import de.cadentem.additional_enchantments.client.block_vision.ShaderSimple;
+import de.cadentem.additional_enchantments.client.block_vision.ShaderSimpleBlockEntities;
 import de.cadentem.additional_enchantments.compat.Compat;
 import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.config.VisionConfig;
@@ -23,8 +26,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -34,12 +39,14 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterShadersEvent;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,13 +59,14 @@ public class VisionHandler {
     /** Extend the search as a buffer while the background thread is searching */
     private static final int EXTENDED_SEARCH_RANGE = 16;
 
-    private static Cache<LevelChunkSection, Boolean[]> CHUNK_CACHE;
-
     private static final Map<Long, Data> RENDER_DATA = new HashMap<>();
     private static final List<Data> SHADER_RENDER_DATA = new ArrayList<>();
 
     private static final List<Data> SEARCH_RESULT = new ArrayList<>();
     private static final List<Long> REMOVAL = new ArrayList<>();
+
+    private static Cache<LevelChunkSection, Boolean[]> CHUNK_CACHE;
+    private static ShaderInstance simpleShader;
 
     private static int enchantmentLevel;
     private static Vec3 lastScanCenter;
@@ -75,6 +83,14 @@ public class VisionHandler {
 
         public int getColor() {
             return ColorUtils.lerpColor(visionData().colorsARGB(), visionData().colorShiftRate(), 0);
+        }
+    }
+
+    public static void registerShaders(final RegisterShadersEvent event) {
+        try {
+            event.registerShader(new ShaderInstance(event.getResourceManager(), new ResourceLocation(AE.MODID, "block_vision_simple"), DefaultVertexFormat.BLOCK), instance -> simpleShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -206,22 +222,40 @@ public class VisionHandler {
             return;
         }
 
+        List<Data> blockEntities = new ArrayList<>();
+
         PoseStack pose = event.getPoseStack();
         pose.pushPose();
 
         Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         pose.translate(-camera.x(), -camera.y(), -camera.z());
 
-        BlockVisionShaderSimple.beginBatch();
+        ShaderSimple.beginBatch();
 
         for (Data data : SHADER_RENDER_DATA) {
+            if (data.state().hasBlockEntity()) {
+                blockEntities.add(data);
+                continue;
+            }
+
             pose.pushPose();
             pose.translate(data.x(), data.y(), data.z());
-            BlockVisionShaderSimple.render(data, pose);
+            ShaderSimple.render(data, pose);
             pose.popPose();
         }
 
-        BlockVisionShaderSimple.endBatch();
+        ShaderSimple.endBatch();
+
+        ShaderSimpleBlockEntities.beginBatch();
+
+        for (Data data : blockEntities) {
+            pose.pushPose();
+            pose.translate(data.x(), data.y(), data.z());
+            ShaderSimpleBlockEntities.render(data, pose);
+            pose.popPose();
+        }
+
+        ShaderSimpleBlockEntities.endBatch();
 
         pose.popPose();
         SHADER_RENDER_DATA.clear();
@@ -254,11 +288,19 @@ public class VisionHandler {
 
         VisionConfig.VisionData oldData = VisionConfig.get(oldState.getBlock(), enchantmentLevel);
 
+        if (oldData == null && oldState.is(AEBlockTags.TREASURES)) {
+            oldData = VisionConfig.SpecialBlock.TREASURE.get(enchantmentLevel);
+        }
+
         if (!RENDER_DATA.isEmpty() && oldData != null && oldData.range() > 0) {
             REMOVAL.add(position.asLong());
         }
 
         VisionConfig.VisionData newData = VisionConfig.get(newBlock, enchantmentLevel);
+
+        if (newData == null && newState.is(AEBlockTags.TREASURES)) {
+            newData = VisionConfig.SpecialBlock.TREASURE.get(enchantmentLevel);
+        }
 
         if (newData != null && newData.range() > 0) {
             RENDER_DATA.put(position.asLong(), new Data(newState, newData, position.getX(), position.getY(), position.getZ()));
@@ -277,6 +319,10 @@ public class VisionHandler {
         if (!RENDER_DATA.isEmpty()) {
             REMOVAL.add(position.asLong());
         }
+    }
+
+    public static ShaderInstance getSimpleShader() {
+        return simpleShader;
     }
 
     private static void collect(final Player player, double searchRange) {

@@ -3,7 +3,7 @@ package de.cadentem.additional_enchantments;
 import com.mojang.logging.LogUtils;
 import de.cadentem.additional_enchantments.capability.PlayerData;
 import de.cadentem.additional_enchantments.capability.ProjectileData;
-import de.cadentem.additional_enchantments.client.BlockVisionShaderSimple;
+import de.cadentem.additional_enchantments.client.VisionHandler;
 import de.cadentem.additional_enchantments.client.ClientRegistry;
 import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.config.VisionConfig;
@@ -63,7 +63,7 @@ public class AE {
     public void clientSetup(final FMLClientSetupEvent event) {
         event.enqueueWork(ClientRegistry::registerItemProperties);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(VisionConfig::updateFromConfig);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(BlockVisionShaderSimple::registerShaders);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(VisionHandler::registerShaders);
         MinecraftForge.EVENT_BUS.addListener(VisionConfig::updateFromReload);
     }
 
