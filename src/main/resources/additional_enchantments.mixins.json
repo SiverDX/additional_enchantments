@@ -20,6 +20,7 @@
     "TridentAccess"
   ],
   "client": [
+    "client.BlockEntityRenderDispatcherMixin",
     "client.ClientLevelMixin",
     "client.FrustumAccess",
     "client.ItemInHandRendererMixin",
