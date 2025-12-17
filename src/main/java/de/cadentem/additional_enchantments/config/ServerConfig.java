@@ -196,6 +196,18 @@ public class ServerConfig {
                 colorEntry.apply("#ff4d4d", 0.15)
         ), 1.0, VisionConfig.DisplayType.GLOW}));
 
+        list.add(entry.apply(new Object[]{"#forge:ores/zinc", 1, 2, 16.0, List.of(
+                colorEntry.apply("#9aa3ad", 0.15),
+                colorEntry.apply("#b7c0c9", 0.15),
+                colorEntry.apply("#d0d7df", 0.15)
+        ), 1.0, VisionConfig.DisplayType.GLOW}));
+
+        list.add(entry.apply(new Object[]{"#forge:ores/silver", 2, 3, 16.0, List.of(
+                colorEntry.apply("white", 0.15),
+                colorEntry.apply("gray", 0.15),
+                colorEntry.apply("#dfe6ee", 0.15)
+        ), 1.0, VisionConfig.DisplayType.GLOW}));
+
         list.add(entry.apply(new Object[]{"#" + Tags.Blocks.ORES_LAPIS.location(), 2, 3, 16.0, List.of(
                 colorEntry.apply("dark_blue", 0.15),
                 colorEntry.apply("blue", 0.15),
