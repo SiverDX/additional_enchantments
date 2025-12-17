@@ -9,7 +9,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.compat.Compat;
 import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.config.VisionConfig;
@@ -57,6 +56,7 @@ public class VisionHandler {
 
     private static final Map<Long, Data> RENDER_DATA = new HashMap<>();
     private static final List<Data> SHADER_RENDER_DATA = new ArrayList<>();
+
     private static final List<Data> SEARCH_RESULT = new ArrayList<>();
     private static final List<Long> REMOVAL = new ArrayList<>();
 
@@ -407,7 +407,7 @@ public class VisionHandler {
         return currentPosition.distanceToSqr(lastScanCenter) > halfRange * halfRange;
     }
 
-    private static void drawLines(final VertexConsumer buffer, final PoseStack.Pose pose, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final int color) {
+    public static void drawLines(final VertexConsumer buffer, final PoseStack.Pose pose, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final int color) {
         drawLine(buffer, pose, minX, minY, minZ, maxX, minY, minZ, 1, 0, 0, color);
         drawLine(buffer, pose, minX, minY, minZ, minX, maxY, minZ, 0, 1, 0, color);
         drawLine(buffer, pose, minX, minY, minZ, minX, minY, maxZ, 0, 0, 1, color);

@@ -51,7 +51,7 @@ public class AEEnchantments {
     public static final RegistryObject<WitherEnchantment> WITHER = ENCHANTMENTS.register(WITHER_ID, WitherEnchantment::new);
     public static final RegistryObject<PerceptionEnchantment> PERCEPTION = ENCHANTMENTS.register(PERCEPTION_ID, PerceptionEnchantment::new);
     public static final RegistryObject<ConfusionEnchantment> CONFUSION = ENCHANTMENTS.register(CONFUSION_ID, ConfusionEnchantment::new);
-    public static final RegistryObject<TreasureFinderEnchantment> TREASURE_FINDER = ENCHANTMENTS.register(ORE_SIGHT_ID, TreasureFinderEnchantment::new);
+    public static final RegistryObject<TreasureFinderEnchantment> TREASURE_FINDER = ENCHANTMENTS.register(TREASURE_FINDER_ID, TreasureFinderEnchantment::new);
     public static final RegistryObject<HunterEnchantment> HUNTER = ENCHANTMENTS.register(HUNTER_ID, HunterEnchantment::new);
     public static final RegistryObject<Bracewalk> BRACEWALK = ENCHANTMENTS.register(BRACEWALK_ID, Bracewalk::new);
     public static final RegistryObject<HydroShockEnchantment> HYDRO_SHOCK = ENCHANTMENTS.register(HYDRO_SHOCK_ID, HydroShockEnchantment::new);

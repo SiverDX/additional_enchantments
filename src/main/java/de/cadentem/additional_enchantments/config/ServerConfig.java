@@ -75,7 +75,7 @@ public class ServerConfig {
         ENCHANTMENTS.put(AEEnchantments.WITHER_ID, 6);
         ENCHANTMENTS.put(AEEnchantments.PERCEPTION_ID, 4);
         ENCHANTMENTS.put(AEEnchantments.CONFUSION_ID, 5);
-        ENCHANTMENTS.put(AEEnchantments.ORE_SIGHT_ID, 4);
+        ENCHANTMENTS.put(AEEnchantments.TREASURE_FINDER_ID, 4);
         ENCHANTMENTS.put(AEEnchantments.HUNTER_ID, 6);
         ENCHANTMENTS.put(AEEnchantments.BRACEWALK_ID, 4);
         ENCHANTMENTS.put(AEEnchantments.HYDRO_SHOCK_ID, 5);
