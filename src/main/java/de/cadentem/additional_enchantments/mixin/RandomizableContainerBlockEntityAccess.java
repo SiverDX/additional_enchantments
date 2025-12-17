@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.mixin.client;
+package de.cadentem.additional_enchantments.mixin;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;

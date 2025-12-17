@@ -6,8 +6,8 @@ import de.cadentem.additional_enchantments.client.ClientProxy;
 import de.cadentem.additional_enchantments.mixin.HolderSet$NamedAccess;
 import de.cadentem.additional_enchantments.util.ColorUtils;
 import net.minecraft.advancements.critereon.MinMaxBounds;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -134,7 +134,7 @@ public class VisionConfig {
             return;
         }
 
-        reload(player.level.registryAccess());
+        reload(player.level().registryAccess());
     }
 
     private static void reload(final RegistryAccess access) {
@@ -157,14 +157,14 @@ public class VisionConfig {
             } else if (parsed.resource().startsWith("#")) {
                 ResourceLocation resource = new ResourceLocation(parsed.resource().substring(1));
 
-                access.registryOrThrow(Registry.BLOCK_REGISTRY).getTag(TagKey.create(Registry.BLOCK_REGISTRY, resource)).ifPresent(tag -> {
+                access.registryOrThrow(Registries.BLOCK).getTag(TagKey.create(Registries.BLOCK, resource)).ifPresent(tag -> {
                     //noinspection unchecked -> cast is valid
                     ((HolderSet$NamedAccess<Block>) tag).additional_enchantments$contents().forEach(block -> {
                         newEntries.computeIfAbsent(block.unwrapKey().orElseThrow(), key -> new ArrayList<>()).add(parsed.data());
                     });
                 });
             } else {
-                newEntries.computeIfAbsent(ResourceKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(parsed.resource())), key -> new ArrayList<>()).add(parsed.data());
+                newEntries.computeIfAbsent(ResourceKey.create(Registries.BLOCK, new ResourceLocation(parsed.resource())), key -> new ArrayList<>()).add(parsed.data());
             }
         });
 

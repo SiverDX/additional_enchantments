@@ -15,6 +15,7 @@
     "ItemMixin",
     "LivingEntityMixin",
     "ProjectileMixin",
+    "RandomizableContainerBlockEntityAccess",
     "RandomizableContainerBlockEntityMixin",
     "SwellGoalMixin",
     "TridentAccess",
@@ -29,7 +30,6 @@
     "client.MinecraftMixin",
     "client.ModelBakeryMixin",
     "client.PlayerRendererMixin",
-    "client.RandomizableContainerBlockEntityAccess",
     "client.RenderStateShardAccessor",
     "skinlayers3d.CustomLayerFeatureRendererMixin",
     "skinlayers3d.PlayerRenderMixin"

@@ -2,7 +2,7 @@ package de.cadentem.additional_enchantments.network;
 
 import de.cadentem.additional_enchantments.client.ClientProxy;
 import de.cadentem.additional_enchantments.client.VisionHandler;
-import de.cadentem.additional_enchantments.mixin.client.RandomizableContainerBlockEntityAccess;
+import de.cadentem.additional_enchantments.mixin.RandomizableContainerBlockEntityAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.cadentem.additional_enchantments.client.VisionHandler;
 import de.cadentem.additional_enchantments.config.VisionConfig;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
+import de.cadentem.additional_enchantments.mixin.RandomizableContainerBlockEntityAccess;
 import de.cadentem.additional_enchantments.util.ColorUtils;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;

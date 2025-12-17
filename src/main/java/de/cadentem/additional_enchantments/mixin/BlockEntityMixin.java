@@ -2,7 +2,6 @@ package de.cadentem.additional_enchantments.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import de.cadentem.additional_enchantments.AE;
-import de.cadentem.additional_enchantments.mixin.client.RandomizableContainerBlockEntityAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;

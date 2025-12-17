@@ -54,7 +54,7 @@ public class ShaderSimple {
             return;
         }
 
-        BlockPos position = new BlockPos(data.x(), data.y(), data.z());
+        BlockPos position = BlockPos.containing(data.x(), data.y(), data.z());
         Level level = Objects.requireNonNull(Minecraft.getInstance().level);
 
         pose.pushPose();

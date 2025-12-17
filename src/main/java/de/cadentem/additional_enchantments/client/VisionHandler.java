@@ -18,7 +18,7 @@ import de.cadentem.additional_enchantments.config.VisionConfig;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
 import de.cadentem.additional_enchantments.enchantments.TreasureFinderEnchantment;
 import de.cadentem.additional_enchantments.mixin.client.FrustumAccess;
-import de.cadentem.additional_enchantments.mixin.client.RandomizableContainerBlockEntityAccess;
+import de.cadentem.additional_enchantments.mixin.RandomizableContainerBlockEntityAccess;
 import de.cadentem.additional_enchantments.registry.AEParticles;
 import de.cadentem.additional_enchantments.util.ColorUtils;
 import net.minecraft.Util;
@@ -42,7 +42,6 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterShadersEvent;
-import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -91,7 +90,7 @@ public class VisionHandler {
 
     public static void registerShaders(final RegisterShadersEvent event) {
         try {
-            event.registerShader(new ShaderInstance(event.getResourceManager(), new ResourceLocation(AE.MODID, "block_vision_simple"), DefaultVertexFormat.BLOCK), instance -> simpleShader = instance);
+            event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(AE.MODID, "block_vision_simple"), DefaultVertexFormat.BLOCK), instance -> simpleShader = instance);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -137,7 +136,7 @@ public class VisionHandler {
             RENDER_DATA.clear();
 
             for (Data data : SEARCH_RESULT) {
-                RENDER_DATA.put(new BlockPos(data.x(), data.y(), data.z()).asLong(), data);
+                RENDER_DATA.put(BlockPos.containing(data.x(), data.y(), data.z()).asLong(), data);
             }
 
             SEARCH_RESULT.clear();
@@ -200,7 +199,7 @@ public class VisionHandler {
                             double y = (data.y() + 0.5) + (player.getRandom().nextDouble() - 0.5) * 2;
                             double z = (data.z() + 0.5) + (player.getRandom().nextDouble() - 0.5) * 2;
                             //noinspection deprecation -> key is present
-                            player.level.addParticle(AEParticles.GLOW.get(), x, y, z, map.getId(data.state().getBlock().builtInRegistryHolder()), enchantmentLevel, 0);
+                            player.level().addParticle(AEParticles.GLOW.get(), x, y, z, map.getId(data.state().getBlock().builtInRegistryHolder()), enchantmentLevel, 0);
                         }
                     }
                 }
@@ -220,8 +219,12 @@ public class VisionHandler {
      * This also means we can't allow x-ray functionality for these because otherwise they'd render over entities
      */
     @SubscribeEvent
-    public static void handleShader(final RenderLevelLastEvent event) {
+    public static void handleShader(final RenderLevelStageEvent event) {
         if (Compat.isRenderingShadows()) {
+            return;
+        }
+
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
             return;
         }
 
@@ -339,9 +342,9 @@ public class VisionHandler {
 
         int minChunkX = (int) (startPosition.getX() - searchRange);
         int maxChunkX = (int) (startPosition.getX() + searchRange);
-        int minChunkY = (int) Math.max(player.level.getMinBuildHeight(), startPosition.getY() - searchRange);
+        int minChunkY = (int) Math.max(player.level().getMinBuildHeight(), startPosition.getY() - searchRange);
         // Max build height is non-inclusive (see LevelHeightAccessor#isOutsideBuildHeight)
-        int maxChunkY = (int) Math.min(player.level.getMaxBuildHeight() - 1, startPosition.getY() + searchRange);
+        int maxChunkY = (int) Math.min(player.level().getMaxBuildHeight() - 1, startPosition.getY() + searchRange);
         int minChunkZ = (int) (startPosition.getZ() - searchRange);
         int maxChunkZ = (int) (startPosition.getZ() + searchRange);
 
@@ -359,7 +362,7 @@ public class VisionHandler {
 
                 if (currentChunk == null || currentChunkPosition.x != sectionX || currentChunkPosition.z != sectionZ) {
                     currentChunkPosition = new ChunkPos(sectionX, sectionZ);
-                    currentChunk = player.level.getChunk(sectionX, sectionZ);
+                    currentChunk = player.level().getChunk(sectionX, sectionZ);
                 }
 
                 for (int y = maxChunkY; y >= minChunkY; y--) {
@@ -383,7 +386,7 @@ public class VisionHandler {
 
                         if (vision != null && vision.range() > 0) {
                             SEARCH_RESULT.add(new Data(state, vision, x, y, z));
-                        } else if (state.is(AEBlockTags.TREASURES) && hasLoot(player.level, new BlockPos(x, y, z))) {
+                        } else if (state.is(AEBlockTags.TREASURES) && hasLoot(player.level(), new BlockPos(x, y, z))) {
                             VisionConfig.VisionData visionData = VisionConfig.SpecialBlock.TREASURE.get(enchantmentLevel);
 
                             if (visionData != null) {

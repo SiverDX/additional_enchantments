@@ -35,7 +35,7 @@ public class EntityDataProvider implements ICapabilitySerializable<CompoundTag> 
     }
 
     public static LazyOptional<EntityData> getCapability(final Entity entity) {
-        if (entity.getLevel().isClientSide()) {
+        if (entity.level().isClientSide()) {
             return LazyOptional.empty();
         }
 
@@ -58,7 +58,7 @@ public class EntityDataProvider implements ICapabilitySerializable<CompoundTag> 
     }
 
     public static void removeCachedEntry(final LivingEntity entity) {
-        if (!entity.getLevel().isClientSide()) {
+        if (!entity.level().isClientSide()) {
             SERVER_CACHE.remove(entity.getId());
         }
     }
