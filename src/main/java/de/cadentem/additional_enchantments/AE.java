@@ -63,7 +63,6 @@ public class AE {
     public void clientSetup(final FMLClientSetupEvent event) {
         event.enqueueWork(ClientRegistry::registerItemProperties);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(VisionConfig::updateFromConfig);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ServerConfig::updateFromConfig);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(BlockVisionShaderSimple::registerShaders);
         MinecraftForge.EVENT_BUS.addListener(VisionConfig::updateFromReload);
     }
