@@ -22,7 +22,7 @@ public final class BlockVisionRenderTypes {
         if (CUTOUT == null) {
             //noinspection deprecation -> ignore
             RenderType.CompositeState state = RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(BlockVisionShaderSimple::getShader))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(VisionHandler::getSimpleShader))
                     .setTextureState(new RenderStateShard.TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
                     .setTransparencyState(RenderStateShardAccessor.additional_enchantments$getTranslucentTransparency())
                     .setDepthTestState(RenderStateShardAccessor.additional_enchantments$getLEqualDepthTest())
@@ -48,7 +48,7 @@ public final class BlockVisionRenderTypes {
         if (TRANSLUCENT == null) {
             //noinspection deprecation -> ignore
             RenderType.CompositeState state = RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(BlockVisionShaderSimple::getShader))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(VisionHandler::getSimpleShader))
                     .setTextureState(new RenderStateShard.TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
                     .setTransparencyState(RenderStateShardAccessor.additional_enchantments$getTranslucentTransparency())
                     .setDepthTestState(RenderStateShardAccessor.additional_enchantments$getLEqualDepthTest())
