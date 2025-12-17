@@ -19,12 +19,12 @@ public class TreasureFinderEnchantment extends ConfigurableEnchantment {
     private static final Map<String, Pair<Integer, Integer>> CLIENT_CACHE = new HashMap<>();
 
     public TreasureFinderEnchantment() {
-        super(Rarity.RARE, EnchantmentCategory.ARMOR_HEAD, EquipmentSlot.HEAD, AEEnchantments.ORE_SIGHT_ID);
+        super(Rarity.RARE, EnchantmentCategory.ARMOR_HEAD, EquipmentSlot.HEAD, AEEnchantments.TREASURE_FINDER_ID);
     }
 
     @Override
     protected boolean checkCompatibility(@NotNull final Enchantment other) {
-        if (other == AEEnchantments.PERCEPTION.get() || other == AEEnchantments.ORE_SIGHT.get()) {
+        if (other == AEEnchantments.PERCEPTION.get()) {
             return false;
         }
 

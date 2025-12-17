@@ -12,6 +12,7 @@
     "ExperienceOrbMixin",
     "ExplosionMixin",
     "HolderSet$NamedAccess",
+    "ItemMixin",
     "LivingEntityMixin",
     "ProjectileMixin",
     "RandomizableContainerBlockEntityMixin",

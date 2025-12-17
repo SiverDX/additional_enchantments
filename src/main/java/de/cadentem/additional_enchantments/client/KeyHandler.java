@@ -2,7 +2,6 @@ package de.cadentem.additional_enchantments.client;
 
 import de.cadentem.additional_enchantments.capability.CapabilityHandler;
 import de.cadentem.additional_enchantments.capability.PlayerDataProvider;
-import de.cadentem.additional_enchantments.enchantments.OreSightEnchantment;
 import de.cadentem.additional_enchantments.enchantments.PerceptionEnchantment;
 import de.cadentem.additional_enchantments.registry.AEEnchantments;
 import net.minecraft.client.KeyMapping;

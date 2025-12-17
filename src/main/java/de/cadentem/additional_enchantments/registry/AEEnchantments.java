@@ -8,13 +8,12 @@ import de.cadentem.additional_enchantments.enchantments.FasterAttacksEnchantment
 import de.cadentem.additional_enchantments.enchantments.HomingEnchantment;
 import de.cadentem.additional_enchantments.enchantments.HunterEnchantment;
 import de.cadentem.additional_enchantments.enchantments.HydroShockEnchantment;
-import de.cadentem.additional_enchantments.enchantments.OreSightEnchantment;
+import de.cadentem.additional_enchantments.enchantments.TreasureFinderEnchantment;
 import de.cadentem.additional_enchantments.enchantments.PerceptionEnchantment;
 import de.cadentem.additional_enchantments.enchantments.PlagueEnchantment;
 import de.cadentem.additional_enchantments.enchantments.ShatterEnchantment;
 import de.cadentem.additional_enchantments.enchantments.StraightShotEnchantment;
 import de.cadentem.additional_enchantments.enchantments.TippedEnchantment;
-import de.cadentem.additional_enchantments.enchantments.TreasureFinderEnchantment;
 import de.cadentem.additional_enchantments.enchantments.VoidingEnchantment;
 import de.cadentem.additional_enchantments.enchantments.WitherEnchantment;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -35,7 +34,7 @@ public class AEEnchantments {
     public static final String WITHER_ID = "wither";
     public static final String PERCEPTION_ID = "perception";
     public static final String CONFUSION_ID = "confusion";
-    public static final String ORE_SIGHT_ID = "ore_sight";
+    public static final String ORE_SIGHT_ID = "ore_sight"; // Removed
     public static final String HUNTER_ID = "hunter";
     public static final String BRACEWALK_ID = "bracewalk";
     public static final String HYDRO_SHOCK_ID = "hydro_shock";
@@ -52,10 +51,9 @@ public class AEEnchantments {
     public static final RegistryObject<WitherEnchantment> WITHER = ENCHANTMENTS.register(WITHER_ID, WitherEnchantment::new);
     public static final RegistryObject<PerceptionEnchantment> PERCEPTION = ENCHANTMENTS.register(PERCEPTION_ID, PerceptionEnchantment::new);
     public static final RegistryObject<ConfusionEnchantment> CONFUSION = ENCHANTMENTS.register(CONFUSION_ID, ConfusionEnchantment::new);
-    public static final RegistryObject<OreSightEnchantment> ORE_SIGHT = ENCHANTMENTS.register(ORE_SIGHT_ID, OreSightEnchantment::new);
+    public static final RegistryObject<TreasureFinderEnchantment> TREASURE_FINDER = ENCHANTMENTS.register(ORE_SIGHT_ID, TreasureFinderEnchantment::new);
     public static final RegistryObject<HunterEnchantment> HUNTER = ENCHANTMENTS.register(HUNTER_ID, HunterEnchantment::new);
     public static final RegistryObject<Bracewalk> BRACEWALK = ENCHANTMENTS.register(BRACEWALK_ID, Bracewalk::new);
     public static final RegistryObject<HydroShockEnchantment> HYDRO_SHOCK = ENCHANTMENTS.register(HYDRO_SHOCK_ID, HydroShockEnchantment::new);
     public static final RegistryObject<VoidingEnchantment> VOIDING = ENCHANTMENTS.register(VOIDING_ID, VoidingEnchantment::new);
-    public static final RegistryObject<TreasureFinderEnchantment> TREASURE_FINDER = ENCHANTMENTS.register(TREASURE_FINDER_ID, TreasureFinderEnchantment::new);
 }

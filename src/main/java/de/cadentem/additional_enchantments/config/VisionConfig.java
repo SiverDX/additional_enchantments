@@ -1,9 +1,11 @@
 package de.cadentem.additional_enchantments.config;
 
+import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.client.ClientProxy;
 import de.cadentem.additional_enchantments.mixin.HolderSet$NamedAccess;
 import de.cadentem.additional_enchantments.util.ColorUtils;
+import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.TextColor;
@@ -23,62 +25,93 @@ import java.util.List;
 import java.util.Map;
 
 public class VisionConfig {
-    // Ore Sight
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> RAW_ORE_SIGHT_ENTRIES;
-    private static final HashMap<Integer, Double> MAX_ORE_SIGHT_RANGE = new HashMap<>();
-    private static Map<Integer, Map<ResourceKey<Block>, VisionData>> ORE_SIGHT_DATA = new HashMap<>();
+    public static ForgeConfigSpec.ConfigValue<List<?>> RAW_ENTRIES;
 
-    // Treasure Finder
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> RAW_TREASURE_FINDER_ENTRIES;
-    private static final HashMap<Integer, Double> MAX_TREASURE_FINDER_RANGE = new HashMap<>();
-    private static Map<Integer, Map<ResourceKey<Block>, VisionData>> TREASURE_FINDER_DATA = new HashMap<>();
+    /** Max. range per enchantment level */
+    private static final HashMap<Integer, Double> MAX_RANGE = new HashMap<>();
+    private static Map<ResourceKey<Block>, List<VisionData>> DATA = new HashMap<>();
+    private static Map<SpecialBlock, List<VisionData>> SPECIAL_BLOCK_DATA = new HashMap<>();
 
     /** Used for the max. range */
     private static long lastUpdate;
     private static long lastReload;
 
-    public static @Nullable VisionConfig.VisionData get(final Type type, final int enchantmentLevel, final Block block) {
-        Map<ResourceKey<Block>, VisionData> blocks = switch (type) {
-            case ORE_SIGHT -> ORE_SIGHT_DATA.get(enchantmentLevel);
-            case TREASURE_FINDER -> TREASURE_FINDER_DATA.get(enchantmentLevel);
-        };
+    public enum DisplayType {
+        X_RAY_OUTLINE, GLOW, PARTICLES
+    }
 
-        if (blocks == null) {
+    public enum SpecialBlock {
+        TREASURE("$treasure");
+
+        private final String key;
+
+        SpecialBlock(final String key) {
+            this.key = key;
+        }
+
+        public static @Nullable SpecialBlock fromKey(final String key) {
+            for (SpecialBlock value : values()) {
+                if (value.getKey().equals(key)) {
+                    return value;
+                }
+            }
+
             return null;
         }
 
-        //noinspection deprecation -> ignore
-        return blocks.get(block.builtInRegistryHolder().key());
+        public @Nullable VisionData get(final int enchantmentLevel) {
+            List<VisionData> entries = SPECIAL_BLOCK_DATA.get(this);
+
+            if (entries == null) {
+                return null;
+            }
+
+            for (VisionData entry : entries) {
+                if (entry.levelBounds().matches(enchantmentLevel)) {
+                    return entry;
+                }
+            }
+
+            return null;
+        }
+
+        public String getKey() {
+            return key;
+        }
     }
 
-    public static double getMaxRange(final Type type, final int enchantmentLevel) {
-        HashMap<Integer, Double> ranges = switch (type) {
-            case ORE_SIGHT -> MAX_ORE_SIGHT_RANGE;
-            case TREASURE_FINDER -> MAX_TREASURE_FINDER_RANGE;
-        };
+    public static @Nullable VisionConfig.VisionData get(final Block block, final int enchantmentLevel) {
+        //noinspection deprecation -> ignore
+        List<VisionData> entries = DATA.get(block.builtInRegistryHolder().key());
 
+        if (entries == null) {
+            return null;
+        }
+
+        for (VisionData entry : entries) {
+            if (entry.levelBounds().matches(enchantmentLevel)) {
+                return entry;
+            }
+        }
+
+        return null;
+    }
+
+    public static double getMaxRange(final int enchantmentLevel) {
         if (lastUpdate < lastReload) {
             lastUpdate = System.currentTimeMillis();
             // Make sure to remove the old entry from both
-            MAX_ORE_SIGHT_RANGE.clear();
-            MAX_TREASURE_FINDER_RANGE.clear();
+            MAX_RANGE.clear();
         }
 
-        return ranges.computeIfAbsent(enchantmentLevel, key -> {
+        return MAX_RANGE.computeIfAbsent(enchantmentLevel, key -> {
             double currentRange = 0;
 
-            Map<ResourceKey<Block>, VisionData> blocks = switch (type) {
-                case ORE_SIGHT -> ORE_SIGHT_DATA.get(enchantmentLevel);
-                case TREASURE_FINDER -> TREASURE_FINDER_DATA.get(enchantmentLevel);
-            };
-
-            if (blocks == null) {
-                return currentRange;
-            }
-
-            for (VisionData data : blocks.values()) {
-                if (data.range() > currentRange) {
-                    currentRange = data.range();
+            for (List<VisionData> entries : DATA.values()) {
+                for (VisionData entry : entries) {
+                    if (entry.levelBounds().matches(enchantmentLevel) && entry.range() > currentRange) {
+                        currentRange = entry.range();
+                    }
                 }
             }
 
@@ -109,115 +142,145 @@ public class VisionConfig {
             return;
         }
 
-        initializeData(access, Type.ORE_SIGHT);
-        initializeData(access, Type.TREASURE_FINDER);
+        initializeData(access);
     }
 
-    private static void initializeData(final RegistryAccess access, final Type type) {
-        Map<Integer, Map<ResourceKey<Block>, VisionData>> newEntries = new HashMap<>();
+    private static void initializeData(final RegistryAccess access) {
+        Map<ResourceKey<Block>, List<VisionData>> newEntries = new HashMap<>();
+        Map<SpecialBlock, List<VisionData>> newSpecialEntries = new HashMap<>();
 
-        List<? extends String> entries = switch (type) {
-            case ORE_SIGHT -> RAW_ORE_SIGHT_ENTRIES.get();
-            case TREASURE_FINDER -> RAW_TREASURE_FINDER_ENTRIES.get();
-        };
+        RAW_ENTRIES.get().forEach(entry -> {
+            ParsedEntry parsed = ParsedEntry.from(entry);
 
-        entries.forEach(entry -> {
-            ParsedEntry parsed = ParsedEntry.fromString(entry);
-
-            if (parsed.resource().startsWith("#")) {
+            if (parsed.resource().startsWith("$")) {
+                newSpecialEntries.computeIfAbsent(SpecialBlock.fromKey(parsed.resource()), key -> new ArrayList<>()).add(parsed.data());
+            } else if (parsed.resource().startsWith("#")) {
                 ResourceLocation resource = new ResourceLocation(parsed.resource().substring(1));
 
                 access.registryOrThrow(Registry.BLOCK_REGISTRY).getTag(TagKey.create(Registry.BLOCK_REGISTRY, resource)).ifPresent(tag -> {
                     //noinspection unchecked -> cast is valid
                     ((HolderSet$NamedAccess<Block>) tag).additional_enchantments$contents().forEach(block -> {
-                        newEntries.computeIfAbsent(parsed.requiredLevel(), key -> new HashMap<>())
-                                .put(block.unwrapKey().orElseThrow(), parsed.data());
+                        newEntries.computeIfAbsent(block.unwrapKey().orElseThrow(), key -> new ArrayList<>()).add(parsed.data());
                     });
                 });
             } else {
-                newEntries.computeIfAbsent(parsed.requiredLevel(), key -> new HashMap<>())
-                        .put(ResourceKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(parsed.resource())), parsed.data());
+                newEntries.computeIfAbsent(ResourceKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(parsed.resource())), key -> new ArrayList<>()).add(parsed.data());
             }
         });
 
-        switch (type) {
-            case ORE_SIGHT -> {
-                ORE_SIGHT_DATA = newEntries;
-                AE.LOG.debug("Reloaded ore sight entries: {}", ORE_SIGHT_DATA);
-            }
-            case TREASURE_FINDER -> {
-                TREASURE_FINDER_DATA = newEntries;
-                AE.LOG.debug("Reloaded treasure finder entries: {}", TREASURE_FINDER_DATA);
-            }
-        }
-
+        DATA = newEntries;
+        SPECIAL_BLOCK_DATA = newSpecialEntries;
+        AE.LOG.debug("Reloaded treasure finder entries:\n - Normal blocks: {}\n - Special blocks: {}", DATA, SPECIAL_BLOCK_DATA);
         lastReload = System.currentTimeMillis();
     }
 
-    public enum Type {
-        ORE_SIGHT,
-        TREASURE_FINDER
-    }
+    public record VisionData(VisionConfig.DisplayType displayType, double range, List<Integer> colorsARGB, double colorShiftRate, MinMaxBounds.Ints levelBounds) {}
 
-    public record VisionData(double range, List<Integer> colorsARGB, double colorShiftRate) {}
-
-    public record ParsedEntry(String resource, int requiredLevel, double range, List<Integer> colorsARGB, double colorShiftRate) {
-        private static final int RESOURCE = 0;
-        private static final int REQUIRED_LEVEL = 1;
-        private static final int RANGE = 2;
-        private static final int COLOR = 3;
-        private static final int ALPHA = 4;
-        private static final int COLOR_SHIFT_RATE = 5;
-
+    public record ParsedEntry(String resource, int fromLevel, int toLevel, double range, List<Integer> colorsARGB, double colorShiftRate, VisionConfig.DisplayType displayType) {
         public VisionData data() {
-            return new VisionData(range, colorsARGB, colorShiftRate);
-        }
+            MinMaxBounds.Ints levelBounds;
 
-        public static ParsedEntry fromString(final String data) {
-            String[] entries = data.split(";");
-            return new ParsedEntry(
-                    entries[RESOURCE],
-                    Integer.parseInt(entries[REQUIRED_LEVEL]),
-                    Double.parseDouble(entries[RANGE]),
-                    parseColors(entries[COLOR], entries.length > 4 ? Double.parseDouble(entries[ALPHA]) : 1),
-                    entries.length > 5 ? Double.parseDouble(entries[COLOR_SHIFT_RATE]) : 1
-            );
-        }
-
-        private static List<Integer> parseColors(final String colorString, final double alpha) {
-            String[] entries = colorString.split("/");
-            List<Integer> colors = new ArrayList<>();
-
-            for (String entry : entries) {
-                //noinspection DataFlowIssue -> color should be present
-                colors.add(ColorUtils.withAlpha(TextColor.parseColor(entry).getValue(), (float) alpha));
+            if (toLevel > 0) {
+                levelBounds = MinMaxBounds.Ints.between(fromLevel, toLevel);
+            } else {
+                levelBounds = MinMaxBounds.Ints.atLeast(fromLevel);
             }
 
-            return colors;
+            return new VisionData(displayType, range, colorsARGB, colorShiftRate, levelBounds);
         }
 
-        @SuppressWarnings("RedundantIfStatement") // ignore for clarity
-        public static boolean validate(final String data) {
+        public static ParsedEntry fromConfig(final UnmodifiableConfig config) {
+            String resource = config.get("resource");
+
+            int fromLevel = config.getInt("from_level");
+            int toLevel = config.getInt("to_level");
+
+            double range = config.get("range");
+            double colorShiftRate = config.get("color_shift_rate");
+
+            DisplayType displayType;
+            Object parsedDisplayType = config.get("display_type");
+
+            if (parsedDisplayType instanceof DisplayType type) {
+                displayType = type;
+            } else if (parsedDisplayType instanceof String string) {
+                displayType = DisplayType.valueOf(string.toUpperCase());
+            } else {
+                throw new IllegalArgumentException("Unsupported display type: " + parsedDisplayType.getClass());
+            }
+
+            List<Integer> colors = new ArrayList<>();
+
+            if (config.get("colors") instanceof List<?> list) {
+                for (Object entry : list) {
+                    if (entry instanceof UnmodifiableConfig colorConfig) {
+                        TextColor color = TextColor.parseColor(colorConfig.get("color"));
+
+                        if (color == null) {
+                            throw new IllegalArgumentException("Invalid color entry: " + colorConfig.get("color"));
+                        }
+
+                        int base = color.getValue();
+                        double alpha = colorConfig.get("alpha");
+                        colors.add(ColorUtils.withAlpha(base, (float) alpha));
+                    } else {
+                        throw new IllegalArgumentException("Unsupported color entry type: " + entry.getClass());
+                    }
+                }
+            }
+
+            return new ParsedEntry(resource, fromLevel, toLevel, range, colors, colorShiftRate, displayType);
+        }
+
+        public static ParsedEntry from(final Object value) {
+            if (value instanceof UnmodifiableConfig config) {
+                return fromConfig(config);
+            }
+
+            throw new IllegalArgumentException("Unsupported value type: " + value);
+        }
+
+        public static boolean validate(final Object data) {
             try {
-                ParsedEntry vision = fromString(data);
+                ParsedEntry vision = from(data);
                 String resource;
 
-                if (vision.resource().startsWith("#")) {
-                    resource = vision.resource().substring(1);
+                if (vision.resource().startsWith("$")) {
+                    if (SpecialBlock.fromKey(vision.resource()) == null) {
+                        AE.LOG.error("Invalid resource: {}", vision.resource());
+                        return false;
+                    }
                 } else {
-                    resource = vision.resource();
-                }
+                    if (vision.resource().startsWith("#")) {
+                        resource = vision.resource().substring(1);
+                    } else {
+                        resource = vision.resource();
+                    }
 
-                if (!ResourceLocation.isValidResourceLocation(resource)) {
-                    return false;
+                    if (!ResourceLocation.isValidResourceLocation(resource)) {
+                        AE.LOG.error("Invalid resource: {}", vision.resource());
+                        return false;
+                    }
                 }
 
                 if (vision.range() < 0) {
+                    AE.LOG.error("Invalid range: {}", vision.range());
+                    return false;
+                }
+
+                if (vision.colorShiftRate() < 0) {
+                    AE.LOG.error("Invalid color shift rate: {}", vision.colorShiftRate());
+                    return false;
+                }
+
+                if (vision.fromLevel() < 0) {
+                    AE.LOG.error("Invalid from level: {}", vision.fromLevel());
                     return false;
                 }
 
                 return true;
-            } catch (Exception ignored) {
+            } catch (Exception exception) {
+                AE.LOG.error("Invalid vision entry: {}", data, exception);
                 return false;
             }
         }

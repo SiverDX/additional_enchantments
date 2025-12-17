@@ -91,6 +91,8 @@ dependencies {
     implementation fg.deobf("curse.maven:oculus-581495:6020961") // 1.6.9a
 
     /* --- Test --- */
+    implementation fg.deobf("curse.maven:jade-324717:4914105") // 8.9.2
+    implementation fg.deobf("curse.maven:spark-361579:4505309") // 1.10.37
 
     /* --- Mixin Configuration --- */
     implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-common:${mixin_squared_version}"))
