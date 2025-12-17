@@ -10,7 +10,6 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.client.BlockVisionRenderTypes;
 import de.cadentem.additional_enchantments.client.VisionHandler;
-import de.cadentem.additional_enchantments.compat.ModCheck;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -30,13 +29,9 @@ import java.util.Objects;
 public class ShaderSimpleBlockEntities {
     private static final ResourceLocation FLAT_TEXTURE = new ResourceLocation(AE.MODID, "white.png");
 
-    /**
-     * When Iris is installed using this single buffer works fine </br>
-     * The alternative (our own render types) have issues and don't render correctly </br>
-     * It might be possible to make them work in all cases, but properly testing that is too annoying at the moment
-     */
-    private static BufferBuilder irisBuffer;
-    private static Tesselator irisTesselator;
+    // No special handling needed here since we render a simple box
+    private static BufferBuilder buffer;
+    private static Tesselator tesselator;
 
     public static void render(final VisionHandler.Data data, final PoseStack pose) {
         prepare();
@@ -83,7 +78,6 @@ public class ShaderSimpleBlockEntities {
             final float maxX, final float maxY, final float maxZ,
             final float red, final float green, final float blue, final float alpha
     ) {
-        VertexConsumer buffer = Objects.requireNonNullElseGet(irisBuffer, () -> Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(BlockVisionRenderTypes.blockVisionTranslucent()));
         // Front (Z+)
         quad(buffer, pose, minX, minY, maxZ,  maxX, minY, maxZ,  maxX, maxY, maxZ,  minX, maxY, maxZ, red, green, blue, alpha, 0, 0, 1);
         // Back (Z-)
@@ -115,22 +109,16 @@ public class ShaderSimpleBlockEntities {
     }
 
     public static void beginBatch() {
-        if (ModCheck.Mod.IRIS.isLoaded()) {
-            irisTesselator = RenderSystem.renderThreadTesselator();
-            irisBuffer = irisTesselator.getBuilder();
-            irisBuffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
-        }
+        tesselator = RenderSystem.renderThreadTesselator();
+        buffer = tesselator.getBuilder();
+        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
     }
 
     public static void endBatch() {
         prepare();
 
-        MultiBufferSource.BufferSource source = Minecraft.getInstance().renderBuffers().bufferSource();
-        source.endBatch(BlockVisionRenderTypes.blockVisionCutout());
-        source.endBatch(BlockVisionRenderTypes.blockVisionTranslucent());
-
-        if (irisTesselator != null) {
-            irisTesselator.end();
+        if (tesselator != null) {
+            tesselator.end();
         }
 
         // Revert back to default values
@@ -140,8 +128,8 @@ public class ShaderSimpleBlockEntities {
 
         VisionHandler.getSimpleShader().clear();
 
-        irisTesselator = null;
-        irisBuffer = null;
+        tesselator = null;
+        buffer = null;
     }
 
     @SuppressWarnings("DataFlowIssue") // Shader variables should be present
@@ -152,7 +140,7 @@ public class ShaderSimpleBlockEntities {
         VisionHandler.getSimpleShader().getUniform("DepthBias").set(0.0115f);
         VisionHandler.getSimpleShader().apply();
 
-        if (irisTesselator != null) {
+        if (tesselator != null) {
             RenderSystem.enableDepthTest();
             // Emulate vanilla cutout state: no blending and write depth
             RenderSystem.enableBlend();
