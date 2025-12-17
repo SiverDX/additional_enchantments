@@ -18,6 +18,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -56,6 +57,15 @@ public class TippedEnchantment extends ConfigurableEnchantment {
                 }
             });
         }
+    }
+
+    @SubscribeEvent
+    public static void tickCooldown(final LivingEvent.LivingTickEvent event) {
+        EntityDataProvider.getCapability(event.getEntity()).ifPresent(entityData -> {
+            if (entityData.tippedCooldown > 0) {
+                entityData.tippedCooldown--;
+            }
+        });
     }
 
     private static boolean canApplyEffects(final ProjectileData projectileData, final LivingEntity target) {
