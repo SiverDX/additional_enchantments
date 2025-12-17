@@ -173,10 +173,13 @@ public class ServerConfig {
         };
 
         list.add(entry.apply(new Object[]{VisionConfig.SpecialBlock.TREASURE.getKey(), 1, -1, 24.0, List.of(
-                colorEntry.apply("gold", 0.15),
-                colorEntry.apply("yellow", 0.15),
-                colorEntry.apply("#ffdd55", 0.15)
-        ), 1.0, VisionConfig.DisplayType.GLOW}));
+                colorEntry.apply("#a87c1a", 1d),
+                colorEntry.apply("gold", 1d),
+                colorEntry.apply("#ff9f1a", 1d),
+                colorEntry.apply("#ff5fd2", 1d),
+                colorEntry.apply("#5fd9ff", 1d),
+                colorEntry.apply("#ffffff", 1d)
+        ), 2.0, VisionConfig.DisplayType.PARTICLES}));
 
         list.add(entry.apply(new Object[]{"#" + Tags.Blocks.ORES_COPPER.location(), 1, 1, 24.0, List.of(
                 colorEntry.apply("#7a4a2e", 0.15),

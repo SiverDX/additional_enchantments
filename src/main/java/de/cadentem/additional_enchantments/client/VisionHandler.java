@@ -28,6 +28,8 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.IdMap;
 import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -45,6 +47,7 @@ import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -125,6 +128,9 @@ public class VisionHandler {
             return;
         }
 
+        //noinspection DataFlowIssue -> level is present
+        IdMap<Holder<Block>> map = Minecraft.getInstance().level.registryAccess().registryOrThrow(ForgeRegistries.BLOCKS.getRegistryKey()).asHolderIdMap();
+
         initCache();
 
         if (!isSearching && hasPendingUpdate) {
@@ -193,7 +199,8 @@ public class VisionHandler {
                             double x = (data.x() + 0.5) + (player.getRandom().nextDouble() - 0.5) * 2;
                             double y = (data.y() + 0.5) + (player.getRandom().nextDouble() - 0.5) * 2;
                             double z = (data.z() + 0.5) + (player.getRandom().nextDouble() - 0.5) * 2;
-                            player.level.addParticle(AEParticles.GLOW.get(), x, y, z, data.getColor(), enchantmentLevel, 0);
+                            //noinspection deprecation -> key is present
+                            player.level.addParticle(AEParticles.GLOW.get(), x, y, z, map.getId(data.state().getBlock().builtInRegistryHolder()), enchantmentLevel, 0);
                         }
                     }
                 }
