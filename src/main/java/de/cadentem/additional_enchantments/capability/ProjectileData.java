@@ -18,11 +18,12 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 public class ProjectileData {
-    public Set<MobEffectInstance> addedEffects;
     public int tippedEnchantmentLevel;
 
     public LivingEntity homingTarget;
@@ -34,6 +35,9 @@ public class ProjectileData {
 
     public int straightShotEnchantmentLevel;
     public int gravityTime;
+
+    @Nullable
+    private Set<MobEffectInstance> addedEffects;
 
     public void handleHomingMovement(final Projectile instance) {
         if (homingTarget == null) {
@@ -138,8 +142,20 @@ public class ProjectileData {
         setHomingTarget(projectile, null);
     }
 
-    public boolean hasAddedEffects() {
-        return addedEffects != null && !addedEffects.isEmpty();
+    public void addEffect(final MobEffectInstance effect) {
+        if (addedEffects == null) {
+            addedEffects = Sets.newHashSet();
+        }
+
+        addedEffects.add(effect);
+    }
+
+    public Collection<MobEffectInstance> getEffects() {
+        if (addedEffects == null) {
+            return Set.of();
+        }
+
+        return addedEffects;
     }
 
     private void setHomingTarget(final Projectile instance, final LivingEntity target) {
@@ -184,7 +200,7 @@ public class ProjectileData {
         tag.putInt("gravityTime", gravityTime);
         tag.putBoolean("exploded", exploded);
 
-        if (hasAddedEffects()) {
+        if (addedEffects != null) {
             ListTag effects = new ListTag();
 
             for (MobEffectInstance effect : addedEffects) {
@@ -208,12 +224,22 @@ public class ProjectileData {
 
         ListTag effects = tag.getList("addedEffects", ListTag.TAG_COMPOUND);
 
-        if (!hasAddedEffects()) {
+        if (addedEffects == null) {
             addedEffects = Sets.newHashSet();
+        } else {
+            addedEffects.clear();
         }
 
         for (int i = 0; i < effects.size(); i++) {
-            addedEffects.add(MobEffectInstance.load(effects.getCompound(i)));
+            MobEffectInstance effect = MobEffectInstance.load(effects.getCompound(i));
+
+            if (effect != null) {
+                addedEffects.add(effect);
+            }
+        }
+
+        if (addedEffects.isEmpty()) {
+            addedEffects = null;
         }
     }
 }

@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Mixin(CustomLayerFeatureRenderer.class)
 public abstract class CustomLayerFeatureRendererMixin {
-    @ModifyExpressionValue(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/AbstractClientPlayer;isInvisible()Z"))
+    @ModifyExpressionValue(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/AbstractClientPlayer;isInvisible()Z"), require = 0)
     private boolean additional_enchantments$allowRenderWhenTransparent(boolean isInvisible, @Local(argsOnly = true) final AbstractClientPlayer player) {
         AtomicBoolean result = new AtomicBoolean(isInvisible);
 

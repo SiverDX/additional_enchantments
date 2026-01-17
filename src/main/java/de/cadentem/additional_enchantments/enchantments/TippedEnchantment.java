@@ -46,12 +46,12 @@ public class TippedEnchantment extends ConfigurableEnchantment {
     public static void applyEffectsToTarget(final LivingHurtEvent event) {
         if (event.getSource().getDirectEntity() instanceof Projectile projectile) {
             ProjectileDataProvider.getCapability(projectile).ifPresent(projectileData -> {
-                if (projectileData.hasAddedEffects()) {
+                if (!projectileData.getEffects().isEmpty()) {
                     if (!canApplyEffects(projectileData, event.getEntity())) {
                         return;
                     }
 
-                    for (MobEffectInstance effect : projectileData.addedEffects) {
+                    for (MobEffectInstance effect : projectileData.getEffects()) {
                         event.getEntity().addEffect(new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier()));
                     }
                 }
@@ -95,11 +95,10 @@ public class TippedEnchantment extends ConfigurableEnchantment {
 
             if (level > 0) {
                 ProjectileDataProvider.getCapability(projectile).ifPresent(projectileData -> {
-                    if (projectileData.hasAddedEffects()) {
+                    if (!projectileData.getEffects().isEmpty()) {
                         return;
                     }
 
-                    projectileData.addedEffects = Sets.newHashSet();
                     projectileData.tippedEnchantmentLevel = level;
 
                     PlayerDataProvider.getCapability(livingOwner).ifPresent(playerData -> {
@@ -128,7 +127,7 @@ public class TippedEnchantment extends ConfigurableEnchantment {
                             }
 
                             for (MobEffect effect : appliedEffects) {
-                                projectileData.addedEffects.add(new MobEffectInstance(effect, effect.isInstantenous() ? 1 : (int) (20 * (ServerConfig.TIPPED_DURATION_BASE.get() + (level * ServerConfig.TIPPED_DURATION_MULTIPLIER.get()))), level - 1));
+                                projectileData.addEffect(new MobEffectInstance(effect, effect.isInstantenous() ? 1 : (int) (20 * (ServerConfig.TIPPED_DURATION_BASE.get() + (level * ServerConfig.TIPPED_DURATION_MULTIPLIER.get()))), level - 1));
                             }
                         }
                     });
