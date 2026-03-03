@@ -25,7 +25,7 @@ import java.util.Objects;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class ShaderSimpleBlockEntities {
-    private static final ResourceLocation FLAT_TEXTURE = new ResourceLocation(AE.MODID, "white.png");
+    private static final ResourceLocation FLAT_TEXTURE = new ResourceLocation(AE.MODID, "textures/white.png");
 
     // No special handling needed here since we render a simple box
     private static BufferBuilder buffer;
