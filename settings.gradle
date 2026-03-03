@@ -1,12 +1,14 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        maven { /* NeoForged */ url "https://maven.neoforged.net/releases" }
+        maven { /* Forge */ url 'https://maven.minecraftforge.net/' }
         maven { /* ParchmentMC */ url "https://maven.parchmentmc.org" }
-        maven { /* SpongePowered */ url "https://repo.spongepowered.org/repository/maven-public/" }
+//        maven { /* SpongePowered */ url "https://repo.spongepowered.org/repository/maven-public/" }
     }
 }
 
 plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.5.0'
 }
+
+rootProject.name = 'additional_enchantments'
