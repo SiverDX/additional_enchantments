@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Axis;
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.client.block_vision.ShaderSimple;
 import de.cadentem.additional_enchantments.client.block_vision.ShaderSimpleBlockEntities;
@@ -17,8 +18,8 @@ import de.cadentem.additional_enchantments.config.ServerConfig;
 import de.cadentem.additional_enchantments.config.VisionConfig;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
 import de.cadentem.additional_enchantments.enchantments.TreasureFinderEnchantment;
-import de.cadentem.additional_enchantments.mixin.client.FrustumAccess;
 import de.cadentem.additional_enchantments.mixin.RandomizableContainerBlockEntityAccess;
+import de.cadentem.additional_enchantments.mixin.client.FrustumAccess;
 import de.cadentem.additional_enchantments.registry.AEParticles;
 import de.cadentem.additional_enchantments.util.ColorUtils;
 import net.minecraft.Util;
@@ -147,7 +148,6 @@ public class VisionHandler {
         if (!isSearching && isOutsideRange(maxRange)) {
             lastScanCenter = player.position();
             isSearching = true;
-
 //            AE.LOG.debug("Initialized search for treasure finder at [{}]", lastScanCenter);
 
             Util.backgroundExecutor().submit(() -> {
@@ -236,8 +236,20 @@ public class VisionHandler {
 
         PoseStack pose = event.getPoseStack();
         pose.pushPose();
+        // 1.20.1 seems to have some weird issues compared to 1.19.2 and 1.21.1
+        // Therefor reset everything to a "clean" state
+        pose.last().pose().identity();
+        pose.last().normal().identity();
 
-        Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        Vec3 camera = event.getCamera().getPosition();
+        RenderSystem.getModelViewStack().pushPose();
+        RenderSystem.getModelViewStack().setIdentity();
+        RenderSystem.applyModelViewMatrix();
+
+        RenderSystem.setProjectionMatrix(event.getProjectionMatrix(), RenderSystem.getVertexSorting());
+
+        pose.mulPose(Axis.XP.rotationDegrees(event.getCamera().getXRot()));
+        pose.mulPose(Axis.YP.rotationDegrees(event.getCamera().getYRot() + 180.0F));
         pose.translate(-camera.x(), -camera.y(), -camera.z());
 
         ShaderSimple.beginBatch();
@@ -255,7 +267,6 @@ public class VisionHandler {
         }
 
         ShaderSimple.endBatch();
-
         ShaderSimpleBlockEntities.beginBatch();
 
         for (Data data : blockEntities) {
@@ -267,6 +278,8 @@ public class VisionHandler {
 
         ShaderSimpleBlockEntities.endBatch();
 
+        RenderSystem.getModelViewStack().popPose();
+        RenderSystem.applyModelViewMatrix();
         pose.popPose();
         SHADER_RENDER_DATA.clear();
     }

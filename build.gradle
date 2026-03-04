@@ -95,8 +95,9 @@ dependencies {
 //    implementation fg.deobf("curse.maven:skin-layers-3d-521480:7322361")
     compileOnly "maven.modrinth:3dskinlayers:evQiUIrz"
 
-//    implementation fg.deobf("curse.maven:embeddium-908741:5539178") // 0.3.18.1
     compileOnly fg.deobf("curse.maven:oculus-581495:6020952") // 1.8.0
+//    runtimeOnly fg.deobf("curse.maven:embeddium-908741:5681725") // 0.3.31
+//    runtimeOnly fg.deobf("curse.maven:rubidium-574856:4952685") // 0.7.1a
 
     /* --- Test --- */
     runtimeOnly fg.deobf("curse.maven:jade-324717:6855440") // 11.13.2

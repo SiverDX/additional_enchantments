@@ -89,7 +89,7 @@ public class ShaderSimple {
             // Culled faces
             for (Direction direction : Direction.values()) {
                 putData(buffer, random, seed, model.getQuads(data.state(), direction, random, modelData, type), lastPose, red, green, blue, alpha);
-          }
+            }
         }
     }
 
@@ -131,7 +131,6 @@ public class ShaderSimple {
         irisTesselator = null;
         irisBuffer = null;
     }
-
 
     @SuppressWarnings("DataFlowIssue") // Shader variables should be present
     private static void prepare() {
