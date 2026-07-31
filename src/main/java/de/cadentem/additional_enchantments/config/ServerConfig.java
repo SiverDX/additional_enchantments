@@ -229,6 +229,12 @@ public class ServerConfig {
                 colorEntry.apply("#55ff88", 0.15)
         ), 1.0, VisionConfig.DisplayType.GLOW}));
 
+        list.add(entry.apply(new Object[]{"#forge:ores/randomium", 3, 3, 16.0, List.of(
+                colorEntry.apply("purple", 0.15),
+                colorEntry.apply("magenta", 0.15),
+                colorEntry.apply("#ee55ff", 0.15)
+        ), 1.0, VisionConfig.DisplayType.GLOW}));
+
         list.add(entry.apply(new Object[]{"#" + Tags.Blocks.ORES_DIAMOND.location(), 3, 3, 16.0, List.of(
                 colorEntry.apply("#3fffdc", 0.15),
                 colorEntry.apply("aqua", 0.15),
@@ -241,6 +247,12 @@ public class ServerConfig {
                 colorEntry.apply("dark_green", 0.15),
                 colorEntry.apply("green", 0.15),
                 colorEntry.apply("#55ff88", 0.15)
+        ), 1.0, VisionConfig.DisplayType.X_RAY_OUTLINE}));
+
+        list.add(entry.apply(new Object[]{"#forge:ores/randomium", 4, -1, 16.0, List.of(
+                colorEntry.apply("purple", 0.15),
+                colorEntry.apply("magenta", 0.15),
+                colorEntry.apply("#ee55ff", 0.15)
         ), 1.0, VisionConfig.DisplayType.X_RAY_OUTLINE}));
 
         list.add(entry.apply(new Object[]{"#" + Tags.Blocks.ORES_DIAMOND.location(), 4, -1, 16.0, List.of(
