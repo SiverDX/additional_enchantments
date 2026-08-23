@@ -1,0 +1,61 @@
+{
+  "anvil_cost": 1,
+  "description": {
+    "translate": "enchantment.additional_enchantments.block_vision.desc"
+  },
+  "effects": {
+    "additional_enchantments:block_vision": {
+      "vision": {
+        "values": [
+          {
+            "from_level": 1,
+            "value": [
+              {
+                "blocks": "#minecraft:diamond_ores",
+                "color_shift_rate": 0.5,
+                "colors": [
+                  {
+                    "alpha": 0.5,
+                    "color": "gold"
+                  },
+                  {
+                    "alpha": 0.5,
+                    "color": "dark_purple"
+                  },
+                  {
+                    "alpha": 0.5,
+                    "color": "green"
+                  },
+                  {
+                    "alpha": 0.5,
+                    "color": "red"
+                  },
+                  {
+                    "alpha": 0.5,
+                    "color": "blue"
+                  }
+                ],
+                "display_type": "simple_shader",
+                "range": 15
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "max_cost": {
+    "base": 25,
+    "per_level_above_first": 0
+  },
+  "max_level": 1,
+  "min_cost": {
+    "base": 10,
+    "per_level_above_first": 0
+  },
+  "slots": [
+    "head"
+  ],
+  "supported_items": "#minecraft:head_armor",
+  "weight": 1
+}
