@@ -26,7 +26,7 @@ public class AE {
 
         AEDataAttachments.REGISTRY.register(eventBus);
         AEEnchantmentRegistry.COMPONENT_REGISTRY.register(eventBus);
-        AEEnchantmentRegistry.LOCATION_EFFECT_REGISTRY.register(eventBus);
+        AEEnchantmentRegistry.ENTITY_EFFECT_REGISTRY.register(eventBus);
         AEParticles.REGISTRY.register(eventBus);
     }
 

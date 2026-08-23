@@ -27,7 +27,7 @@ public class AEEnchantments {
     public static void bootstrap(final BootstrapContext<Enchantment> context) {
         //noinspection DataFlowIssue -> color is present
         context.register(BLOCK_VISION, new Enchantment(
-                Component.translatable("enchantment.additional_enchantments.block_vision.desc"),
+                Component.translatable("enchantment.additional_enchantments.block_vision"),
                 new Enchantment.EnchantmentDefinition(
                         context.lookup(Registries.ITEM).getOrThrow(ItemTags.HEAD_ARMOR),
                         Optional.empty(),
@@ -39,7 +39,7 @@ public class AEEnchantments {
                         List.of(EquipmentSlotGroup.HEAD)
                 ),
                 HolderSet.empty(), // TODO
-                DataComponentMap.builder().set(AEEnchantmentRegistry.BLOCK_VISION_COMPONENT.value(), new BlockVisionEffect(
+                DataComponentMap.builder().set(AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value(), List.of(new BlockVisionEffect(
                         LevelBasedBlockVision.atLevel(1, new BlockVision(
                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(BlockTags.DIAMOND_ORES)),
                                 BlockVision.DisplayType.SIMPLE_SHADER,
@@ -54,7 +54,7 @@ public class AEEnchantments {
                                 10,
                                 0.5f
                         ))
-                )).build()));
+                ))).build()));
     }
 
     private static ResourceKey<Enchantment> key(final String path) {

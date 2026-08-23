@@ -1,5 +1,3 @@
 {
-  "itemGroup.additional_enchantments": "Example Mod Tab",
-  "block.additional_enchantments.example_block": "Example Block",
-  "item.additional_enchantments.example_item": "Example Item"
+  "enchantment.additional_enchantments.block_vision": "Ore Vision"
 }
