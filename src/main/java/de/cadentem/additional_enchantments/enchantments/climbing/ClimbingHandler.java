@@ -5,7 +5,6 @@ import de.cadentem.additional_enchantments.common.network.SyncClimbFlag;
 import de.cadentem.additional_enchantments.common.network.SyncClimbablePositions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.WorldGenLevel;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -20,23 +19,42 @@ import java.util.Set;
 
 @ParametersAreNonnullByDefault
 public class ClimbingHandler {
+    /** To differentiate between the actual ceiling and a wall position that is above the entity */
+    private static final double CEILING_TOLERANCE = 0.1;
+
     public static boolean canClimb(final LivingEntity entity, final ClimbableData data) {
         if (entity.level() instanceof WorldGenLevel level) {
-            SyncClimbFlag.ClimbingType previous = data.climbingType;
-            EntityDimensions oldDimensions = entity.getDimensions(entity.getPose());
-
+            SyncClimbFlag.ClimbingType previous = data.getClimbingType();
             boolean canClimb = handleServer(entity, data, level);
 
-            if (previous != data.climbingType) {
-                PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new SyncClimbFlag(entity.getId(), data.climbingType));
+            if (previous != data.getClimbingType()) {
+                PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new SyncClimbFlag(entity.getId(), data.getClimbingType()));
                 entity.refreshDimensions();
-                entity.fudgePositionAfterSizeChange(oldDimensions);
             }
 
             return canClimb;
         }
 
         return handleClient(entity, data);
+    }
+
+    public static boolean canDescend(final LivingEntity entity, final ClimbableData data) {
+        if (!entity.isShiftKeyDown()) {
+            return false;
+        }
+
+        if (!data.isCeilingClimbing()) {
+            return true;
+        }
+
+        for (int offset = 1; offset <= Math.ceil(CeilingClimbDimensions.getUnmodifiedHeight(entity)); offset++) {
+            //noinspection DataFlowIssue -> 'climgPosition' is not null at this point
+            if (entity.level().getBlockState(data.climbPosition.below(offset)).blocksMotion()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /** Checks whether the supplied positions are climbable */
@@ -53,7 +71,7 @@ public class ClimbingHandler {
 
     private static boolean handleServer(final LivingEntity entity, final ClimbableData data, final WorldGenLevel level) {
         if (data.trackedClimbPositions == null) {
-            data.climbingType = SyncClimbFlag.ClimbingType.NONE;
+            data.setClimbingType(SyncClimbFlag.ClimbingType.NONE);
             return false;
         }
 
@@ -65,7 +83,7 @@ public class ClimbingHandler {
                 continue;
             }
 
-            if (position.getY() >= entity.getBoundingBox().getMaxPosition().y()) {
+            if (isCeilingPosition(entity, position)) {
                 ceilingPosition = position;
                 break;
             } else if (wallPosition == null) {
@@ -78,12 +96,17 @@ public class ClimbingHandler {
 
         if (climbPosition != null) {
             data.climbPosition = climbPosition;
-            data.isCeilingClimbing = ceilingPosition != null;
-            data.climbingType = data.isCeilingClimbing ? SyncClimbFlag.ClimbingType.CEILING : SyncClimbFlag.ClimbingType.WALL;
+
+            if (ceilingPosition != null) {
+                data.setClimbingType(SyncClimbFlag.ClimbingType.CEILING);
+            } else {
+                data.setClimbingType(SyncClimbFlag.ClimbingType.WALL);
+            }
+
             return true;
         }
 
-        data.climbingType = SyncClimbFlag.ClimbingType.NONE;
+        data.setClimbingType(SyncClimbFlag.ClimbingType.NONE);
         return false;
     }
 
@@ -134,7 +157,7 @@ public class ClimbingHandler {
         }
 
         if (!attemptedWallClimb && data.canClimbCeilings() && !entity.onGround()) {
-            climbablePositions.add(BlockPos.containing(entity.getX(), entity.getBoundingBox().getMaxPosition().y() + 0.01, entity.getZ()));
+            climbablePositions.add(BlockPos.containing(entity.getX(), entity.getBoundingBox().getMaxPosition().y() + CEILING_TOLERANCE, entity.getZ()));
         }
 
         if (!climbablePositions.equals(Objects.requireNonNullElse(data.trackedClimbPositions, Set.of()))) {
@@ -154,7 +177,7 @@ public class ClimbingHandler {
                 continue;
             }
 
-            if (position.getY() >= entity.getBoundingBox().getMaxPosition().y()) {
+            if (isCeilingPosition(entity, position)) {
                 ceilingPosition = position;
                 break;
             } else if (wallPosition == null) {
@@ -172,5 +195,10 @@ public class ClimbingHandler {
         }
 
         return false;
+    }
+
+    /** The ceiling is only relevant while it is in contact with the top of the bounding box */
+    private static boolean isCeilingPosition(final LivingEntity entity, final BlockPos position) {
+        return Math.abs(position.getY() - entity.getBoundingBox().getMaxPosition().y()) <= CEILING_TOLERANCE;
     }
 }

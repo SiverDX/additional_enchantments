@@ -23,7 +23,7 @@ public abstract class LivingEntityRendererMixin {
 
         ClimbableData data = entity.getExistingData(AEDataAttachments.CLIMBABLE_DATA).orElse(null);
 
-        if (data == null || !(data.climbingType == SyncClimbFlag.ClimbingType.CEILING || data.isCeilingClimbing())) {
+        if (data == null || !(data.getClimbingType() == SyncClimbFlag.ClimbingType.CEILING || data.isCeilingClimbing())) {
             return;
         }
 

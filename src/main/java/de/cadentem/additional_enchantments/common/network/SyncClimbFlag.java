@@ -9,7 +9,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
@@ -26,13 +25,9 @@ public record SyncClimbFlag(int entityId, ClimbingType climbingType) implements 
     public static void handleClient(final SyncClimbFlag packet, final IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.player().level().getEntity(packet.entityId()) instanceof LivingEntity entity) {
-                EntityDimensions oldDimensions = entity.getDimensions(entity.getPose());
-
                 ClimbableData data = entity.getData(AEDataAttachments.CLIMBABLE_DATA);
-                data.climbingType = packet.climbingType();
-
+                data.setClimbingType(packet.climbingType());
                 entity.refreshDimensions();
-//                entity.fudgePositionAfterSizeChange(oldDimensions);
             }
         });
     }

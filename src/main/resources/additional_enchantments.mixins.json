@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "plugin": "de.cadentem.additional_enchantments.mixin.ApplyMixinPlugin",
   "mixins": [
+    "EntityMixin",
     "IBlocksExtensionMixin",
     "LivingEntityMixin",
     "RandomizableContainerBlockEntityAccess",

@@ -27,12 +27,6 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
     // Meaning the client needs to collect the relevant positions and the server has to approve them
 
     /**
-     * Purely for other players to know what the other client is doing </br>
-     * On the server-side it is used to check whether a sync is required (i.e., type changed)
-     */
-    public SyncClimbFlag.ClimbingType climbingType = SyncClimbFlag.ClimbingType.NONE;
-
-    /**
      * Temporarily kept to handle 'canStickToWalls' and ceiling climbing
      */
     public @Nullable BlockPos climbPosition;
@@ -46,32 +40,24 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
      * Last set of (unfiltered in regard to climbable) positions collected by the client and sent to the server </br>
      * On the server-side they may be updated through the 'LevelMixin' (causing a refresh to be sent to the client)
      */
-    public @Nullable
-    @Unmodifiable Collection<BlockPos> trackedClimbPositions;
+    public @Nullable @Unmodifiable Collection<BlockPos> trackedClimbPositions;
 
     /**
      * Client-only: positions the server has confirmed as climbable </br>
      * Used to actually check (on the client-side) whether climbing is allowed
      */
-    private @Nullable
-    @Unmodifiable Collection<BlockPos> approvedClimbPositions;
+    private @Nullable @Unmodifiable Collection<BlockPos> approvedClimbPositions;
+
+    /**
+     * Purely for other players to know what the other client is doing </br>
+     * On the server-side it is used to check whether a sync is required (i.e., type changed)
+     */
+    private SyncClimbFlag.ClimbingType climbingType = SyncClimbFlag.ClimbingType.NONE;
 
     private final Map<ResourceLocation, Climbable> climbables = new HashMap<>();
 
     public boolean isApprovedClimbPosition(final BlockPos position) {
         return approvedClimbPositions != null && approvedClimbPositions.contains(position);
-    }
-
-    public boolean canStillClimb(final LivingEntity entity) {
-        if (climbPosition == null) {
-            return false;
-        }
-
-        if (entity.level() instanceof WorldGenLevel level) {
-            return canClimb(level, climbPosition, entity);
-        }
-
-        return isApprovedClimbPosition(climbPosition);
     }
 
     public void setApprovedClimbPositions(@Unmodifiable final Collection<BlockPos> positions) {
@@ -108,6 +94,15 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
         }
 
         return false;
+    }
+
+    public SyncClimbFlag.ClimbingType getClimbingType() {
+        return climbingType;
+    }
+
+    public void setClimbingType(final SyncClimbFlag.ClimbingType climbingType) {
+        this.climbingType = climbingType;
+        isCeilingClimbing = climbingType == SyncClimbFlag.ClimbingType.CEILING;
     }
 
     public boolean isCeilingClimbing() {
