@@ -14,5 +14,6 @@ public class NetworkHandler {
         final PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
 
         registrar.playToClient(SyncBlockVision.TYPE, SyncBlockVision.STREAM_CODEC, SyncBlockVision::handleClient);
+        registrar.playToClient(SyncLootTable.TYPE, SyncLootTable.STREAM_CODEC, SyncLootTable::handleClient);
     }
 }

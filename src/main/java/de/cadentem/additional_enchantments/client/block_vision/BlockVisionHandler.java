@@ -6,7 +6,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import de.cadentem.additional_enchantments.attachments.AEDataAttachments;
 import de.cadentem.additional_enchantments.attachments.BlockVisionData;
 import de.cadentem.additional_enchantments.compat.Compat;
+import de.cadentem.additional_enchantments.data.AEBlockTags;
 import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVision;
+import de.cadentem.additional_enchantments.mixin.RandomizableContainerBlockEntityAccess;
 import de.cadentem.additional_enchantments.mixin.client.FrustumAccess;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -15,10 +17,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -256,6 +260,28 @@ public class BlockVisionHandler {
         }
     }
 
+    public static void addTreasure(final BlockPos position, final BlockState state) {
+        Block block = state.getBlock();
+        int range = vision.getRange(block);
+
+        if (range == 0) {
+            return;
+        }
+
+        RENDER_DATA.add(new Data(
+                state, range,
+                vision.getDisplayType(block),
+                vision.getParticleRate(block),
+                position.getX(), position.getY(), position.getZ()
+        ));
+    }
+
+    public static void removeTreasure(final BlockPos position) {
+        if (!RENDER_DATA.isEmpty()) {
+            REMOVAL.add(position);
+        }
+    }
+
     /** The searching algorithm is referenced from <a href="https://github.com/TelepathicGrunt/Bumblezone/blob/d4b2a29d7075749e1f4e8289debbc4cef3fc74c4/common/src/main/java/com/telepathicgrunt/the_bumblezone/items/essence/LifeEssence.java#L127">TelepathicGrunt</a> */
     private static void collect(final Player player, int searchRange) {
         BlockPos startPosition = player.blockPosition();
@@ -305,6 +331,10 @@ public class BlockVisionHandler {
                         int range = vision.getRange(block);
 
                         if (range != 0) {
+                            if (state.is(AEBlockTags.TREASURES) && !hasLoot(player.level(), mutablePosition)) {
+                                continue;
+                            }
+
                             SEARCH_RESULT.add(new Data(state, range, vision.getDisplayType(block), vision.getParticleRate(block), x, y, z));
                         }
                     } else if (y != minChunkY) {
@@ -328,6 +358,11 @@ public class BlockVisionHandler {
 
     private static boolean isWithin(final BlockPos position, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
         return position.getX() >= xMin && position.getX() <= xMax && position.getY() >= yMin && position.getY() <= yMax && position.getZ() >= zMin && position.getZ() <= zMax;
+    }
+
+    private static boolean hasLoot(final Level level, final BlockPos position) {
+        return level.getBlockEntity(position) instanceof RandomizableContainerBlockEntityAccess access &&
+                (access.additional_enchantments$getLootTable() != null && access.additional_enchantments$getLootTable() != BuiltInLootTables.EMPTY);
     }
 
     private static boolean containsOres(final LevelChunk chunk, final LevelChunkSection section, int sectionIndex) {
