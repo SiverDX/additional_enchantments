@@ -1,7 +1,7 @@
 {
   "anvil_cost": 1,
   "description": {
-    "translate": "enchantment.additional_enchantments.block_vision.desc"
+    "translate": "enchantment.additional_enchantments.block_vision"
   },
   "effects": {
     "additional_enchantments:equipment_change_trigger": [
@@ -10,37 +10,328 @@
         "vision": {
           "values": [
             {
-              "from_level": 1,
-              "value": [
-                {
-                  "blocks": "#minecraft:diamond_ores",
-                  "color_shift_rate": 0.5,
-                  "colors": [
-                    {
-                      "alpha": 0.5,
-                      "color": "gold"
-                    },
-                    {
-                      "alpha": 0.5,
-                      "color": "dark_purple"
-                    },
-                    {
-                      "alpha": 0.5,
-                      "color": "green"
-                    },
-                    {
-                      "alpha": 0.5,
-                      "color": "red"
-                    },
-                    {
-                      "alpha": 0.5,
-                      "color": "blue"
-                    }
-                  ],
-                  "display_type": "simple_shader",
-                  "range": 15
-                }
-              ]
+              "level_range": 1,
+              "value": {
+                "blocks": "#minecraft:copper_ores",
+                "colors": [
+                  {
+                    "alpha": 0.15,
+                    "color": "#7A4A2E"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "dark_green"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "#3F7F5F"
+                  }
+                ],
+                "display_type": "simple_shader",
+                "range": 24
+              }
+            },
+            {
+              "level_range": {
+                "max": 2,
+                "min": 1
+              },
+              "value": {
+                "blocks": "#minecraft:iron_ores",
+                "colors": [
+                  {
+                    "alpha": 0.15,
+                    "color": "white"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "gray"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "dark_gray"
+                  }
+                ],
+                "display_type": "simple_shader",
+                "range": 24
+              }
+            },
+            {
+              "level_range": {
+                "max": 2,
+                "min": 1
+              },
+              "value": {
+                "blocks": "#minecraft:redstone_ores",
+                "colors": [
+                  {
+                    "alpha": 0.15,
+                    "color": "dark_red"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "red"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "#FF4D4D"
+                  }
+                ],
+                "display_type": "simple_shader",
+                "range": 24
+              }
+            },
+            {
+              "level_range": {
+                "max": 2,
+                "min": 1
+              },
+              "value": {
+                "blocks": "#c:ores/zinc",
+                "colors": [
+                  {
+                    "alpha": 0.15,
+                    "color": "#9AA3AD"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "#B7C0C9"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "#D0D7DF"
+                  }
+                ],
+                "display_type": "simple_shader",
+                "range": 24
+              }
+            },
+            {
+              "level_range": {
+                "max": 2,
+                "min": 1
+              },
+              "value": {
+                "blocks": "#c:ores/silver",
+                "colors": [
+                  {
+                    "alpha": 0.15,
+                    "color": "white"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "gray"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "#DFE6EE"
+                  }
+                ],
+                "display_type": "simple_shader",
+                "range": 24
+              }
+            },
+            {
+              "level_range": {
+                "max": 3,
+                "min": 2
+              },
+              "value": {
+                "blocks": "#minecraft:lapis_ores",
+                "colors": [
+                  {
+                    "alpha": 0.15,
+                    "color": "dark_blue"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "blue"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "#4169E1"
+                  }
+                ],
+                "display_type": "simple_shader",
+                "range": 24
+              }
+            },
+            {
+              "level_range": {
+                "max": 3,
+                "min": 2
+              },
+              "value": {
+                "blocks": "#minecraft:gold_ores",
+                "colors": [
+                  {
+                    "alpha": 0.15,
+                    "color": "gold"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "yellow"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "#FFDD55"
+                  }
+                ],
+                "display_type": "simple_shader",
+                "range": 24
+              }
+            },
+            {
+              "level_range": 3,
+              "value": {
+                "blocks": "#minecraft:emerald_ores",
+                "colors": [
+                  {
+                    "alpha": 0.15,
+                    "color": "dark_green"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "green"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "#55FF88"
+                  }
+                ],
+                "display_type": "simple_shader",
+                "range": 16
+              }
+            },
+            {
+              "level_range": 3,
+              "value": {
+                "blocks": "#minecraft:diamond_ores",
+                "colors": [
+                  {
+                    "alpha": 0.15,
+                    "color": "#3FFFDC"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "aqua"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "#3FC5FF"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "#8B7DFF"
+                  },
+                  {
+                    "alpha": 0.15,
+                    "color": "#55FF88"
+                  }
+                ],
+                "display_type": "simple_shader",
+                "range": 16
+              }
+            },
+            {
+              "level_range": {
+                "min": 4
+              },
+              "value": {
+                "blocks": "#minecraft:emerald_ores",
+                "colors": [
+                  {
+                    "color": "dark_green"
+                  },
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "#55FF88"
+                  }
+                ],
+                "display_type": "outline",
+                "range": 16
+              }
+            },
+            {
+              "level_range": {
+                "min": 4
+              },
+              "value": {
+                "blocks": "#minecraft:diamond_ores",
+                "colors": [
+                  {
+                    "color": "#3FFFDC"
+                  },
+                  {
+                    "color": "aqua"
+                  },
+                  {
+                    "color": "#3FC5FF"
+                  },
+                  {
+                    "color": "#8B7DFF"
+                  },
+                  {
+                    "color": "#55FF88"
+                  }
+                ],
+                "display_type": "outline",
+                "range": 16
+              }
+            },
+            {
+              "level_range": {
+                "min": 4
+              },
+              "value": {
+                "blocks": "#c:ores/netherite_scrap",
+                "colors": [
+                  {
+                    "color": "dark_gray"
+                  },
+                  {
+                    "color": "#3B3B3B"
+                  },
+                  {
+                    "color": "#6E4A3A"
+                  }
+                ],
+                "display_type": "outline",
+                "range": 16
+              }
+            },
+            {
+              "level_range": {
+                "min": 1
+              },
+              "value": {
+                "blocks": "treasures",
+                "colors": [
+                  {
+                    "color": "#A87C1A"
+                  },
+                  {
+                    "color": "gold"
+                  },
+                  {
+                    "color": "#FF9F1A"
+                  },
+                  {
+                    "color": "#FF5FD2"
+                  },
+                  {
+                    "color": "#5FD9FF"
+                  },
+                  {
+                    "color": "#FFFFFF"
+                  }
+                ],
+                "display_type": "particles",
+                "particle_rate": 10,
+                "range": 24
+              }
             }
           ]
         }
@@ -48,13 +339,13 @@
     ]
   },
   "max_cost": {
-    "base": 25,
-    "per_level_above_first": 0
+    "base": 50,
+    "per_level_above_first": 10
   },
-  "max_level": 1,
+  "max_level": 4,
   "min_cost": {
-    "base": 10,
-    "per_level_above_first": 0
+    "base": 20,
+    "per_level_above_first": 10
   },
   "slots": [
     "head"

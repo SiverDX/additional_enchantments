@@ -9,7 +9,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
@@ -19,13 +18,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
-public record BlockVision(Either<SpecialBlockType, HolderSet<Block>> blocks, DisplayType displayType, int range, List<ColorEntry> colors, int particleRate, double colorShiftRate) {
+public record BlockVision(Either<SpecialBlockType, HolderSet<Block>> blocks, DisplayType displayType, int range, List<Color> colors, int particleRate, double colorShiftRate) {
     public static final Codec<BlockVision> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.either(SpecialBlockType.CODEC, RegistryCodecs.homogeneousList(Registries.BLOCK)).fieldOf("blocks").forGetter(BlockVision::blocks),
             DisplayType.CODEC.fieldOf("display_type").forGetter(BlockVision::displayType),
+            // TODO :: make this a level based value?
             Codec.INT.fieldOf("range").forGetter(BlockVision::range),
-            ColorEntry.CODEC.listOf().fieldOf("colors").forGetter(BlockVision::colors),
-            Codec.INT.optionalFieldOf("particle_rate", 10).forGetter(BlockVision::particleRate),
+            Color.CODEC.listOf().fieldOf("colors").forGetter(BlockVision::colors),
+            Codec.INT.optionalFieldOf("particle_rate", 0).forGetter(BlockVision::particleRate),
             Codec.DOUBLE.optionalFieldOf("color_shift_rate", 1.0).forGetter(BlockVision::colorShiftRate)
     ).apply(instance, BlockVision::new));
 
@@ -87,13 +87,6 @@ public record BlockVision(Either<SpecialBlockType, HolderSet<Block>> blocks, Dis
         }
 
         return -1;
-    }
-
-    public record ColorEntry(TextColor color, float alpha) {
-        public static final Codec<ColorEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                TextColor.CODEC.fieldOf("color").forGetter(ColorEntry::color),
-                Codec.FLOAT.optionalFieldOf("alpha", 0.3f).forGetter(ColorEntry::alpha)
-        ).apply(instance, ColorEntry::new));
     }
 
     public enum SpecialBlockType implements StringRepresentable {

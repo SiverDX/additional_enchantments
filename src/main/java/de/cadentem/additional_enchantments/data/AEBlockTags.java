@@ -23,6 +23,10 @@ public class AEBlockTags extends BlockTagsProvider {
     public static final TagKey<Block> BRACEWALK = TagKey.create(Registries.BLOCK, AE.location("bracewalk"));
     public static final TagKey<Block> TREASURES = TagKey.create(Registries.BLOCK, AE.location("treasures"));
 
+    // Compatibility
+    public static final TagKey<Block> ZINC_ORES = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("c", "ores/zinc"));
+    public static final TagKey<Block> SILVER_ORES = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("c", "ores/silver"));
+
     public AEBlockTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> provider, @Nullable final ExistingFileHelper helper) {
         super(output, provider, AE.MODID, helper);
     }
