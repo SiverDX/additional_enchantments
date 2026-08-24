@@ -5,12 +5,15 @@
   "compatibilityLevel": "JAVA_21",
   "plugin": "de.cadentem.additional_enchantments.mixin.ApplyMixinPlugin",
   "mixins": [
+    "IBlocksExtensionMixin",
+    "LivingEntityMixin",
     "RandomizableContainerBlockEntityAccess",
     "RandomizableContainerBlockEntityMixin"
   ],
   "client": [
     "client.ClientLevelMixin",
-    "client.FrustumAccess"
+    "client.FrustumAccess",
+    "client.LivingEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

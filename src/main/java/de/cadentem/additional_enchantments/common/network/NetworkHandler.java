@@ -3,6 +3,7 @@ package de.cadentem.additional_enchantments.common.network;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 @EventBusSubscriber
@@ -15,5 +16,9 @@ public class NetworkHandler {
 
         registrar.playToClient(SyncBlockVision.TYPE, SyncBlockVision.STREAM_CODEC, SyncBlockVision::handleClient);
         registrar.playToClient(SyncLootTable.TYPE, SyncLootTable.STREAM_CODEC, SyncLootTable::handleClient);
+
+        registrar.playBidirectional(SyncClimbablePositions.TYPE, SyncClimbablePositions.STREAM_CODEC, new DirectionalPayloadHandler<>(SyncClimbablePositions::handleClient, SyncClimbablePositions::handleServer));
+        registrar.playToClient(SyncClimbFlag.TYPE, SyncClimbFlag.STREAM_CODEC, SyncClimbFlag::handleClient);
+        registrar.playToClient(SyncClimbableInstance.TYPE, SyncClimbableInstance.STREAM_CODEC, SyncClimbableInstance::handleClient);
     }
 }

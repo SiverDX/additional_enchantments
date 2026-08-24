@@ -174,7 +174,7 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
                     .resultOrPartial(AE.LOG::error).ifPresent(data -> tag.put("visions", data));
         }
 
-        return null;
+        return tag;
     }
 
     @Override

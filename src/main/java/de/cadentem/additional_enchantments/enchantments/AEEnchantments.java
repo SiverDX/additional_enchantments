@@ -5,8 +5,11 @@ import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
 import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVision;
 import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVisionEffect;
-import de.cadentem.additional_enchantments.enchantments.block_vision.Color;
 import de.cadentem.additional_enchantments.enchantments.block_vision.LevelBasedBlockVision;
+import de.cadentem.additional_enchantments.enchantments.climbing.Climbable;
+import de.cadentem.additional_enchantments.enchantments.climbing.ClimbableEffect;
+import de.cadentem.additional_enchantments.enchantments.climbing.LevelBasedClimbable;
+import de.cadentem.additional_enchantments.util.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.core.HolderSet;
@@ -19,6 +22,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.neoforged.neoforge.common.Tags;
 
 import java.util.List;
@@ -26,12 +30,71 @@ import java.util.Optional;
 
 public class AEEnchantments {
     public static ResourceKey<Enchantment> BLOCK_VISION = key("block_vision");
+    public static ResourceKey<Enchantment> CLIMBABLE = key("climbable");
 
     public static void bootstrap(final BootstrapContext<Enchantment> context) {
+        context.register(CLIMBABLE, new Enchantment(
+                Component.translatable("enchantment.additional_enchantments.climbable"),
+                new Enchantment.EnchantmentDefinition(
+                        context.lookup(Registries.ITEM).getOrThrow(ItemTags.FOOT_ARMOR_ENCHANTABLE),
+                        Optional.empty(),
+                        1,
+                        3,
+                        Enchantment.dynamicCost(20, 10),
+                        Enchantment.dynamicCost(50, 10),
+                        1,
+                        List.of(EquipmentSlotGroup.FEET)
+                ),
+                HolderSet.empty(), // TODO
+                DataComponentMap.builder().set(
+                        AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value(),
+                        ClimbableEffect.single(
+                                new LevelBasedClimbable.Entry(
+                                        new Climbable(
+                                                AE.location("climbable_enchantment"),
+                                                BlockPredicate.allOf(
+                                                        BlockPredicate.not(BlockPredicate.matchesTag(AEBlockTags.SLIPPERY)),
+                                                        BlockPredicate.not(BlockPredicate.matchesTag(BlockTags.AIR)),
+                                                        BlockPredicate.noFluid()
+                                                ),
+                                                false,
+                                                false
+                                        ),
+                                        MinMaxBounds.Ints.between(1, 1)
+                                ),
+                                new LevelBasedClimbable.Entry(
+                                        new Climbable(
+                                                AE.location("climbable_enchantment"),
+                                                BlockPredicate.allOf(
+                                                        BlockPredicate.not(BlockPredicate.matchesTag(AEBlockTags.SLIPPERY)),
+                                                        BlockPredicate.not(BlockPredicate.matchesTag(BlockTags.AIR)),
+                                                        BlockPredicate.noFluid()
+                                                ),
+                                                true,
+                                                false
+                                        ),
+                                        MinMaxBounds.Ints.between(2, 2)
+                                ),
+                                new LevelBasedClimbable.Entry(
+                                        new Climbable(
+                                                AE.location("climbable_enchantment"),
+                                                BlockPredicate.allOf(
+                                                        BlockPredicate.not(BlockPredicate.matchesTag(AEBlockTags.SLIPPERY)),
+                                                        BlockPredicate.not(BlockPredicate.matchesTag(BlockTags.AIR)),
+                                                        BlockPredicate.noFluid()
+                                                ),
+                                                true,
+                                                true
+                                        ),
+                                        MinMaxBounds.Ints.between(3, 3)
+                                )
+                        )
+                ).build()));
+
         context.register(BLOCK_VISION, new Enchantment(
                 Component.translatable("enchantment.additional_enchantments.block_vision"),
                 new Enchantment.EnchantmentDefinition(
-                        context.lookup(Registries.ITEM).getOrThrow(ItemTags.HEAD_ARMOR),
+                        context.lookup(Registries.ITEM).getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
                         Optional.empty(),
                         1,
                         4,

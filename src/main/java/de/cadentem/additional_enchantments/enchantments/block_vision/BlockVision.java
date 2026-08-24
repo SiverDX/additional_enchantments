@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
+import de.cadentem.additional_enchantments.util.Color;
 import de.cadentem.additional_enchantments.util.Colors;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -91,7 +92,7 @@ public record BlockVision(Either<SpecialBlockType, HolderSet<Block>> blocks, Dis
 
     public enum SpecialBlockType implements StringRepresentable {
         TREASURES("treasures"),
-        FILLED_CONTAINERS("filled_containers");
+        FILLED_CONTAINERS("filled_containers"); // TODO :: implement
 
         public static final Codec<SpecialBlockType> CODEC = StringRepresentable.fromEnum(SpecialBlockType::values);
         private final String name;

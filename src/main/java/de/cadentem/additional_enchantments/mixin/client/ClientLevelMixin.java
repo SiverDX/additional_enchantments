@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ClientLevelMixin {
     /** Update the ore vision handler while a search is pending or not scheduled */
     @Inject(method = "sendBlockUpdated", at = @At("HEAD"))
-    private void dragonSurvival$updateBlockVision(final BlockPos position, final BlockState oldState, final BlockState newState, final int flags, final CallbackInfo callback) {
+    private void additional_enchantments$updateBlockVision(final BlockPos position, final BlockState oldState, final BlockState newState, final int flags, final CallbackInfo callback) {
         BlockVisionHandler.updateEntry(position, oldState, newState);
     }
 }

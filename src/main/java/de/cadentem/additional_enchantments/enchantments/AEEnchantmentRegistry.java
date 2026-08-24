@@ -3,6 +3,7 @@ package de.cadentem.additional_enchantments.enchantments;
 import com.mojang.serialization.MapCodec;
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVisionEffect;
+import de.cadentem.additional_enchantments.enchantments.climbing.ClimbableEffect;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,7 +23,11 @@ import java.util.function.UnaryOperator;
 @EventBusSubscriber
 public class AEEnchantmentRegistry {
     public static final DeferredRegister<MapCodec<? extends EnchantmentEntityEffect>> ENTITY_EFFECT_REGISTRY = DeferredRegister.create(Registries.ENCHANTMENT_ENTITY_EFFECT_TYPE, AE.MODID);
-    public static final DeferredHolder<MapCodec<? extends EnchantmentEntityEffect>, MapCodec<BlockVisionEffect>> BLOCK_VISION_EFFECT = ENTITY_EFFECT_REGISTRY.register("block_vision", () -> BlockVisionEffect.CODEC);
+
+    static {
+        ENTITY_EFFECT_REGISTRY.register("block_vision", () -> BlockVisionEffect.CODEC);
+        ENTITY_EFFECT_REGISTRY.register("climbable", () -> ClimbableEffect.CODEC);
+    }
 
     public static final DeferredRegister<DataComponentType<?>> COMPONENT_REGISTRY = DeferredRegister.create(Registries.ENCHANTMENT_EFFECT_COMPONENT_TYPE, AE.MODID);
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<EnchantmentEntityEffect>>> EQUIPMENT_CHANGE_TRIGGER = register("equipment_change_trigger", builder -> builder.persistent(EnchantmentEntityEffect.CODEC.listOf()));

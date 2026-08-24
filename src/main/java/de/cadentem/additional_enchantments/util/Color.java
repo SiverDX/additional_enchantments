@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.enchantments.block_vision;
+package de.cadentem.additional_enchantments.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

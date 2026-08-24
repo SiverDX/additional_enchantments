@@ -22,6 +22,7 @@ public class AEBlockTags extends BlockTagsProvider {
     public static final TagKey<Block> HUNTER_RELEVANT = TagKey.create(Registries.BLOCK, AE.location("hunter_relevant"));
     public static final TagKey<Block> BRACEWALK = TagKey.create(Registries.BLOCK, AE.location("bracewalk"));
     public static final TagKey<Block> TREASURES = TagKey.create(Registries.BLOCK, AE.location("treasures"));
+    public static final TagKey<Block> SLIPPERY = TagKey.create(Registries.BLOCK, AE.location("slippery"));
 
     // Compatibility
     public static final TagKey<Block> ZINC_ORES = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("c", "ores/zinc"));
@@ -33,6 +34,13 @@ public class AEBlockTags extends BlockTagsProvider {
 
     @Override
     protected void addTags(@NotNull final HolderLookup.Provider provider) {
+        tag(TREASURES).addTag(Tags.Blocks.CHESTS);
+
+        tag(SLIPPERY)
+                .addTag(BlockTags.ICE)
+                .addTag(Tags.Blocks.GLASS_BLOCKS)
+                .addTag(Tags.Blocks.GLASS_PANES);
+
         tag(HUNTER_RELEVANT)
                 .addTag(BlockTags.FLOWERS)
                 .addTag(BlockTags.SAPLINGS)
@@ -74,7 +82,5 @@ public class AEBlockTags extends BlockTagsProvider {
                 tag(BRACEWALK).addOptional(ResourceLocation.fromNamespaceAndPath("wildberries", bush + "_bush_stage_" + stage));
             }
         }
-
-        tag(TREASURES).addTag(Tags.Blocks.CHESTS);
     }
 }
