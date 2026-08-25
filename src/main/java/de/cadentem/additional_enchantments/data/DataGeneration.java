@@ -34,6 +34,8 @@ public class DataGeneration {
         // Update the lookup provider with the new entries
         provider = datapackProvider.getRegistryProvider();
 
-        generator.addProvider(event.includeServer(), new AEBlockTags(output, provider, helper));
+        AEBlockTags blockTags = new AEBlockTags(output, provider, helper);
+        generator.addProvider(event.includeServer(), blockTags);
+        generator.addProvider(event.includeServer(), new AEItemTags(output, provider, blockTags.contentsGetter(), helper));
     }
 }

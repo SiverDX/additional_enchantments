@@ -6,6 +6,7 @@ import de.cadentem.additional_enchantments.client.AEParticles;
 import de.cadentem.additional_enchantments.client.ClientProxy;
 import de.cadentem.additional_enchantments.enchantments.AEEnchantmentRegistry;
 import de.cadentem.additional_enchantments.server.ServerProxy;
+import de.cadentem.additional_enchantments.server.conditions.AELootItemConditions;
 import de.cadentem.additional_enchantments.util.Proxy;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -25,6 +26,7 @@ public class AE {
         PROXY = FMLLoader.getDist().isClient() ? new ClientProxy() : new ServerProxy();
 
         AEDataAttachments.REGISTRY.register(eventBus);
+        AELootItemConditions.REGISTRY.register(eventBus);
         AEEnchantmentRegistry.COMPONENT_REGISTRY.register(eventBus);
         AEEnchantmentRegistry.ENTITY_EFFECT_REGISTRY.register(eventBus);
         AEParticles.REGISTRY.register(eventBus);

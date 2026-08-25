@@ -1,0 +1,154 @@
+{
+  "anvil_cost": 1,
+  "description": {
+    "translate": "enchantment.additional_enchantments.perception"
+  },
+  "effects": {
+    "additional_enchantments:equipment_change_trigger": [
+      {
+        "type": "additional_enchantments:perception",
+        "perception": {
+          "values": [
+            {
+              "level_range": {
+                "min": 1
+              },
+              "value": [
+                {
+                  "color": {
+                    "colors": [
+                      {
+                        "color": "#FF3030"
+                      },
+                      {
+                        "color": "#FF6B35"
+                      },
+                      {
+                        "color": "#FF3030"
+                      }
+                    ]
+                  },
+                  "condition": {
+                    "type": "enemy",
+                    "condition": "additional_enchantments:entity_type",
+                    "entity": "this"
+                  },
+                  "key": "additional_enchantments:perception_enchantment.enemies",
+                  "range": 24
+                },
+                {
+                  "color": {
+                    "colors": [
+                      {
+                        "color": "#7CFF6B"
+                      },
+                      {
+                        "color": "#D4FF5C"
+                      },
+                      {
+                        "color": "#4DFF88"
+                      }
+                    ]
+                  },
+                  "condition": {
+                    "type": "animal",
+                    "condition": "additional_enchantments:entity_type",
+                    "entity": "this"
+                  },
+                  "key": "additional_enchantments:perception_enchantment.animals",
+                  "range": 24
+                }
+              ]
+            },
+            {
+              "level_range": {
+                "min": 2
+              },
+              "value": [
+                {
+                  "color": {
+                    "colors": [
+                      {
+                        "color": "#5A189A"
+                      },
+                      {
+                        "color": "#9D4EDD"
+                      },
+                      {
+                        "color": "#C77DFF"
+                      },
+                      {
+                        "color": "#7B2CBF"
+                      }
+                    ]
+                  },
+                  "condition": {
+                    "condition": "minecraft:entity_properties",
+                    "entity": "this",
+                    "predicate": {
+                      "type": "#c:bosses"
+                    }
+                  },
+                  "key": "additional_enchantments:perception_enchantment.bosses",
+                  "range": 24
+                },
+                {
+                  "color": {
+                    "colors": [
+                      {
+                        "color": "#55FFFF"
+                      },
+                      {
+                        "color": "#5B7CFF"
+                      },
+                      {
+                        "color": "#B45CFF"
+                      },
+                      {
+                        "color": "#FF5BD8"
+                      },
+                      {
+                        "color": "#FFD45B"
+                      },
+                      {
+                        "color": "#55FFFF"
+                      }
+                    ]
+                  },
+                  "condition": {
+                    "condition": "minecraft:any_of",
+                    "terms": [
+                      {
+                        "condition": "additional_enchantments:item_check",
+                        "items": "#additional_enchantments:valuables"
+                      },
+                      {
+                        "condition": "additional_enchantments:item_check"
+                      }
+                    ]
+                  },
+                  "key": "additional_enchantments:perception_enchantment.valuables",
+                  "range": 24
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "max_cost": {
+    "base": 50,
+    "per_level_above_first": 10
+  },
+  "max_level": 2,
+  "min_cost": {
+    "base": 20,
+    "per_level_above_first": 10
+  },
+  "slots": [
+    "head"
+  ],
+  "supported_items": "#minecraft:enchantable/head_armor",
+  "weight": 1
+}

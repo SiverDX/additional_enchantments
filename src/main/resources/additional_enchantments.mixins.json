@@ -1,6 +1,9 @@
 {
   "required": true,
   "minVersion": "0.8",
+  "mixinextras": {
+    "minVersion": "0.5.3"
+  },
   "package": "de.cadentem.additional_enchantments.mixin",
   "compatibilityLevel": "JAVA_21",
   "plugin": "de.cadentem.additional_enchantments.mixin.ApplyMixinPlugin",
@@ -15,7 +18,8 @@
     "client.ClientLevelMixin",
     "client.FrustumAccess",
     "client.LevelRendererMixin",
-    "client.LivingEntityRendererMixin"
+    "client.LivingEntityRendererMixin",
+    "client.MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

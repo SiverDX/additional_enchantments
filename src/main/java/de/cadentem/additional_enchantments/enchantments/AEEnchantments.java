@@ -3,6 +3,7 @@ package de.cadentem.additional_enchantments.enchantments;
 import com.mojang.datafixers.util.Either;
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
+import de.cadentem.additional_enchantments.data.AEItemTags;
 import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVision;
 import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVisionEffect;
 import de.cadentem.additional_enchantments.enchantments.block_vision.LevelBasedBlockVision;
@@ -12,6 +13,10 @@ import de.cadentem.additional_enchantments.enchantments.climbing.LevelBasedClimb
 import de.cadentem.additional_enchantments.enchantments.perception.LevelBasedPerception;
 import de.cadentem.additional_enchantments.enchantments.perception.Perception;
 import de.cadentem.additional_enchantments.enchantments.perception.PerceptionEffect;
+import de.cadentem.additional_enchantments.server.conditions.Conditions;
+import de.cadentem.additional_enchantments.server.conditions.EntityConditions;
+import de.cadentem.additional_enchantments.server.conditions.EntityTypeCondition;
+import de.cadentem.additional_enchantments.server.conditions.ItemCheckCondition;
 import de.cadentem.additional_enchantments.util.Color;
 import de.cadentem.additional_enchantments.util.ShiftingColor;
 import net.minecraft.ChatFormatting;
@@ -27,6 +32,8 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.predicates.AnyOfCondition;
 import net.neoforged.neoforge.common.Tags;
 
 import java.util.List;
@@ -38,30 +45,77 @@ public class AEEnchantments {
     public static ResourceKey<Enchantment> PERCEPTION = key("perception");
 
     public static void bootstrap(final BootstrapContext<Enchantment> context) {
-//        context.register(PERCEPTION, new Enchantment(
-//                new Enchantment.EnchantmentDefinition(
-//                        context.lookup(Registries.ITEM).getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
-//                        Optional.empty(),
-//                        1,
-//                        3,
-//                        Enchantment.dynamicCost(20, 10),
-//                        Enchantment.dynamicCost(50, 10),
-//                        1,
-//                        List.of(EquipmentSlotGroup.HEAD)
-//                ),
-//                HolderSet.empty(), // TODO
-//                DataComponentMap.builder().set(
-//                        AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value(),
-//                        PerceptionEffect.single(
-//                            new LevelBasedPerception.Entry(
-//                                    new Perception(
-//                                            AE.location("perception_enchantment"),
-//
-//                                    )
-//                            )
-//                        )
-//                )
-//        ));
+        context.register(PERCEPTION, new Enchantment(
+                Component.translatable("enchantment.additional_enchantments.perception"),
+                new Enchantment.EnchantmentDefinition(
+                        context.lookup(Registries.ITEM).getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
+                        Optional.empty(),
+                        1,
+                        2,
+                        Enchantment.dynamicCost(20, 10),
+                        Enchantment.dynamicCost(50, 10),
+                        1,
+                        List.of(EquipmentSlotGroup.HEAD)
+                ),
+                HolderSet.empty(), // TODO
+                DataComponentMap.builder().set(
+                        AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value(),
+                        PerceptionEffect.single(
+                                // TODO :: expand
+                                new LevelBasedPerception.Entry(List.of(
+                                        new Perception(
+                                                AE.location("perception_enchantment.enemies"),
+                                                new EntityTypeCondition(EntityTypeCondition.Type.ENEMY, LootContext.EntityTarget.THIS),
+                                                24,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of("#ff3030"),
+                                                        Color.of("#ff6b35"),
+                                                        Color.of("#ff3030")
+                                                ))
+                                        ),
+                                        new Perception(
+                                                AE.location("perception_enchantment.animals"),
+                                                new EntityTypeCondition(EntityTypeCondition.Type.ANIMAL, LootContext.EntityTarget.THIS),
+                                                24,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of("#7cff6b"),
+                                                        Color.of("#d4ff5c"),
+                                                        Color.of("#4dff88")
+                                                ))
+                                        )
+                                ), MinMaxBounds.Ints.atLeast(1)),
+                                new LevelBasedPerception.Entry(List.of(
+                                        new Perception(
+                                                AE.location("perception_enchantment.bosses"),
+                                                Conditions.thisEntity(EntityConditions.isType(Tags.EntityTypes.BOSSES)).build(),
+                                                24,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of("#5a189a"),
+                                                        Color.of("#9d4edd"),
+                                                        Color.of("#c77dff"),
+                                                        Color.of("#7b2cbf")
+                                                ))
+                                        ),
+                                        new Perception(
+                                                AE.location("perception_enchantment.valuables"),
+                                                AnyOfCondition.anyOf(
+                                                        () -> new ItemCheckCondition(Optional.of(context.lookup(Registries.ITEM).getOrThrow(AEItemTags.VALUABLES)), LootContext.EntityTarget.THIS, Optional.empty()),
+                                                        () -> new ItemCheckCondition(Optional.empty(), LootContext.EntityTarget.THIS, Optional.empty())
+                                                ).build(),
+                                                24,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of("#55ffff"),
+                                                        Color.of("#5b7cff"),
+                                                        Color.of("#b45cff"),
+                                                        Color.of("#ff5bd8"),
+                                                        Color.of("#ffd45b"),
+                                                        Color.of("#55ffff")
+                                                ))
+                                        )
+                                ), MinMaxBounds.Ints.atLeast(2))
+                        )
+                ).build()
+        ));
 
         context.register(CLIMBABLE, new Enchantment(
                 Component.translatable("enchantment.additional_enchantments.climbable"),

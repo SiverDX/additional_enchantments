@@ -12,8 +12,8 @@ public record LevelBasedPerception(List<Entry> values) {
             Entry.CODEC.listOf().fieldOf("values").forGetter(LevelBasedPerception::values)
     ).apply(instance, LevelBasedPerception::new));
 
-    public static LevelBasedPerception constant(final Perception values) {
-        return new LevelBasedPerception(List.of(new Entry(values, MinMaxBounds.Ints.atLeast(0))));
+    public static LevelBasedPerception constant(final Perception... values) {
+        return new LevelBasedPerception(List.of(new Entry(List.of(values), MinMaxBounds.Ints.atLeast(0))));
     }
 
     public List<Perception> get(final int level) {
@@ -21,16 +21,16 @@ public record LevelBasedPerception(List<Entry> values) {
 
         for (LevelBasedPerception.Entry entry : values) {
             if (entry.levelRange().matches(level)) {
-                predicates.add(entry.value());
+                predicates.addAll(entry.value());
             }
         }
 
         return predicates;
     }
 
-    public record Entry(Perception value, MinMaxBounds.Ints levelRange) {
+    public record Entry(List<Perception> value, MinMaxBounds.Ints levelRange) {
         public static final Codec<LevelBasedPerception.Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Perception.CODEC.fieldOf("value").forGetter(LevelBasedPerception.Entry::value),
+                Perception.CODEC.listOf().fieldOf("value").forGetter(LevelBasedPerception.Entry::value),
                 MinMaxBounds.Ints.CODEC.fieldOf("level_range").forGetter(LevelBasedPerception.Entry::levelRange)
         ).apply(instance, LevelBasedPerception.Entry::new));
     }
