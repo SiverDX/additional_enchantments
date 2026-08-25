@@ -22,7 +22,7 @@ public record SyncClimbableInstance(Climbable climbable, boolean remove) impleme
 
     public static void handleClient(final SyncClimbableInstance packet, final IPayloadContext context) {
         context.enqueueWork(() -> {
-            ClimbableData data = context.player().getData(AEDataAttachments.CLIMBABLE_DATA);
+            ClimbableData data = context.player().getData(AEDataAttachments.CLIMBABLE);
 
             if (packet.remove()) {
                 data.removeClimbable(packet.climbable());

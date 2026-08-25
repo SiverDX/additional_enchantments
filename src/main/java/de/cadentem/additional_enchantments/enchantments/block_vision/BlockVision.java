@@ -4,8 +4,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
-import de.cadentem.additional_enchantments.util.Color;
-import de.cadentem.additional_enchantments.util.Colors;
+import de.cadentem.additional_enchantments.util.ShiftingColor;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
@@ -19,15 +18,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
-public record BlockVision(Either<SpecialBlockType, HolderSet<Block>> blocks, DisplayType displayType, int range, List<Color> colors, int particleRate, double colorShiftRate) {
+public record BlockVision(Either<SpecialBlockType, HolderSet<Block>> blocks, int range, DisplayType displayType, int particleRate, ShiftingColor color) {
     public static final Codec<BlockVision> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.either(SpecialBlockType.CODEC, RegistryCodecs.homogeneousList(Registries.BLOCK)).fieldOf("blocks").forGetter(BlockVision::blocks),
-            DisplayType.CODEC.fieldOf("display_type").forGetter(BlockVision::displayType),
-            // TODO :: make this a level based value?
             Codec.INT.fieldOf("range").forGetter(BlockVision::range),
-            Color.CODEC.listOf().fieldOf("colors").forGetter(BlockVision::colors),
+            DisplayType.CODEC.fieldOf("display_type").forGetter(BlockVision::displayType),
             Codec.INT.optionalFieldOf("particle_rate", 0).forGetter(BlockVision::particleRate),
-            Codec.DOUBLE.optionalFieldOf("color_shift_rate", 1.0).forGetter(BlockVision::colorShiftRate)
+            ShiftingColor.CODEC.fieldOf("color").forGetter(BlockVision::color)
     ).apply(instance, BlockVision::new));
 
     /** If the passed state is 'null', it will return the range as well */
@@ -46,15 +43,15 @@ public record BlockVision(Either<SpecialBlockType, HolderSet<Block>> blocks, Dis
         return 0;
     }
 
-    public List<Integer> getColors(final Block block) {
+    public ShiftingColor.Mapped getMappedColors(final Block block) {
         //noinspection deprecation -> ignore
         Holder.Reference<Block> holder = block.builtInRegistryHolder();
 
         if (blocks.map(data -> holder.is(AEBlockTags.TREASURES), data -> data.contains(holder))) {
-            return colors.stream().map(color -> Colors.withAlpha(color.color().getValue(), color.alpha())).toList();
+            return color.map();
         }
 
-        return List.of();
+        return ShiftingColor.Mapped.NONE;
     }
 
     public DisplayType getDisplayType(final Block block) {
@@ -84,7 +81,7 @@ public record BlockVision(Either<SpecialBlockType, HolderSet<Block>> blocks, Dis
         Holder.Reference<Block> holder = block.builtInRegistryHolder();
 
         if (blocks.map(data -> holder.is(AEBlockTags.TREASURES), data -> data.contains(holder))) {
-            return colorShiftRate;
+            return color.colorShiftRate();
         }
 
         return -1;

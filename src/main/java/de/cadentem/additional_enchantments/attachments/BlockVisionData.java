@@ -2,7 +2,7 @@ package de.cadentem.additional_enchantments.attachments;
 
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVision;
-import de.cadentem.additional_enchantments.util.Functions;
+import de.cadentem.additional_enchantments.util.ShiftingColor;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.Map;
@@ -22,9 +21,10 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
     private final Map<Block, CacheEntry> cache = new ConcurrentHashMap<>();
     private int maximumRange = -1;
 
+    // TODO :: convert to map to support multiple enchantments that grand block visions
     private @Nullable List<BlockVision> visions;
 
-    record CacheEntry(int range, List<Integer> colors, BlockVision.DisplayType displayType, int particleRate, double colorShiftRate) { }
+    record CacheEntry(int range, ShiftingColor.Mapped mappedColors, BlockVision.DisplayType displayType, int particleRate) { }
 
     public int getRange(@Nullable final Block block) {
         if (block == null) {
@@ -39,11 +39,11 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
     }
 
     public int getColor(final Block block) {
-        return Functions.lerpColor(cache.computeIfAbsent(block, this::storeData).colors(), cache.computeIfAbsent(block, this::storeData).colorShiftRate(), 0);
+        return cache.computeIfAbsent(block, this::storeData).mappedColors().getColor();
     }
 
     public List<Integer> getColors(final Block block) {
-        return cache.computeIfAbsent(block, this::storeData).colors();
+        return cache.computeIfAbsent(block, this::storeData).mappedColors().colors();
     }
 
     public BlockVision.DisplayType getDisplayType(final Block block) {
@@ -55,7 +55,7 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
     }
 
     private CacheEntry storeData(final Block block) {
-        return new CacheEntry(storeRange(block), storeColor(block), storeDisplayType(block), storeParticleRate(block), storeColorShiftRate(block));
+        return new CacheEntry(storeRange(block), storeMappedColors(block), storeDisplayType(block), storeParticleRate(block));
     }
 
     /** If the passed state is 'null,' it will return the range as well */
@@ -77,20 +77,20 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
         return currentRange;
     }
 
-    private @Unmodifiable List<Integer> storeColor(final Block block) {
+    private ShiftingColor.Mapped storeMappedColors(final Block block) {
         if (visions == null) {
-            return List.of();
+            return ShiftingColor.Mapped.NONE;
         }
 
         for (BlockVision instance : visions) {
-            List<Integer> colors = instance.getColors(block);
+            ShiftingColor.Mapped mappedColors = instance.getMappedColors(block);
 
-            if (!colors.isEmpty()) {
-                return colors;
+            if (mappedColors != ShiftingColor.Mapped.NONE) {
+                return mappedColors;
             }
         }
 
-        return List.of();
+        return ShiftingColor.Mapped.NONE;
     }
 
     private BlockVision.DisplayType storeDisplayType(final Block block) {

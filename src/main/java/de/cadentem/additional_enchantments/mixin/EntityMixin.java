@@ -13,6 +13,10 @@ public abstract class EntityMixin implements IBoundingBoxOffset {
     /** To keep track of the current height modification (difference) */
     @Unique private double additional_enchantments$boundingBoxOffset;
 
+    /**
+     * When a hitbox shrinks, it usually "lowers", reducing the maxY </br>
+     * However, to keep sticking on the ceiling, we need to "shrink" from the bottom, hence the offset
+     */
     @ModifyReturnValue(method = "makeBoundingBox", at = @At("RETURN"))
     private AABB additional_enchantments$anchorToCeiling(final AABB original) {
         if (additional_enchantments$boundingBoxOffset == 0) {

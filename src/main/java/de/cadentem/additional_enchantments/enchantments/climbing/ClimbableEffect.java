@@ -24,7 +24,7 @@ public record ClimbableEffect(LevelBasedClimbable climbable) implements Enchantm
     @Override
     public void apply(@NotNull final ServerLevel level, final int enchantmentLevel, @NotNull final EnchantedItemInUse item, @NotNull final Entity entity, @NotNull final Vec3 position) {
         if (entity instanceof ServerPlayer player) {
-            ClimbableData data = player.getData(AEDataAttachments.CLIMBABLE_DATA);
+            ClimbableData data = player.getData(AEDataAttachments.CLIMBABLE);
 
             climbable.get(enchantmentLevel).forEach(climbable -> {
                 data.addClimbable(climbable);
@@ -38,7 +38,7 @@ public record ClimbableEffect(LevelBasedClimbable climbable) implements Enchantm
         EnchantmentEntityEffect.super.onDeactivated(item, entity, position, enchantmentLevel);
 
         if (entity instanceof ServerPlayer player) {
-            ClimbableData data = player.getData(AEDataAttachments.CLIMBABLE_DATA);
+            ClimbableData data = player.getData(AEDataAttachments.CLIMBABLE);
 
             climbable.get(enchantmentLevel).forEach(climbable -> {
                 data.removeClimbable(climbable);

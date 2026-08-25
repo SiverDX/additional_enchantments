@@ -37,7 +37,7 @@ public record SyncClimbablePositions(Set<BlockPos> positions) implements CustomP
                 return;
             }
 
-            ClimbableData data = player.getExistingData(AEDataAttachments.CLIMBABLE_DATA).orElse(null);
+            ClimbableData data = player.getExistingData(AEDataAttachments.CLIMBABLE).orElse(null);
 
             if (data != null) {
                 data.setTrackedClimbPositions(packet.positions());
@@ -49,7 +49,7 @@ public record SyncClimbablePositions(Set<BlockPos> positions) implements CustomP
 
     public static void handleClient(final SyncClimbablePositions packet, final IPayloadContext context) {
         context.enqueueWork(() -> {
-            ClimbableData data = context.player().getExistingData(AEDataAttachments.CLIMBABLE_DATA).orElse(null);
+            ClimbableData data = context.player().getExistingData(AEDataAttachments.CLIMBABLE).orElse(null);
 
             if (data == null) {
                 return;

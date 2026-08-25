@@ -25,7 +25,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @ModifyReturnValue(method = "isSuppressingSlidingDownLadder", at = @At("RETURN"))
     private boolean additional_enchantments$canStickToWalls(final boolean original) {
-        ClimbableData data = getExistingData(AEDataAttachments.CLIMBABLE_DATA).orElse(null);
+        ClimbableData data = getExistingData(AEDataAttachments.CLIMBABLE).orElse(null);
 
         if (data == null || data.climbPosition == null) {
             return original;
@@ -46,15 +46,16 @@ public abstract class LivingEntityMixin extends Entity {
 
     @ModifyReturnValue(method = "getDimensions", at = @At("RETURN"))
     private EntityDimensions additional_enchantments$ceilingClimbingDimensions(final EntityDimensions original, @Local(argsOnly = true) final Pose pose) {
-        boolean isCeilingClimbing = getData(AEDataAttachments.CLIMBABLE_DATA).isCeilingClimbing();
+        boolean isCeilingClimbing = getExistingData(AEDataAttachments.CLIMBABLE).map(ClimbableData::isCeilingClimbing).orElse(false);
+        LivingEntity self = (LivingEntity) (Object) this;
 
         if (pose == getPose()) {
             // Only keep track of the offset for the current active pose
-            ((IBoundingBoxOffset) this).additional_enchantments$setBoundingBoxOffset(isCeilingClimbing ? CeilingClimbDimensions.adjustOffset(original) : 0);
+            ((IBoundingBoxOffset) this).additional_enchantments$setBoundingBoxOffset(isCeilingClimbing ? CeilingClimbDimensions.adjustOffset(self, original) : 0);
         }
 
         if (isCeilingClimbing) {
-            return CeilingClimbDimensions.adjust(original);
+            return CeilingClimbDimensions.adjust(self, original);
         }
 
         return original;

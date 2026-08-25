@@ -25,7 +25,7 @@ public record SyncClimbFlag(int entityId, ClimbingType climbingType) implements 
     public static void handleClient(final SyncClimbFlag packet, final IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.player().level().getEntity(packet.entityId()) instanceof LivingEntity entity) {
-                ClimbableData data = entity.getData(AEDataAttachments.CLIMBABLE_DATA);
+                ClimbableData data = entity.getData(AEDataAttachments.CLIMBABLE);
                 data.setClimbingType(packet.climbingType());
                 entity.refreshDimensions();
             }

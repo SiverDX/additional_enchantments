@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVisionEffect;
 import de.cadentem.additional_enchantments.enchantments.climbing.ClimbableEffect;
+import de.cadentem.additional_enchantments.enchantments.perception.PerceptionEffect;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,6 +28,7 @@ public class AEEnchantmentRegistry {
     static {
         ENTITY_EFFECT_REGISTRY.register("block_vision", () -> BlockVisionEffect.CODEC);
         ENTITY_EFFECT_REGISTRY.register("climbable", () -> ClimbableEffect.CODEC);
+        ENTITY_EFFECT_REGISTRY.register("perception", () -> PerceptionEffect.CODEC);
     }
 
     public static final DeferredRegister<DataComponentType<?>> COMPONENT_REGISTRY = DeferredRegister.create(Registries.ENCHANTMENT_EFFECT_COMPONENT_TYPE, AE.MODID);

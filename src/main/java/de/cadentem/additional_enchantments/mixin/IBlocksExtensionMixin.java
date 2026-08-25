@@ -19,7 +19,7 @@ public interface IBlocksExtensionMixin {
             return original;
         }
 
-        ClimbableData data = entity.getExistingData(AEDataAttachments.CLIMBABLE_DATA).orElse(null);
+        ClimbableData data = entity.getExistingData(AEDataAttachments.CLIMBABLE).orElse(null);
 
         if (data == null || original) {
             return original;

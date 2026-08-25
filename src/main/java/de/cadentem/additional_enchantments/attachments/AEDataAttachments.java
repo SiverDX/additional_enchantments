@@ -11,5 +11,6 @@ public class AEDataAttachments {
 
     // TODO :: check if should retained on death
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<BlockVisionData>> BLOCK_VISION = REGISTRY.register("block_vision", () -> AttachmentType.serializable(BlockVisionData::new).copyOnDeath().build());
-    public static final DeferredHolder<AttachmentType<?>, AttachmentType<ClimbableData>> CLIMBABLE_DATA = REGISTRY.register("climbable_data", () -> AttachmentType.serializable(ClimbableData::new).copyOnDeath().build());
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<ClimbableData>> CLIMBABLE = REGISTRY.register("climbable", () -> AttachmentType.serializable(ClimbableData::new).copyOnDeath().build());
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<PerceptionData>> PERCEPTION = REGISTRY.register("perception", () -> AttachmentType.serializable(PerceptionData::new).copyOnDeath().build());
 }

@@ -4,8 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import de.cadentem.additional_enchantments.attachments.AEDataAttachments;
 import de.cadentem.additional_enchantments.attachments.ClimbableData;
-import de.cadentem.additional_enchantments.client.ClientProxy;
 import de.cadentem.additional_enchantments.common.network.SyncClimbFlag;
+import de.cadentem.additional_enchantments.enchantments.climbing.CeilingClimbDimensions;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,12 +21,20 @@ public abstract class LivingEntityRendererMixin {
             return;
         }
 
-        ClimbableData data = entity.getExistingData(AEDataAttachments.CLIMBABLE_DATA).orElse(null);
+        ClimbableData data = entity.getExistingData(AEDataAttachments.CLIMBABLE).orElse(null);
 
         if (data == null || !(data.getClimbingType() == SyncClimbFlag.ClimbingType.CEILING || data.isCeilingClimbing())) {
             return;
         }
 
-        ClientProxy.test(entity, poseStack);
+        // The hitbox is usually re-sized to the bottom part - but to keep to the ceiling we need to inverse that behaviour
+        // Which also means we need to move the model up to be at the hitbox again
+        double unmodifiedHeight = CeilingClimbDimensions.getUnmodifiedHeight(entity);
+
+        // Due to the rotation, the model has basically "fallen over" so we move it back to keep the head at the hitbox
+        poseStack.translate(0, unmodifiedHeight, unmodifiedHeight);
+        poseStack.mulPose(Axis.XP.rotationDegrees(90));
+        // Need to invert the facing direction for movement since the model is inverted
+        poseStack.mulPose(Axis.ZP.rotationDegrees(-180));
     }
 }

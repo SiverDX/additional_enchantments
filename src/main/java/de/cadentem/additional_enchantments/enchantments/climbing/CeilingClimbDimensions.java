@@ -6,23 +6,24 @@ import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.function.Function;
 
 @ParametersAreNonnullByDefault
 public class CeilingClimbDimensions {
     /** Crawling / Swimming hit box height */
-    public static final float HEIGHT = 0.2f;
+    public static final Function<Float, Float> HEIGHT = scale -> scale * 0.3f;
 
-    /** Distance from the ceiling to the eye */
+    /** Distance from the ceiling to the eye position */
     private static final float CEILING_DISTANCE = 0.1f;
 
     /** Adjust the height of the dimension for ceiling crawling */
-    public static EntityDimensions adjust(final EntityDimensions dimensions) {
-        return EntityDimensions.fixed(dimensions.width(), HEIGHT).withEyeHeight(dimensions.height() - CEILING_DISTANCE);
+    public static EntityDimensions adjust(final LivingEntity entity, final EntityDimensions dimensions) {
+        return EntityDimensions.fixed(dimensions.width(), HEIGHT.apply(entity.getScale())).withEyeHeight(dimensions.height() - CEILING_DISTANCE);
     }
 
     /** Amount the bounding box needs to be raised by to keep its top at the ceiling */
-    public static double adjustOffset(final EntityDimensions dimensions) {
-        return dimensions.height() - HEIGHT;
+    public static double adjustOffset(final LivingEntity entity, final EntityDimensions dimensions) {
+        return dimensions.height() - HEIGHT.apply(entity.getScale());
     }
 
     /**
@@ -36,9 +37,9 @@ public class CeilingClimbDimensions {
         if (offset == 0) {
             height = entity.getBbHeight();
         } else {
-            height = offset + HEIGHT;
+            height = offset + HEIGHT.apply(entity.getScale());
         }
 
-        return height / entity.getScale();
+        return height / entity.getScale() - CEILING_DISTANCE;
     }
 }

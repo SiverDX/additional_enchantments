@@ -14,6 +14,7 @@
   "client": [
     "client.ClientLevelMixin",
     "client.FrustumAccess",
+    "client.LevelRendererMixin",
     "client.LivingEntityRendererMixin"
   ],
   "injectors": {
