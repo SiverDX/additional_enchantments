@@ -21,6 +21,6 @@ public class NetworkHandler {
 
         registrar.playBidirectional(SyncClimbablePositions.TYPE, SyncClimbablePositions.STREAM_CODEC, new DirectionalPayloadHandler<>(SyncClimbablePositions::handleClient, SyncClimbablePositions::handleServer));
         registrar.playToClient(SyncClimbFlag.TYPE, SyncClimbFlag.STREAM_CODEC, SyncClimbFlag::handleClient);
-        registrar.playToClient(SyncClimbableInstance.TYPE, SyncClimbableInstance.STREAM_CODEC, SyncClimbableInstance::handleClient);
+        registrar.playToClient(SyncClimbable.TYPE, SyncClimbable.STREAM_CODEC, SyncClimbable::handleClient);
     }
 }

@@ -12,8 +12,8 @@ public record LevelBasedClimbable(List<Entry> values) {
             Entry.CODEC.listOf().fieldOf("values").forGetter(LevelBasedClimbable::values)
     ).apply(instance, LevelBasedClimbable::new));
 
-    public static LevelBasedClimbable constant(final Climbable values) {
-        return new LevelBasedClimbable(List.of(new Entry(values, MinMaxBounds.Ints.atLeast(0))));
+    public static LevelBasedClimbable constant(final Climbable... values) {
+        return new LevelBasedClimbable(List.of(new Entry(List.of(values), MinMaxBounds.Ints.atLeast(0))));
     }
 
     public List<Climbable> get(final int level) {
@@ -21,16 +21,16 @@ public record LevelBasedClimbable(List<Entry> values) {
 
         for (LevelBasedClimbable.Entry entry : values) {
             if (entry.levelRange().matches(level)) {
-                predicates.add(entry.value());
+                predicates.addAll(entry.value());
             }
         }
 
         return predicates;
     }
 
-    public record Entry(Climbable value, MinMaxBounds.Ints levelRange) {
+    public record Entry(List<Climbable> value, MinMaxBounds.Ints levelRange) {
         public static final Codec<LevelBasedClimbable.Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Climbable.CODEC.fieldOf("value").forGetter(LevelBasedClimbable.Entry::value),
+                Climbable.CODEC.listOf().fieldOf("value").forGetter(LevelBasedClimbable.Entry::value),
                 MinMaxBounds.Ints.CODEC.fieldOf("level_range").forGetter(LevelBasedClimbable.Entry::levelRange)
         ).apply(instance, LevelBasedClimbable.Entry::new));
     }

@@ -215,9 +215,9 @@ public class AEEnchantments {
                 DataComponentMap.builder().set(
                         AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value(),
                         ClimbableEffect.single(
-                                new LevelBasedClimbable.Entry(
+                                new LevelBasedClimbable.Entry(List.of(
                                         new Climbable(
-                                                AE.location("climbable_enchantment"),
+                                                AE.location("climbable_enchantment.base"),
                                                 BlockPredicate.allOf(
                                                         BlockPredicate.not(BlockPredicate.matchesTag(BlockTags.AIR)),
                                                         BlockPredicate.solid(),
@@ -226,12 +226,11 @@ public class AEEnchantments {
                                                 ),
                                                 false,
                                                 false
-                                        ),
-                                        MinMaxBounds.Ints.between(1, 1)
-                                ),
-                                new LevelBasedClimbable.Entry(
+                                        )
+                                ), MinMaxBounds.Ints.between(1, 1)),
+                                new LevelBasedClimbable.Entry(List.of(
                                         new Climbable(
-                                                AE.location("climbable_enchantment"),
+                                                AE.location("climbable_enchantment.wall"),
                                                 BlockPredicate.allOf(
                                                         BlockPredicate.not(BlockPredicate.matchesTag(BlockTags.AIR)),
                                                         BlockPredicate.solid(),
@@ -240,12 +239,11 @@ public class AEEnchantments {
                                                 ),
                                                 true,
                                                 false
-                                        ),
-                                        MinMaxBounds.Ints.between(2, 2)
-                                ),
-                                new LevelBasedClimbable.Entry(
+                                        )
+                                ), MinMaxBounds.Ints.between(2, 2)),
+                                new LevelBasedClimbable.Entry(List.of(
                                         new Climbable(
-                                                AE.location("climbable_enchantment"),
+                                                AE.location("climbable_enchantment.ceiling"),
                                                 BlockPredicate.allOf(
                                                         BlockPredicate.not(BlockPredicate.matchesTag(BlockTags.AIR)),
                                                         BlockPredicate.solid(),
@@ -254,9 +252,8 @@ public class AEEnchantments {
                                                 ),
                                                 true,
                                                 true
-                                        ),
-                                        MinMaxBounds.Ints.between(3, 3)
-                                )
+                                        )
+                                ), MinMaxBounds.Ints.between(3, 3))
                         )
                 ).build()));
 

@@ -11,23 +11,25 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-public record SyncClimbableInstance(Climbable climbable, boolean remove) implements CustomPacketPayload {
-    public static final Type<SyncClimbableInstance> TYPE = new Type<>(AE.location("sync_climbable_instance"));
+import java.util.List;
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, SyncClimbableInstance> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.fromCodecWithRegistries(Climbable.CODEC), SyncClimbableInstance::climbable,
-            ByteBufCodecs.BOOL, SyncClimbableInstance::remove,
-            SyncClimbableInstance::new
+public record SyncClimbable(List<Climbable> climbable, boolean remove) implements CustomPacketPayload {
+    public static final Type<SyncClimbable> TYPE = new Type<>(AE.location("sync_climbable"));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, SyncClimbable> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.fromCodecWithRegistries(Climbable.CODEC.listOf()), SyncClimbable::climbable,
+            ByteBufCodecs.BOOL, SyncClimbable::remove,
+            SyncClimbable::new
     );
 
-    public static void handleClient(final SyncClimbableInstance packet, final IPayloadContext context) {
+    public static void handleClient(final SyncClimbable packet, final IPayloadContext context) {
         context.enqueueWork(() -> {
             ClimbableData data = context.player().getData(AEDataAttachments.CLIMBABLE);
 
             if (packet.remove()) {
-                data.removeClimbable(packet.climbable());
+                data.removeClimbables(packet.climbable().stream().map(Climbable::id).toList());
             } else {
-                data.addClimbable(packet.climbable());
+                data.addClimbables(packet.climbable());
             }
         });
     }

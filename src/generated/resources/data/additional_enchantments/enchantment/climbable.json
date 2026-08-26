@@ -11,102 +11,108 @@
           "values": [
             {
               "level_range": 1,
-              "value": {
-                "blocks": {
-                  "type": "minecraft:all_of",
-                  "predicates": [
-                    {
-                      "type": "minecraft:not",
-                      "predicate": {
-                        "type": "minecraft:matching_block_tag",
-                        "tag": "minecraft:air"
+              "value": [
+                {
+                  "blocks": {
+                    "type": "minecraft:all_of",
+                    "predicates": [
+                      {
+                        "type": "minecraft:not",
+                        "predicate": {
+                          "type": "minecraft:matching_block_tag",
+                          "tag": "minecraft:air"
+                        }
+                      },
+                      {
+                        "type": "minecraft:solid"
+                      },
+                      {
+                        "type": "minecraft:matching_fluids",
+                        "fluids": "minecraft:empty"
+                      },
+                      {
+                        "type": "minecraft:not",
+                        "predicate": {
+                          "type": "minecraft:matching_block_tag",
+                          "tag": "additional_enchantments:slippery"
+                        }
                       }
-                    },
-                    {
-                      "type": "minecraft:solid"
-                    },
-                    {
-                      "type": "minecraft:matching_fluids",
-                      "fluids": "minecraft:empty"
-                    },
-                    {
-                      "type": "minecraft:not",
-                      "predicate": {
-                        "type": "minecraft:matching_block_tag",
-                        "tag": "additional_enchantments:slippery"
-                      }
-                    }
-                  ]
-                },
-                "key": "additional_enchantments:climbable_enchantment"
-              }
+                    ]
+                  },
+                  "key": "additional_enchantments:climbable_enchantment.base"
+                }
+              ]
             },
             {
               "level_range": 2,
-              "value": {
-                "blocks": {
-                  "type": "minecraft:all_of",
-                  "predicates": [
-                    {
-                      "type": "minecraft:not",
-                      "predicate": {
-                        "type": "minecraft:matching_block_tag",
-                        "tag": "minecraft:air"
+              "value": [
+                {
+                  "blocks": {
+                    "type": "minecraft:all_of",
+                    "predicates": [
+                      {
+                        "type": "minecraft:not",
+                        "predicate": {
+                          "type": "minecraft:matching_block_tag",
+                          "tag": "minecraft:air"
+                        }
+                      },
+                      {
+                        "type": "minecraft:solid"
+                      },
+                      {
+                        "type": "minecraft:matching_fluids",
+                        "fluids": "minecraft:empty"
+                      },
+                      {
+                        "type": "minecraft:not",
+                        "predicate": {
+                          "type": "minecraft:matching_block_tag",
+                          "tag": "additional_enchantments:slippery"
+                        }
                       }
-                    },
-                    {
-                      "type": "minecraft:solid"
-                    },
-                    {
-                      "type": "minecraft:matching_fluids",
-                      "fluids": "minecraft:empty"
-                    },
-                    {
-                      "type": "minecraft:not",
-                      "predicate": {
-                        "type": "minecraft:matching_block_tag",
-                        "tag": "additional_enchantments:slippery"
-                      }
-                    }
-                  ]
-                },
-                "can_stick_to_walls": true,
-                "key": "additional_enchantments:climbable_enchantment"
-              }
+                    ]
+                  },
+                  "can_stick_to_walls": true,
+                  "key": "additional_enchantments:climbable_enchantment.wall"
+                }
+              ]
             },
             {
               "level_range": 3,
-              "value": {
-                "blocks": {
-                  "type": "minecraft:all_of",
-                  "predicates": [
-                    {
-                      "type": "minecraft:not",
-                      "predicate": {
-                        "type": "minecraft:matching_block_tag",
-                        "tag": "minecraft:air"
+              "value": [
+                {
+                  "blocks": {
+                    "type": "minecraft:all_of",
+                    "predicates": [
+                      {
+                        "type": "minecraft:not",
+                        "predicate": {
+                          "type": "minecraft:matching_block_tag",
+                          "tag": "minecraft:air"
+                        }
+                      },
+                      {
+                        "type": "minecraft:solid"
+                      },
+                      {
+                        "type": "minecraft:matching_fluids",
+                        "fluids": "minecraft:empty"
+                      },
+                      {
+                        "type": "minecraft:not",
+                        "predicate": {
+                          "type": "minecraft:matching_block_tag",
+                          "tag": "additional_enchantments:slippery"
+                        }
                       }
-                    },
-                    {
-                      "type": "minecraft:solid"
-                    },
-                    {
-                      "type": "minecraft:matching_fluids",
-                      "fluids": "minecraft:empty"
-                    },
-                    {
-                      "type": "minecraft:not",
-                      "predicate": {
-                        "type": "minecraft:matching_block_tag",
-                        "tag": "additional_enchantments:slippery"
-                      }
-                    }
-                  ]
-                },
-                "can_climb_ceilings": true,
-                "can_stick_to_walls": true,
-                "key": "additional_enchantments:climbable_enchantment"
-              }
+                    ]
+                  },
+                  "can_climb_ceilings": true,
+                  "can_stick_to_walls": true,
+                  "key": "additional_enchantments:climbable_enchantment.ceiling"
+                }
+              ]
             }
           ]
         }
