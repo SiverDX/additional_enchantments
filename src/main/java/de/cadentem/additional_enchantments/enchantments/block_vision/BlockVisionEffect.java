@@ -24,12 +24,12 @@ public record BlockVisionEffect(LevelBasedBlockVision vision) implements Enchant
     @Override
     public void apply(@NotNull final ServerLevel level, final int enchantmentLevel, @NotNull final EnchantedItemInUse item, @NotNull final Entity entity, @NotNull final Vec3 position) {
         if (entity instanceof ServerPlayer player) {
-            List<BlockVision> visions = vision.get(enchantmentLevel);
+            List<BlockVision.Mapped> visions = vision.get(enchantmentLevel);
 
             BlockVisionData data = player.getData(AEDataAttachments.BLOCK_VISION);
-            data.setVisions(visions, enchantmentLevel);
+            data.addVisions(visions);
 
-            PacketDistributor.sendToPlayer(player, new SyncBlockVision(visions, enchantmentLevel));
+            PacketDistributor.sendToPlayer(player, new SyncBlockVision(visions, false));
         }
     }
 
@@ -38,10 +38,12 @@ public record BlockVisionEffect(LevelBasedBlockVision vision) implements Enchant
         EnchantmentEntityEffect.super.onDeactivated(item, entity, position, enchantmentLevel);
 
         if (entity instanceof ServerPlayer player) {
-            BlockVisionData data = player.getData(AEDataAttachments.BLOCK_VISION);
-            data.setVisions(null, 0);
+            List<BlockVision.Mapped> visions = vision.get(enchantmentLevel);
 
-            PacketDistributor.sendToPlayer(player, new SyncBlockVision(List.of(), 0));
+            BlockVisionData data = player.getData(AEDataAttachments.BLOCK_VISION);
+            data.removeVisions(visions.stream().map(BlockVision.Mapped::id).toList());
+
+            PacketDistributor.sendToPlayer(player, new SyncBlockVision(visions, true));
         }
     }
 

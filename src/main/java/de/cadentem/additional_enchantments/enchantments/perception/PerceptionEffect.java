@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.cadentem.additional_enchantments.attachments.AEDataAttachments;
 import de.cadentem.additional_enchantments.attachments.PerceptionData;
-import de.cadentem.additional_enchantments.common.network.SyncPerceptionInstance;
+import de.cadentem.additional_enchantments.common.network.SyncPerception;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -24,12 +24,12 @@ public record PerceptionEffect(LevelBasedPerception perception) implements Encha
     @Override
     public void apply(@NotNull final ServerLevel level, final int enchantmentLevel, @NotNull final EnchantedItemInUse item, @NotNull final Entity entity, @NotNull final Vec3 position) {
         if (entity instanceof ServerPlayer player) {
-            PerceptionData data = player.getData(AEDataAttachments.PERCEPTION);
+            List<Perception.Mapped> perceptions = perception.get(enchantmentLevel);
 
-            perception.get(enchantmentLevel).forEach(perception -> {
-                data.addPerception(perception);
-                PacketDistributor.sendToPlayer(player, new SyncPerceptionInstance(perception, false));
-            });
+            PerceptionData data = player.getData(AEDataAttachments.PERCEPTION);
+            data.addPerceptions(perceptions);
+
+            PacketDistributor.sendToPlayer(player, new SyncPerception(perceptions, false));
         }
     }
 
@@ -38,12 +38,12 @@ public record PerceptionEffect(LevelBasedPerception perception) implements Encha
         EnchantmentEntityEffect.super.onDeactivated(item, entity, position, enchantmentLevel);
 
         if (entity instanceof ServerPlayer player) {
-            PerceptionData data = player.getData(AEDataAttachments.PERCEPTION);
+            List<Perception.Mapped> perceptions = perception.get(enchantmentLevel);
 
-            perception.get(enchantmentLevel).forEach(perception -> {
-                data.removePerception(perception);
-                PacketDistributor.sendToPlayer(player, new SyncPerceptionInstance(perception, true));
-            });
+            PerceptionData data = player.getData(AEDataAttachments.PERCEPTION);
+            data.removePerceptions(perceptions.stream().map(Perception.Mapped::id).toList());
+
+            PacketDistributor.sendToPlayer(player, new SyncPerception(perceptions, true));
         }
     }
 

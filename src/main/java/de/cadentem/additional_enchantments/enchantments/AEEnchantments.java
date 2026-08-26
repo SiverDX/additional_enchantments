@@ -80,7 +80,7 @@ public class AEEnchantments {
                                                                 ItemEnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(Optional.empty(), MinMaxBounds.Ints.ANY)))
                                                         ))
                                                 ).build(),
-                                                24,
+                                                LevelBasedValue.perLevel(16, 8),
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#55ffff"),
                                                         Color.of("#5b7cff"),
@@ -95,7 +95,7 @@ public class AEEnchantments {
                                         new Perception(
                                                 AE.location("perception_enchantment.enemies"),
                                                 new EntityTypeCondition(EntityTypeCondition.Type.ENEMY, LootContext.EntityTarget.THIS),
-                                                24,
+                                                LevelBasedValue.perLevel(16, 8),
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#ff3030"),
                                                         Color.of("#ff6b35"),
@@ -105,7 +105,7 @@ public class AEEnchantments {
                                         new Perception(
                                                 AE.location("perception_enchantment.animals"),
                                                 new EntityTypeCondition(EntityTypeCondition.Type.ANIMAL, LootContext.EntityTarget.THIS),
-                                                24,
+                                                LevelBasedValue.perLevel(16, 8),
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#7cff6b"),
                                                         Color.of("#d4ff5c"),
@@ -120,7 +120,7 @@ public class AEEnchantments {
                                                         Conditions.thisEntity(EntityConditions.isType(Tags.EntityTypes.BOSSES)),
                                                         Conditions.thisEntity(EntityConditions.isType(EntityType.WARDEN))
                                                 ).build(),
-                                                36,
+                                                LevelBasedValue.perLevel(24, 8),
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#5a189a"),
                                                         Color.of("#9d4edd"),
@@ -133,7 +133,7 @@ public class AEEnchantments {
                                         new Perception(
                                                 AE.location("perception_enchantment.limited_valuables"),
                                                 MatchItemEntityCondition.matches(ItemPredicate.Builder.item().of(AEItemTags.LIMITED_VALUABLES)).build(),
-                                                36,
+                                                LevelBasedValue.constant(32),
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#55ffff"),
                                                         Color.of("#5b7cff"),
@@ -185,7 +185,7 @@ public class AEEnchantments {
                                                                 ))
                                                         )
                                                 ).build(),
-                                                36,
+                                                LevelBasedValue.constant(32),
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#5e35b1"),
                                                         Color.of("#7e57c2"),
@@ -276,191 +276,7 @@ public class AEEnchantments {
                 DataComponentMap.builder().set(
                         AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value(),
                         BlockVisionEffect.single(
-                                new LevelBasedBlockVision.Entry(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.copper"),
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_COPPER)),
-                                                LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
-                                                0,
-                                                ShiftingColor.of(List.of(
-                                                        Color.of("#7a4a2e", 0.15f),
-                                                        Color.of(ChatFormatting.DARK_GREEN, 0.15f),
-                                                        Color.of("#3f7f5f", 0.15f)
-                                                ), 1, 1)
-                                        ),
-                                        MinMaxBounds.Ints.between(1, 1)
-                                ),
-                                new LevelBasedBlockVision.Entry(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.iron"),
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_IRON)),
-                                                LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
-                                                0,
-                                                ShiftingColor.of(List.of(
-                                                        Color.of(ChatFormatting.WHITE, 0.15f),
-                                                        Color.of(ChatFormatting.GRAY, 0.15f),
-                                                        Color.of(ChatFormatting.DARK_GRAY, 0.15f)
-                                                ), 1, 1)
-                                        ),
-                                        MinMaxBounds.Ints.between(1, 2)
-                                ),
-                                new LevelBasedBlockVision.Entry(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.redstone"),
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_REDSTONE)),
-                                                LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
-                                                0,
-                                                ShiftingColor.of(List.of(
-                                                        Color.of(ChatFormatting.DARK_RED, 0.15f),
-                                                        Color.of(ChatFormatting.RED, 0.15f),
-                                                        Color.of("#ff4d4d", 0.15f)
-                                                ), 1, 1)
-                                        ),
-                                        MinMaxBounds.Ints.between(1, 2)
-                                ),
-                                new LevelBasedBlockVision.Entry(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.zinc"),
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(AEBlockTags.ZINC_ORES)),
-                                                LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
-                                                0,
-                                                ShiftingColor.of(List.of(
-                                                        Color.of("#9aa3ad", 0.15f),
-                                                        Color.of("#b7c0c9", 0.15f),
-                                                        Color.of("#d0d7df", 0.15f)
-                                                ), 1, 1)
-                                        ),
-                                        MinMaxBounds.Ints.between(1, 2)
-                                ),
-                                new LevelBasedBlockVision.Entry(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.silver"),
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(AEBlockTags.SILVER_ORES)),
-                                                LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
-                                                0,
-                                                ShiftingColor.of(List.of(
-                                                        Color.of(ChatFormatting.WHITE, 0.15f),
-                                                        Color.of(ChatFormatting.GRAY, 0.15f),
-                                                        Color.of("#dfe6ee", 0.15f)
-                                                ), 1, 1)
-                                        ),
-                                        MinMaxBounds.Ints.between(1, 2)
-                                ),
-                                new LevelBasedBlockVision.Entry(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.lapis"),
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_LAPIS)),
-                                                LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
-                                                0,
-                                                ShiftingColor.of(List.of(
-                                                        Color.of(ChatFormatting.DARK_BLUE, 0.15f),
-                                                        Color.of(ChatFormatting.BLUE, 0.15f),
-                                                        Color.of("#4169e1", 0.15f)
-                                                ), 1, 1)
-                                        ),
-                                        MinMaxBounds.Ints.between(2, 3)
-                                ),
-                                new LevelBasedBlockVision.Entry(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.gold"),
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_GOLD)),
-                                                LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
-                                                0,
-                                                ShiftingColor.of(List.of(
-                                                        Color.of(ChatFormatting.GOLD, 0.15f),
-                                                        Color.of(ChatFormatting.YELLOW, 0.15f),
-                                                        Color.of("#ffdd55", 0.15f)
-                                                ), 1, 1)
-                                        ),
-                                        MinMaxBounds.Ints.between(2, 3)
-                                ),
-                                new LevelBasedBlockVision.Entry(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.emerald"),
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_EMERALD)),
-                                                LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
-                                                0,
-                                                ShiftingColor.of(List.of(
-                                                        Color.of(ChatFormatting.DARK_GREEN, 0.15f),
-                                                        Color.of(ChatFormatting.GREEN, 0.15f),
-                                                        Color.of("#55ff88", 0.15f)
-                                                ), 1, 1)
-                                        ),
-                                        MinMaxBounds.Ints.between(3, 3)
-                                ),
-                                new LevelBasedBlockVision.Entry(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.diamond"),
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_DIAMOND)),
-                                                LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
-                                                0,
-                                                ShiftingColor.of(List.of(
-                                                        Color.of("#3fffdc", 0.15f),
-                                                        Color.of(ChatFormatting.AQUA, 0.15f),
-                                                        Color.of("#3fc5ff", 0.15f),
-                                                        Color.of("#8b7dff", 0.15f),
-                                                        Color.of("#55ff88", 0.15f)
-                                                ), 1, 1)
-                                        ),
-                                        MinMaxBounds.Ints.between(3, 3)
-                                ),
-                                new LevelBasedBlockVision.Entry(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.emerald"),
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_EMERALD)),
-                                                LevelBasedValue.constant(16),
-                                                BlockVision.DisplayType.OUTLINE,
-                                                0,
-                                                ShiftingColor.of(List.of(
-                                                        Color.of(ChatFormatting.DARK_GREEN),
-                                                        Color.of(ChatFormatting.GREEN),
-                                                        Color.of("#55ff88")
-                                                ), 1, 1)
-                                        ),
-                                        MinMaxBounds.Ints.atLeast(4)
-                                ),
-                                new LevelBasedBlockVision.Entry(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.diamond"),
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_DIAMOND)),
-                                                LevelBasedValue.constant(16),
-                                                BlockVision.DisplayType.OUTLINE,
-                                                0,
-                                                ShiftingColor.of(List.of(
-                                                        Color.of("#3fffdc"),
-                                                        Color.of(ChatFormatting.AQUA),
-                                                        Color.of("#3fc5ff"),
-                                                        Color.of("#8b7dff"),
-                                                        Color.of("#55ff88")
-                                                ), 1, 1)
-                                        ),
-                                        MinMaxBounds.Ints.atLeast(4)
-                                ),
-                                new LevelBasedBlockVision.Entry(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.netherite"),
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_NETHERITE_SCRAP)),
-                                                LevelBasedValue.constant(16),
-                                                BlockVision.DisplayType.OUTLINE,
-                                                0,
-                                                ShiftingColor.of(List.of(
-                                                        Color.of("#8a502b"),
-                                                        Color.of("#8a312c"),
-                                                        Color.of("#852747")
-                                                ), 1, 1)
-                                        ),
-                                        MinMaxBounds.Ints.atLeast(4)
-                                ),
-                                new LevelBasedBlockVision.Entry(
+                                new LevelBasedBlockVision.Entry(List.of(
                                         new BlockVision(
                                                 AE.location("block_vision_enchantment.copper"),
                                                 Either.left(BlockVision.SpecialBlockType.TREASURES),
@@ -475,9 +291,166 @@ public class AEEnchantments {
                                                         Color.of("#5fd9ff"),
                                                         Color.of("#ffffff")
                                                 ), 1, 1)
+                                        )
+                                ), MinMaxBounds.Ints.atLeast(1)),
+                                new LevelBasedBlockVision.Entry(List.of(
+                                        new BlockVision(
+                                                AE.location("block_vision_enchantment.copper"),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_COPPER)),
+                                                LevelBasedValue.constant(24),
+                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                0,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of("#7a4a2e", 0.15f),
+                                                        Color.of(ChatFormatting.DARK_GREEN, 0.15f),
+                                                        Color.of("#3f7f5f", 0.15f)
+                                                ), 1, 1)
+                                        )
+                                ), MinMaxBounds.Ints.between(1, 1)),
+                                new LevelBasedBlockVision.Entry(List.of(
+                                        new BlockVision(
+                                                AE.location("block_vision_enchantment.iron"),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_IRON)),
+                                                LevelBasedValue.constant(24),
+                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                0,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of(ChatFormatting.WHITE, 0.15f),
+                                                        Color.of(ChatFormatting.GRAY, 0.15f),
+                                                        Color.of(ChatFormatting.DARK_GRAY, 0.15f)
+                                                ), 1, 1)
                                         ),
-                                        MinMaxBounds.Ints.atLeast(1)
-                                )
+                                        new BlockVision(
+                                                AE.location("block_vision_enchantment.redstone"),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_REDSTONE)),
+                                                LevelBasedValue.constant(24),
+                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                0,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of(ChatFormatting.DARK_RED, 0.15f),
+                                                        Color.of(ChatFormatting.RED, 0.15f),
+                                                        Color.of("#ff4d4d", 0.15f)
+                                                ), 1, 1)
+                                        ),
+                                        new BlockVision(
+                                                AE.location("block_vision_enchantment.zinc"),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(AEBlockTags.ZINC_ORES)),
+                                                LevelBasedValue.constant(24),
+                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                0,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of("#9aa3ad", 0.15f),
+                                                        Color.of("#b7c0c9", 0.15f),
+                                                        Color.of("#d0d7df", 0.15f)
+                                                ), 1, 1)
+                                        ),
+                                        new BlockVision(
+                                                AE.location("block_vision_enchantment.silver"),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(AEBlockTags.SILVER_ORES)),
+                                                LevelBasedValue.constant(24),
+                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                0,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of(ChatFormatting.WHITE, 0.15f),
+                                                        Color.of(ChatFormatting.GRAY, 0.15f),
+                                                        Color.of("#dfe6ee", 0.15f)
+                                                ), 1, 1)
+                                        )
+                                ), MinMaxBounds.Ints.between(1, 2)),
+                                new LevelBasedBlockVision.Entry(List.of(
+                                        new BlockVision(
+                                                AE.location("block_vision_enchantment.lapis"),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_LAPIS)),
+                                                LevelBasedValue.constant(24),
+                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                0,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of(ChatFormatting.DARK_BLUE, 0.15f),
+                                                        Color.of(ChatFormatting.BLUE, 0.15f),
+                                                        Color.of("#4169e1", 0.15f)
+                                                ), 1, 1)
+                                        ),
+                                        new BlockVision(
+                                                AE.location("block_vision_enchantment.gold"),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_GOLD)),
+                                                LevelBasedValue.constant(24),
+                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                0,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of(ChatFormatting.GOLD, 0.15f),
+                                                        Color.of(ChatFormatting.YELLOW, 0.15f),
+                                                        Color.of("#ffdd55", 0.15f)
+                                                ), 1, 1)
+                                        )
+                                ), MinMaxBounds.Ints.between(2, 3)),
+                                new LevelBasedBlockVision.Entry(List.of(
+                                        new BlockVision(
+                                                AE.location("block_vision_enchantment.emerald"),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_EMERALD)),
+                                                LevelBasedValue.constant(24),
+                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                0,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of(ChatFormatting.DARK_GREEN, 0.15f),
+                                                        Color.of(ChatFormatting.GREEN, 0.15f),
+                                                        Color.of("#55ff88", 0.15f)
+                                                ), 1, 1)
+                                        ),
+                                        new BlockVision(
+                                                AE.location("block_vision_enchantment.diamond"),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_DIAMOND)),
+                                                LevelBasedValue.constant(24),
+                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                0,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of("#3fffdc", 0.15f),
+                                                        Color.of(ChatFormatting.AQUA, 0.15f),
+                                                        Color.of("#3fc5ff", 0.15f),
+                                                        Color.of("#8b7dff", 0.15f),
+                                                        Color.of("#55ff88", 0.15f)
+                                                ), 1, 1)
+                                        )
+                                ), MinMaxBounds.Ints.between(3, 3)),
+                                new LevelBasedBlockVision.Entry(List.of(
+                                        new BlockVision(
+                                                AE.location("block_vision_enchantment.emerald"),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_EMERALD)),
+                                                LevelBasedValue.constant(16),
+                                                BlockVision.DisplayType.OUTLINE,
+                                                0,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of(ChatFormatting.DARK_GREEN),
+                                                        Color.of(ChatFormatting.GREEN),
+                                                        Color.of("#55ff88")
+                                                ), 1, 1)
+                                        ),
+                                        new BlockVision(
+                                                AE.location("block_vision_enchantment.diamond"),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_DIAMOND)),
+                                                LevelBasedValue.constant(16),
+                                                BlockVision.DisplayType.OUTLINE,
+                                                0,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of("#3fffdc"),
+                                                        Color.of(ChatFormatting.AQUA),
+                                                        Color.of("#3fc5ff"),
+                                                        Color.of("#8b7dff"),
+                                                        Color.of("#55ff88")
+                                                ), 1, 1)
+                                        ),
+                                        new BlockVision(
+                                                AE.location("block_vision_enchantment.netherite"),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_NETHERITE_SCRAP)),
+                                                LevelBasedValue.constant(16),
+                                                BlockVision.DisplayType.OUTLINE,
+                                                0,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of("#8a502b"),
+                                                        Color.of("#8a312c"),
+                                                        Color.of("#852747")
+                                                ), 1, 1)
+                                        )
+                                ), MinMaxBounds.Ints.atLeast(4))
                         )
                 ).build()));
     }

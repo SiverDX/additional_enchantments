@@ -60,7 +60,11 @@
                     ]
                   },
                   "key": "additional_enchantments:perception_enchantment.valuables",
-                  "range": 24
+                  "range": {
+                    "type": "minecraft:linear",
+                    "base": 16.0,
+                    "per_level_above_first": 8.0
+                  }
                 }
               ]
             },
@@ -90,7 +94,11 @@
                     "entity": "this"
                   },
                   "key": "additional_enchantments:perception_enchantment.enemies",
-                  "range": 24
+                  "range": {
+                    "type": "minecraft:linear",
+                    "base": 16.0,
+                    "per_level_above_first": 8.0
+                  }
                 },
                 {
                   "color": {
@@ -112,7 +120,11 @@
                     "entity": "this"
                   },
                   "key": "additional_enchantments:perception_enchantment.animals",
-                  "range": 24
+                  "range": {
+                    "type": "minecraft:linear",
+                    "base": 16.0,
+                    "per_level_above_first": 8.0
+                  }
                 }
               ]
             },
@@ -159,7 +171,11 @@
                     ]
                   },
                   "key": "additional_enchantments:perception_enchantment.bosses",
-                  "range": 36
+                  "range": {
+                    "type": "minecraft:linear",
+                    "base": 24.0,
+                    "per_level_above_first": 8.0
+                  }
                 }
               ]
             },
@@ -198,7 +214,7 @@
                     }
                   },
                   "key": "additional_enchantments:perception_enchantment.limited_valuables",
-                  "range": 36
+                  "range": 32.0
                 },
                 {
                   "color": {
@@ -379,7 +395,7 @@
                     ]
                   },
                   "key": "additional_enchantments:perception_enchantment.enchanted_books",
-                  "range": 36
+                  "range": 32.0
                 }
               ]
             }

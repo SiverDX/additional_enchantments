@@ -12,25 +12,25 @@ public record LevelBasedBlockVision(List<Entry> values) {
             Entry.CODEC.listOf().fieldOf("values").forGetter(LevelBasedBlockVision::values)
     ).apply(instance, LevelBasedBlockVision::new));
 
-    public static LevelBasedBlockVision constant(final BlockVision values) {
-        return new LevelBasedBlockVision(List.of(new Entry(values, MinMaxBounds.Ints.atLeast(0))));
+    public static LevelBasedBlockVision constant(final BlockVision... values) {
+        return new LevelBasedBlockVision(List.of(new Entry(List.of(values), MinMaxBounds.Ints.atLeast(0))));
     }
 
-    public List<BlockVision> get(final int level) {
-        List<BlockVision> visions = new ArrayList<>();
+    public List<BlockVision.Mapped> get(final int level) {
+        List<BlockVision.Mapped> visions = new ArrayList<>();
 
         for (Entry entry : values) {
             if (entry.levelRange().matches(level)) {
-                visions.add(entry.value());
+                entry.value().forEach(vision -> visions.add(vision.map(level)));
             }
         }
 
         return visions;
     }
 
-    public record Entry(BlockVision value, MinMaxBounds.Ints levelRange) {
+    public record Entry(List<BlockVision> value, MinMaxBounds.Ints levelRange) {
         public static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                BlockVision.CODEC.fieldOf("value").forGetter(Entry::value),
+                BlockVision.CODEC.listOf().fieldOf("value").forGetter(Entry::value),
                 MinMaxBounds.Ints.CODEC.fieldOf("level_range").forGetter(Entry::levelRange)
         ).apply(instance, Entry::new));
     }

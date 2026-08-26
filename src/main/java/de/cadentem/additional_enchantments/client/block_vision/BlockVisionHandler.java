@@ -54,9 +54,9 @@ public class BlockVisionHandler {
     private static BlockVisionData vision;
     private static Vec3 lastScanCenter;
 
-    private static int previousStorage;
     private static boolean isSearching;
     private static boolean hasPendingUpdate;
+    private static boolean requestCacheClear;
 
     public record Data(BlockState state, int range, BlockVision.DisplayType displayType, int particleRate, float x, float y, float z) {
         public boolean isInRange(final Vec3 position, final int visibleRange) {
@@ -81,17 +81,16 @@ public class BlockVisionHandler {
         LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
         vision = player.getExistingData(AEDataAttachments.BLOCK_VISION).orElse(null);
 
-        if (vision == null || vision.size() == 0) {
+        if (vision.isEmpty()) {
             clear();
             return;
         }
 
-        if (previousStorage != vision.size()) {
-            // Reset the data since entries have been adjusted
+        if (requestCacheClear && !isSearching) {
             clear();
+            requestCacheClear = false;
         }
 
-        previousStorage = vision.size();
         initCache();
 
         if (!isSearching && hasPendingUpdate) {
@@ -436,6 +435,7 @@ public class BlockVisionHandler {
         lastScanCenter = null;
         isSearching = false;
         hasPendingUpdate = false;
+        requestCacheClear = false;
 
         CHUNK_CACHE.invalidateAll();
         CHUNK_CACHE = null;

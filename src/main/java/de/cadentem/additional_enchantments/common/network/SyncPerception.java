@@ -11,23 +11,25 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-public record SyncPerceptionInstance(Perception perception, boolean remove) implements CustomPacketPayload {
-    public static final Type<SyncPerceptionInstance> TYPE = new Type<>(AE.location("sync_perception_instance"));
+import java.util.List;
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, SyncPerceptionInstance> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.fromCodecWithRegistries(Perception.CODEC), SyncPerceptionInstance::perception,
-            ByteBufCodecs.BOOL, SyncPerceptionInstance::remove,
-            SyncPerceptionInstance::new
+public record SyncPerception(List<Perception.Mapped> perceptions, boolean remove) implements CustomPacketPayload {
+    public static final Type<SyncPerception> TYPE = new Type<>(AE.location("sync_perception"));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, SyncPerception> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.fromCodecWithRegistries(Perception.Mapped.CODEC.listOf()), SyncPerception::perceptions,
+            ByteBufCodecs.BOOL, SyncPerception::remove,
+            SyncPerception::new
     );
 
-    public static void handleClient(final SyncPerceptionInstance packet, final IPayloadContext context) {
+    public static void handleClient(final SyncPerception packet, final IPayloadContext context) {
         context.enqueueWork(() -> {
             PerceptionData data = context.player().getData(AEDataAttachments.PERCEPTION);
 
             if (packet.remove()) {
-                data.removePerception(packet.perception());
+                data.removePerceptions(packet.perceptions().stream().map(Perception.Mapped::id).toList());
             } else {
-                data.addPerception(packet.perception());
+                data.addPerceptions(packet.perceptions());
             }
         });
     }

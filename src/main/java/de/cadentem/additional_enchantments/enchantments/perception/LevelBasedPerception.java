@@ -16,12 +16,12 @@ public record LevelBasedPerception(List<Entry> values) {
         return new LevelBasedPerception(List.of(new Entry(List.of(values), MinMaxBounds.Ints.atLeast(0))));
     }
 
-    public List<Perception> get(final int level) {
-        List<Perception> predicates = new ArrayList<>();
+    public List<Perception.Mapped> get(final int level) {
+        List<Perception.Mapped> predicates = new ArrayList<>();
 
         for (LevelBasedPerception.Entry entry : values) {
             if (entry.levelRange().matches(level)) {
-                predicates.addAll(entry.value());
+                entry.value().forEach(perception -> predicates.add(perception.map(level)));
             }
         }
 

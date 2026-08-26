@@ -10,380 +10,355 @@
         "vision": {
           "values": [
             {
+              "level_range": {
+                "min": 1
+              },
+              "value": [
+                {
+                  "blocks": "treasures",
+                  "color": {
+                    "colors": [
+                      {
+                        "color": "#A87C1A"
+                      },
+                      {
+                        "color": "gold"
+                      },
+                      {
+                        "color": "#FF9F1A"
+                      },
+                      {
+                        "color": "#FF5FD2"
+                      },
+                      {
+                        "color": "#5FD9FF"
+                      },
+                      {
+                        "color": "#FFFFFF"
+                      }
+                    ],
+                    "priority": 1
+                  },
+                  "display_type": "particles",
+                  "id": "additional_enchantments:block_vision_enchantment.copper",
+                  "particle_rate": 10,
+                  "range": 24.0
+                }
+              ]
+            },
+            {
               "level_range": 1,
-              "value": {
-                "blocks": "#c:ores/copper",
-                "color": {
-                  "colors": [
-                    {
-                      "alpha": 0.15,
-                      "color": "#7A4A2E"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "dark_green"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "#3F7F5F"
-                    }
-                  ],
-                  "priority": 1
-                },
-                "display_type": "simple_shader",
-                "id": "additional_enchantments:block_vision_enchantment.copper",
-                "range": 24.0
-              }
+              "value": [
+                {
+                  "blocks": "#c:ores/copper",
+                  "color": {
+                    "colors": [
+                      {
+                        "alpha": 0.15,
+                        "color": "#7A4A2E"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "dark_green"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "#3F7F5F"
+                      }
+                    ],
+                    "priority": 1
+                  },
+                  "display_type": "simple_shader",
+                  "id": "additional_enchantments:block_vision_enchantment.copper",
+                  "range": 24.0
+                }
+              ]
             },
             {
               "level_range": {
                 "max": 2,
                 "min": 1
               },
-              "value": {
-                "blocks": "#c:ores/iron",
-                "color": {
-                  "colors": [
-                    {
-                      "alpha": 0.15,
-                      "color": "white"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "gray"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "dark_gray"
-                    }
-                  ],
-                  "priority": 1
+              "value": [
+                {
+                  "blocks": "#c:ores/iron",
+                  "color": {
+                    "colors": [
+                      {
+                        "alpha": 0.15,
+                        "color": "white"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "gray"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "dark_gray"
+                      }
+                    ],
+                    "priority": 1
+                  },
+                  "display_type": "simple_shader",
+                  "id": "additional_enchantments:block_vision_enchantment.iron",
+                  "range": 24.0
                 },
-                "display_type": "simple_shader",
-                "id": "additional_enchantments:block_vision_enchantment.iron",
-                "range": 24.0
-              }
-            },
-            {
-              "level_range": {
-                "max": 2,
-                "min": 1
-              },
-              "value": {
-                "blocks": "#c:ores/redstone",
-                "color": {
-                  "colors": [
-                    {
-                      "alpha": 0.15,
-                      "color": "dark_red"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "red"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "#FF4D4D"
-                    }
-                  ],
-                  "priority": 1
+                {
+                  "blocks": "#c:ores/redstone",
+                  "color": {
+                    "colors": [
+                      {
+                        "alpha": 0.15,
+                        "color": "dark_red"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "red"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "#FF4D4D"
+                      }
+                    ],
+                    "priority": 1
+                  },
+                  "display_type": "simple_shader",
+                  "id": "additional_enchantments:block_vision_enchantment.redstone",
+                  "range": 24.0
                 },
-                "display_type": "simple_shader",
-                "id": "additional_enchantments:block_vision_enchantment.redstone",
-                "range": 24.0
-              }
-            },
-            {
-              "level_range": {
-                "max": 2,
-                "min": 1
-              },
-              "value": {
-                "blocks": "#c:ores/zinc",
-                "color": {
-                  "colors": [
-                    {
-                      "alpha": 0.15,
-                      "color": "#9AA3AD"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "#B7C0C9"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "#D0D7DF"
-                    }
-                  ],
-                  "priority": 1
+                {
+                  "blocks": "#c:ores/zinc",
+                  "color": {
+                    "colors": [
+                      {
+                        "alpha": 0.15,
+                        "color": "#9AA3AD"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "#B7C0C9"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "#D0D7DF"
+                      }
+                    ],
+                    "priority": 1
+                  },
+                  "display_type": "simple_shader",
+                  "id": "additional_enchantments:block_vision_enchantment.zinc",
+                  "range": 24.0
                 },
-                "display_type": "simple_shader",
-                "id": "additional_enchantments:block_vision_enchantment.zinc",
-                "range": 24.0
-              }
-            },
-            {
-              "level_range": {
-                "max": 2,
-                "min": 1
-              },
-              "value": {
-                "blocks": "#c:ores/silver",
-                "color": {
-                  "colors": [
-                    {
-                      "alpha": 0.15,
-                      "color": "white"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "gray"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "#DFE6EE"
-                    }
-                  ],
-                  "priority": 1
-                },
-                "display_type": "simple_shader",
-                "id": "additional_enchantments:block_vision_enchantment.silver",
-                "range": 24.0
-              }
+                {
+                  "blocks": "#c:ores/silver",
+                  "color": {
+                    "colors": [
+                      {
+                        "alpha": 0.15,
+                        "color": "white"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "gray"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "#DFE6EE"
+                      }
+                    ],
+                    "priority": 1
+                  },
+                  "display_type": "simple_shader",
+                  "id": "additional_enchantments:block_vision_enchantment.silver",
+                  "range": 24.0
+                }
+              ]
             },
             {
               "level_range": {
                 "max": 3,
                 "min": 2
               },
-              "value": {
-                "blocks": "#c:ores/lapis",
-                "color": {
-                  "colors": [
-                    {
-                      "alpha": 0.15,
-                      "color": "dark_blue"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "blue"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "#4169E1"
-                    }
-                  ],
-                  "priority": 1
+              "value": [
+                {
+                  "blocks": "#c:ores/lapis",
+                  "color": {
+                    "colors": [
+                      {
+                        "alpha": 0.15,
+                        "color": "dark_blue"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "blue"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "#4169E1"
+                      }
+                    ],
+                    "priority": 1
+                  },
+                  "display_type": "simple_shader",
+                  "id": "additional_enchantments:block_vision_enchantment.lapis",
+                  "range": 24.0
                 },
-                "display_type": "simple_shader",
-                "id": "additional_enchantments:block_vision_enchantment.lapis",
-                "range": 24.0
-              }
-            },
-            {
-              "level_range": {
-                "max": 3,
-                "min": 2
-              },
-              "value": {
-                "blocks": "#c:ores/gold",
-                "color": {
-                  "colors": [
-                    {
-                      "alpha": 0.15,
-                      "color": "gold"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "yellow"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "#FFDD55"
-                    }
-                  ],
-                  "priority": 1
-                },
-                "display_type": "simple_shader",
-                "id": "additional_enchantments:block_vision_enchantment.gold",
-                "range": 24.0
-              }
+                {
+                  "blocks": "#c:ores/gold",
+                  "color": {
+                    "colors": [
+                      {
+                        "alpha": 0.15,
+                        "color": "gold"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "yellow"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "#FFDD55"
+                      }
+                    ],
+                    "priority": 1
+                  },
+                  "display_type": "simple_shader",
+                  "id": "additional_enchantments:block_vision_enchantment.gold",
+                  "range": 24.0
+                }
+              ]
             },
             {
               "level_range": 3,
-              "value": {
-                "blocks": "#c:ores/emerald",
-                "color": {
-                  "colors": [
-                    {
-                      "alpha": 0.15,
-                      "color": "dark_green"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "green"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "#55FF88"
-                    }
-                  ],
-                  "priority": 1
+              "value": [
+                {
+                  "blocks": "#c:ores/emerald",
+                  "color": {
+                    "colors": [
+                      {
+                        "alpha": 0.15,
+                        "color": "dark_green"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "green"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "#55FF88"
+                      }
+                    ],
+                    "priority": 1
+                  },
+                  "display_type": "simple_shader",
+                  "id": "additional_enchantments:block_vision_enchantment.emerald",
+                  "range": 24.0
                 },
-                "display_type": "simple_shader",
-                "id": "additional_enchantments:block_vision_enchantment.emerald",
-                "range": 24.0
-              }
-            },
-            {
-              "level_range": 3,
-              "value": {
-                "blocks": "#c:ores/diamond",
-                "color": {
-                  "colors": [
-                    {
-                      "alpha": 0.15,
-                      "color": "#3FFFDC"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "aqua"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "#3FC5FF"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "#8B7DFF"
-                    },
-                    {
-                      "alpha": 0.15,
-                      "color": "#55FF88"
-                    }
-                  ],
-                  "priority": 1
-                },
-                "display_type": "simple_shader",
-                "id": "additional_enchantments:block_vision_enchantment.diamond",
-                "range": 24.0
-              }
-            },
-            {
-              "level_range": {
-                "min": 4
-              },
-              "value": {
-                "blocks": "#c:ores/emerald",
-                "color": {
-                  "colors": [
-                    {
-                      "color": "dark_green"
-                    },
-                    {
-                      "color": "green"
-                    },
-                    {
-                      "color": "#55FF88"
-                    }
-                  ],
-                  "priority": 1
-                },
-                "display_type": "outline",
-                "id": "additional_enchantments:block_vision_enchantment.emerald",
-                "range": 16.0
-              }
+                {
+                  "blocks": "#c:ores/diamond",
+                  "color": {
+                    "colors": [
+                      {
+                        "alpha": 0.15,
+                        "color": "#3FFFDC"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "aqua"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "#3FC5FF"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "#8B7DFF"
+                      },
+                      {
+                        "alpha": 0.15,
+                        "color": "#55FF88"
+                      }
+                    ],
+                    "priority": 1
+                  },
+                  "display_type": "simple_shader",
+                  "id": "additional_enchantments:block_vision_enchantment.diamond",
+                  "range": 24.0
+                }
+              ]
             },
             {
               "level_range": {
                 "min": 4
               },
-              "value": {
-                "blocks": "#c:ores/diamond",
-                "color": {
-                  "colors": [
-                    {
-                      "color": "#3FFFDC"
-                    },
-                    {
-                      "color": "aqua"
-                    },
-                    {
-                      "color": "#3FC5FF"
-                    },
-                    {
-                      "color": "#8B7DFF"
-                    },
-                    {
-                      "color": "#55FF88"
-                    }
-                  ],
-                  "priority": 1
+              "value": [
+                {
+                  "blocks": "#c:ores/emerald",
+                  "color": {
+                    "colors": [
+                      {
+                        "color": "dark_green"
+                      },
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "#55FF88"
+                      }
+                    ],
+                    "priority": 1
+                  },
+                  "display_type": "outline",
+                  "id": "additional_enchantments:block_vision_enchantment.emerald",
+                  "range": 16.0
                 },
-                "display_type": "outline",
-                "id": "additional_enchantments:block_vision_enchantment.diamond",
-                "range": 16.0
-              }
-            },
-            {
-              "level_range": {
-                "min": 4
-              },
-              "value": {
-                "blocks": "#c:ores/netherite_scrap",
-                "color": {
-                  "colors": [
-                    {
-                      "color": "#8A502B"
-                    },
-                    {
-                      "color": "#8A312C"
-                    },
-                    {
-                      "color": "#852747"
-                    }
-                  ],
-                  "priority": 1
+                {
+                  "blocks": "#c:ores/diamond",
+                  "color": {
+                    "colors": [
+                      {
+                        "color": "#3FFFDC"
+                      },
+                      {
+                        "color": "aqua"
+                      },
+                      {
+                        "color": "#3FC5FF"
+                      },
+                      {
+                        "color": "#8B7DFF"
+                      },
+                      {
+                        "color": "#55FF88"
+                      }
+                    ],
+                    "priority": 1
+                  },
+                  "display_type": "outline",
+                  "id": "additional_enchantments:block_vision_enchantment.diamond",
+                  "range": 16.0
                 },
-                "display_type": "outline",
-                "id": "additional_enchantments:block_vision_enchantment.netherite",
-                "range": 16.0
-              }
-            },
-            {
-              "level_range": {
-                "min": 1
-              },
-              "value": {
-                "blocks": "treasures",
-                "color": {
-                  "colors": [
-                    {
-                      "color": "#A87C1A"
-                    },
-                    {
-                      "color": "gold"
-                    },
-                    {
-                      "color": "#FF9F1A"
-                    },
-                    {
-                      "color": "#FF5FD2"
-                    },
-                    {
-                      "color": "#5FD9FF"
-                    },
-                    {
-                      "color": "#FFFFFF"
-                    }
-                  ],
-                  "priority": 1
-                },
-                "display_type": "particles",
-                "id": "additional_enchantments:block_vision_enchantment.copper",
-                "particle_rate": 10,
-                "range": 24.0
-              }
+                {
+                  "blocks": "#c:ores/netherite_scrap",
+                  "color": {
+                    "colors": [
+                      {
+                        "color": "#8A502B"
+                      },
+                      {
+                        "color": "#8A312C"
+                      },
+                      {
+                        "color": "#852747"
+                      }
+                    ],
+                    "priority": 1
+                  },
+                  "display_type": "outline",
+                  "id": "additional_enchantments:block_vision_enchantment.netherite",
+                  "range": 16.0
+                }
+              ]
             }
           ]
         }

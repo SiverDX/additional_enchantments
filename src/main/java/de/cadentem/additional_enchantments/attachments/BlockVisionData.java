@@ -12,20 +12,19 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class BlockVisionData implements INBTSerializable<CompoundTag> {
     // Concurrent because the worker thread (for searching) and the render thread modify it
     private final Map<Block, CacheEntry> cache = new ConcurrentHashMap<>();
     private int maximumRange = -1;
 
-    private @Unmodifiable Map<ResourceLocation, BlockVision.Mapped> visions = Map.of();
+    private Map<ResourceLocation, BlockVision.Mapped> visions = new HashMap<>();
 
     record CacheEntry(int range, ShiftingColor.Mapped mappedColors, BlockVision.DisplayType displayType, int particleRate) { }
 
@@ -118,18 +117,24 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
         return -1;
     }
 
-    public void setVisions(@Nullable final List<BlockVision> visions, final int level) {
-        if (visions == null || visions.isEmpty()) {
-            this.visions = Map.of();
-        } else {
-            this.visions = visions.stream().collect(Collectors.toUnmodifiableMap(BlockVision::id, vision -> vision.map(level)));
+    public boolean isEmpty() {
+        return visions.isEmpty();
+    }
+
+    public void addVisions(final Collection<BlockVision.Mapped> visions) {
+        for (BlockVision.Mapped vision : visions) {
+            this.visions.put(vision.id(), vision);
         }
 
         invalidateCache();
     }
 
-    public int size() {
-        return visions == null ? 0 : visions.size();
+    public void removeVisions(final Collection<ResourceLocation> ids) {
+        for (ResourceLocation id : ids) {
+            visions.remove(id);
+        }
+
+        invalidateCache();
     }
 
     public void invalidateCache() {
@@ -149,8 +154,7 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
 
     @Override
     public void deserializeNBT(@NotNull final HolderLookup.Provider provider, @NotNull final CompoundTag tag) {
-        visions = BlockVision.Mapped.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.getList("visions", Tag.TAG_COMPOUND))
-                .resultOrPartial(AE.LOG::error).map(data -> data.stream().collect(Collectors.toUnmodifiableMap(BlockVision.Mapped::id, Function.identity())))
-                .orElse(Map.of());
+        BlockVision.Mapped.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.getList("visions", Tag.TAG_COMPOUND))
+                .resultOrPartial(AE.LOG::error).ifPresent(entries -> entries.forEach(entry -> visions.put(entry.id(), entry)));
     }
 }
