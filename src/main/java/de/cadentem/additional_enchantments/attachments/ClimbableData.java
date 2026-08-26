@@ -26,14 +26,10 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
     // - Block predicates can only be evaluated on the server-side (i.e., is climbing allowed on that position)
     // Meaning the client needs to collect the relevant positions and the server has to approve them
 
-    /**
-     * Temporarily kept to handle 'canStickToWalls' and ceiling climbing
-     */
+    /** Temporarily kept to handle 'canStickToWalls' and ceiling climbing */
     public @Nullable BlockPos climbPosition;
 
-    /**
-     * Retains whether the current {@link #climbPosition} was set from ceiling climbing
-     */
+    /** Retains whether the current {@link #climbPosition} was set from ceiling climbing */
     public boolean isCeilingClimbing;
 
     /**
@@ -159,10 +155,9 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
     public CompoundTag serializeNBT(@NotNull final HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
 
-        climbables.forEach((key, value) -> {
-            Climbable.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), value)
-                    .resultOrPartial(AE.LOG::error).ifPresent(data -> tag.put(key.toString(), data));
-        });
+        Climbable.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), climbables.values().stream().toList())
+                .resultOrPartial(AE.LOG::error)
+                .ifPresent(data -> tag.put("data", data));
 
         return tag;
     }
@@ -171,15 +166,8 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
     public void deserializeNBT(@NotNull final HolderLookup.Provider provider, @NotNull final CompoundTag tag) {
         climbables.clear();
 
-        tag.getAllKeys().forEach(key -> {
-            ResourceLocation location = ResourceLocation.tryParse(key);
-
-            if (location == null) {
-                return;
-            }
-
-            Climbable.CODEC.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.getCompound(key))
-                    .resultOrPartial(AE.LOG::error).ifPresent(climbable -> climbables.put(location, climbable));
-        });
+        Climbable.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.get("data"))
+                .resultOrPartial(AE.LOG::error)
+                .ifPresent(entries -> entries.forEach(entry -> climbables.put(entry.id(), entry)));
     }
 }

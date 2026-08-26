@@ -13,4 +13,5 @@ public class AEDataAttachments {
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<BlockVisionData>> BLOCK_VISION = REGISTRY.register("block_vision", () -> AttachmentType.serializable(BlockVisionData::new).copyOnDeath().build());
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<ClimbableData>> CLIMBABLE = REGISTRY.register("climbable", () -> AttachmentType.serializable(ClimbableData::new).copyOnDeath().build());
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<PerceptionData>> PERCEPTION = REGISTRY.register("perception", () -> AttachmentType.serializable(PerceptionData::new).copyOnDeath().build());
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<FluidVisionData>> FLUID_VISION = REGISTRY.register("fluid_vision", () -> AttachmentType.serializable(FluidVisionData::new).copyOnDeath().build());
 }

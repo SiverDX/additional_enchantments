@@ -18,8 +18,11 @@
     "client.ClientLevelMixin",
     "client.FrustumAccess",
     "client.LevelRendererMixin",
+    "client.LightTextureMixin",
+    "client.LiquidBlockRendererMixin",
     "client.LivingEntityRendererMixin",
-    "client.MinecraftMixin"
+    "client.MinecraftMixin",
+    "iris.GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

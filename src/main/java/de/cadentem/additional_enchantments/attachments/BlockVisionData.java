@@ -6,7 +6,6 @@ import de.cadentem.additional_enchantments.util.ShiftingColor;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -24,7 +23,7 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
     private final Map<Block, CacheEntry> cache = new ConcurrentHashMap<>();
     private int maximumRange = -1;
 
-    private Map<ResourceLocation, BlockVision.Mapped> visions = new HashMap<>();
+    private final Map<ResourceLocation, BlockVision.Mapped> visions = new HashMap<>();
 
     record CacheEntry(int range, ShiftingColor.Mapped mappedColors, BlockVision.DisplayType displayType, int particleRate) { }
 
@@ -147,14 +146,18 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
         CompoundTag tag = new CompoundTag();
 
         BlockVision.Mapped.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), visions.values().stream().toList())
-                .resultOrPartial(AE.LOG::error).ifPresent(data -> tag.put("visions", data));
+                .resultOrPartial(AE.LOG::error)
+                .ifPresent(data -> tag.put("data", data));
 
         return tag;
     }
 
     @Override
     public void deserializeNBT(@NotNull final HolderLookup.Provider provider, @NotNull final CompoundTag tag) {
-        BlockVision.Mapped.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.getList("visions", Tag.TAG_COMPOUND))
-                .resultOrPartial(AE.LOG::error).ifPresent(entries -> entries.forEach(entry -> visions.put(entry.id(), entry)));
+        visions.clear();
+
+        BlockVision.Mapped.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.get("data"))
+                .resultOrPartial(AE.LOG::error)
+                .ifPresent(entries -> entries.forEach(entry -> visions.put(entry.id(), entry)));
     }
 }

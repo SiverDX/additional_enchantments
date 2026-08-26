@@ -28,6 +28,7 @@ import java.util.Map;
 @EventBusSubscriber
 public class PerceptionData implements INBTSerializable<CompoundTag> {
     private final Map<ResourceLocation, Perception.Mapped> perceptions = new HashMap<>();
+
     private int maxRange;
 
     public ShiftingColor.Mapped getMappedColor(final ServerLevel serverLevel, final LivingEntity perceptionHolder, final Entity entity) {
@@ -106,10 +107,9 @@ public class PerceptionData implements INBTSerializable<CompoundTag> {
     public CompoundTag serializeNBT(@NotNull final HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
 
-        perceptions.forEach((key, value) -> {
-            Perception.Mapped.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), value)
-                    .resultOrPartial(AE.LOG::error).ifPresent(data -> tag.put(key.toString(), data));
-        });
+        Perception.Mapped.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), perceptions.values().stream().toList())
+                .resultOrPartial(AE.LOG::error)
+                .ifPresent(data -> tag.put("data", data));
 
         return tag;
     }
@@ -118,15 +118,8 @@ public class PerceptionData implements INBTSerializable<CompoundTag> {
     public void deserializeNBT(@NotNull final HolderLookup.Provider provider, @NotNull final CompoundTag tag) {
         perceptions.clear();
 
-        tag.getAllKeys().forEach(key -> {
-            ResourceLocation location = ResourceLocation.tryParse(key);
-
-            if (location == null) {
-                return;
-            }
-
-            Perception.Mapped.CODEC.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.getCompound(key))
-                    .resultOrPartial(AE.LOG::error).ifPresent(perception -> perceptions.put(location, perception));
-        });
+        Perception.Mapped.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.get("data"))
+                .resultOrPartial(AE.LOG::error)
+                .ifPresent(entries -> entries.forEach(entry -> perceptions.put(entry.id(), entry)));
     }
 }
