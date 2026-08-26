@@ -18,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class AEItemTags extends ItemTagsProvider {
     public static final TagKey<Item> VALUABLES = TagKey.create(Registries.ITEM, AE.location("valuables"));
+    public static final TagKey<Item> LIMITED_VALUABLES = TagKey.create(Registries.ITEM, AE.location("limited_valuables"));
 
     public AEItemTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> provider, final CompletableFuture<TagLookup<Block>> lookup, final ExistingFileHelper helper) {
         super(output, provider, lookup, AE.MODID, helper);
@@ -25,7 +26,7 @@ public class AEItemTags extends ItemTagsProvider {
 
     @Override
     protected void addTags(@NotNull final HolderLookup.Provider provider) {
-        tag(VALUABLES)
+        tag(LIMITED_VALUABLES)
                 // Equipment
                 .add(Items.NETHERITE_HELMET)
                 .add(Items.NETHERITE_CHESTPLATE)
@@ -36,6 +37,32 @@ public class AEItemTags extends ItemTagsProvider {
                 .add(Items.NETHERITE_AXE)
                 .add(Items.NETHERITE_SHOVEL)
                 .add(Items.NETHERITE_HOE)
+                .add(Items.ELYTRA)
+                // Rare Consumables
+                .add(Items.ENCHANTED_GOLDEN_APPLE)
+                .add(Items.TOTEM_OF_UNDYING)
+                // Rare Materials
+                .add(Items.GOLD_BLOCK)
+                .add(Items.DIAMOND)
+                .add(Items.DIAMOND_BLOCK)
+                .add(Items.EMERALD)
+                .add(Items.EMERALD_BLOCK)
+                .add(Items.ANCIENT_DEBRIS)
+                .add(Items.NETHERITE_SCRAP)
+                .add(Items.NETHERITE_INGOT)
+                .add(Items.NETHERITE_BLOCK)
+                // Trophies
+                .add(Items.DRAGON_EGG)
+                .add(Items.DRAGON_HEAD)
+        ;
+
+        tag(VALUABLES)
+                // Misc.
+                .addTag(ItemTags.TRIM_TEMPLATES)
+                .addTag(Tags.Items.MUSIC_DISCS)
+                .addTag(Tags.Items.GEMS_DIAMOND)
+                .addTag(AEItemTags.LIMITED_VALUABLES)
+                // Equipment
                 .add(Items.DIAMOND_HELMET)
                 .add(Items.DIAMOND_CHESTPLATE)
                 .add(Items.DIAMOND_LEGGINGS)
@@ -45,18 +72,11 @@ public class AEItemTags extends ItemTagsProvider {
                 .add(Items.DIAMOND_AXE)
                 .add(Items.DIAMOND_SHOVEL)
                 .add(Items.DIAMOND_HOE)
-                .add(Items.ELYTRA)
                 .add(Items.TRIDENT)
                 .add(Items.MACE)
                 // Rare Consumables
                 .add(Items.GOLDEN_APPLE)
-                .add(Items.ENCHANTED_GOLDEN_APPLE)
-                .add(Items.TOTEM_OF_UNDYING)
                 // Rare Materials
-                .add(Items.DIAMOND)
-                .add(Items.NETHERITE_INGOT)
-                .add(Items.NETHERITE_SCRAP)
-                .add(Items.ANCIENT_DEBRIS)
                 .add(Items.SHULKER_SHELL)
                 .add(Items.ECHO_SHARD)
                 .add(Items.HEART_OF_THE_SEA)
@@ -66,12 +86,7 @@ public class AEItemTags extends ItemTagsProvider {
                 .add(Items.HEAVY_CORE)
                 .add(Items.BEACON)
                 // Trophies
-                .add(Items.DRAGON_EGG)
-                .add(Items.DRAGON_HEAD)
                 .add(Items.WITHER_SKELETON_SKULL)
-                // Misc.
-                .addTag(ItemTags.TRIM_TEMPLATES)
-                .addTag(Tags.Items.MUSIC_DISCS)
         ;
     }
 }

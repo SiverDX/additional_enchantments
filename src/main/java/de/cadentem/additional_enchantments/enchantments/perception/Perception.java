@@ -18,7 +18,8 @@ public record Perception(ResourceLocation id, LootItemCondition condition, int r
     public static final Codec<Perception> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ResourceLocation.CODEC.fieldOf("key").forGetter(Perception::id),
             LootItemCondition.DIRECT_CODEC.fieldOf("condition").forGetter(Perception::condition),
-            Codec.INT.fieldOf("range").forGetter(Perception::range), // TODO :: level based value to decrease the need for re-adding the same entry (same todo for other codecs)
+            // TODO :: level based value to decrease the need for re-adding the same entry (same todo for other codecs)
+            Codec.INT.fieldOf("range").forGetter(Perception::range),
             ShiftingColor.CODEC.fieldOf("color").forGetter(Perception::color)
     ).apply(instance, Perception::new));
 

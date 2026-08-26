@@ -16,10 +16,14 @@ import de.cadentem.additional_enchantments.enchantments.perception.PerceptionEff
 import de.cadentem.additional_enchantments.server.conditions.Conditions;
 import de.cadentem.additional_enchantments.server.conditions.EntityConditions;
 import de.cadentem.additional_enchantments.server.conditions.EntityTypeCondition;
-import de.cadentem.additional_enchantments.server.conditions.ItemCheckCondition;
+import de.cadentem.additional_enchantments.server.conditions.MatchItemEntityCondition;
 import de.cadentem.additional_enchantments.util.Color;
 import de.cadentem.additional_enchantments.util.ShiftingColor;
 import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.critereon.EnchantmentPredicate;
+import net.minecraft.advancements.critereon.ItemEnchantmentsPredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.ItemSubPredicates;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
@@ -29,10 +33,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.predicates.AllOfCondition;
 import net.minecraft.world.level.storage.loot.predicates.AnyOfCondition;
 import net.neoforged.neoforge.common.Tags;
 
@@ -51,7 +59,7 @@ public class AEEnchantments {
                         context.lookup(Registries.ITEM).getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
                         Optional.empty(),
                         1,
-                        2,
+                        3,
                         Enchantment.dynamicCost(20, 10),
                         Enchantment.dynamicCost(50, 10),
                         1,
@@ -61,7 +69,27 @@ public class AEEnchantments {
                 DataComponentMap.builder().set(
                         AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value(),
                         PerceptionEffect.single(
-                                // TODO :: expand
+                                new LevelBasedPerception.Entry(List.of(
+                                        new Perception(
+                                                AE.location("perception_enchantment.valuables"),
+                                                AnyOfCondition.anyOf(
+                                                        MatchItemEntityCondition.matches(ItemPredicate.Builder.item().of(AEItemTags.VALUABLES)),
+                                                        MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(
+                                                                ItemSubPredicates.ENCHANTMENTS,
+                                                                ItemEnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(Optional.empty(), MinMaxBounds.Ints.ANY)))
+                                                        ))
+                                                ).build(),
+                                                24,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of("#55ffff"),
+                                                        Color.of("#5b7cff"),
+                                                        Color.of("#b45cff"),
+                                                        Color.of("#ff5bd8"),
+                                                        Color.of("#ffd45b"),
+                                                        Color.of("#55ffff")
+                                                ))
+                                        )
+                                ), MinMaxBounds.Ints.between(1, 2)),
                                 new LevelBasedPerception.Entry(List.of(
                                         new Perception(
                                                 AE.location("perception_enchantment.enemies"),
@@ -70,8 +98,8 @@ public class AEEnchantments {
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#ff3030"),
                                                         Color.of("#ff6b35"),
-                                                        Color.of("#ff3030")
-                                                ))
+                                                        Color.of("#ff4855")
+                                                ), 1, 1)
                                         ),
                                         new Perception(
                                                 AE.location("perception_enchantment.animals"),
@@ -87,22 +115,24 @@ public class AEEnchantments {
                                 new LevelBasedPerception.Entry(List.of(
                                         new Perception(
                                                 AE.location("perception_enchantment.bosses"),
-                                                Conditions.thisEntity(EntityConditions.isType(Tags.EntityTypes.BOSSES)).build(),
-                                                24,
+                                                AnyOfCondition.anyOf(
+                                                        Conditions.thisEntity(EntityConditions.isType(Tags.EntityTypes.BOSSES)),
+                                                        Conditions.thisEntity(EntityConditions.isType(EntityType.WARDEN))
+                                                ).build(),
+                                                36,
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#5a189a"),
                                                         Color.of("#9d4edd"),
                                                         Color.of("#c77dff"),
                                                         Color.of("#7b2cbf")
-                                                ))
-                                        ),
+                                                ), 1, 2)
+                                        )
+                                ), MinMaxBounds.Ints.atLeast(2)),
+                                new LevelBasedPerception.Entry(List.of(
                                         new Perception(
-                                                AE.location("perception_enchantment.valuables"),
-                                                AnyOfCondition.anyOf(
-                                                        () -> new ItemCheckCondition(Optional.of(context.lookup(Registries.ITEM).getOrThrow(AEItemTags.VALUABLES)), LootContext.EntityTarget.THIS, Optional.empty()),
-                                                        () -> new ItemCheckCondition(Optional.empty(), LootContext.EntityTarget.THIS, Optional.empty())
-                                                ).build(),
-                                                24,
+                                                AE.location("perception_enchantment.limited_valuables"),
+                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().of(AEItemTags.LIMITED_VALUABLES)).build(),
+                                                36,
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#55ffff"),
                                                         Color.of("#5b7cff"),
@@ -111,8 +141,59 @@ public class AEEnchantments {
                                                         Color.of("#ffd45b"),
                                                         Color.of("#55ffff")
                                                 ))
+                                        ),
+                                        new Perception(
+                                                AE.location("perception_enchantment.enchanted_books"),
+                                                AllOfCondition.allOf(
+                                                        MatchItemEntityCondition.matches(ItemPredicate.Builder.item().of(Items.ENCHANTED_BOOK)),
+                                                        AnyOfCondition.anyOf(
+                                                                // General
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
+                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.UNBREAKING), MinMaxBounds.Ints.atLeast(2))))
+                                                                )),
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
+                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.MENDING), MinMaxBounds.Ints.ANY)))
+                                                                )),
+                                                                // Armor
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
+                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.PROTECTION), MinMaxBounds.Ints.atLeast(3))))
+                                                                )),
+                                                                // Weapons
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
+                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.SHARPNESS), MinMaxBounds.Ints.atLeast(4))))
+                                                                )),
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
+                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.LOOTING), MinMaxBounds.Ints.atLeast(2))))
+                                                                )),
+                                                                // Tools
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
+                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.EFFICIENCY), MinMaxBounds.Ints.atLeast(4))))
+                                                                )),
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
+                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE), MinMaxBounds.Ints.atLeast(2))))
+                                                                )),
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
+                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH), MinMaxBounds.Ints.ANY)))
+                                                                )),
+                                                                // Bow
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
+                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.POWER), MinMaxBounds.Ints.atLeast(4))))
+                                                                )),
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
+                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.INFINITY), MinMaxBounds.Ints.ANY)))
+                                                                ))
+                                                        )
+                                                ).build(),
+                                                36,
+                                                ShiftingColor.of(List.of(
+                                                        Color.of("#5e35b1"),
+                                                        Color.of("#7e57c2"),
+                                                        Color.of("#8279c2"),
+                                                        Color.of("#7e57c2"),
+                                                        Color.of("#5e35b1")
+                                                ), 1, 1)
                                         )
-                                ), MinMaxBounds.Ints.atLeast(2))
+                                ), MinMaxBounds.Ints.atLeast(3))
                         )
                 ).build()
         ));
@@ -196,7 +277,7 @@ public class AEEnchantments {
                         BlockVisionEffect.single(
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(BlockTags.COPPER_ORES)),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_COPPER)),
                                                 24,
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
@@ -204,13 +285,13 @@ public class AEEnchantments {
                                                         Color.of("#7a4a2e", 0.15f),
                                                         Color.of(ChatFormatting.DARK_GREEN, 0.15f),
                                                         Color.of("#3f7f5f", 0.15f)
-                                                ))
+                                                ), 1, 1)
                                         ),
                                         MinMaxBounds.Ints.between(1, 1)
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(BlockTags.IRON_ORES)),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_IRON)),
                                                 24,
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
@@ -218,13 +299,13 @@ public class AEEnchantments {
                                                         Color.of(ChatFormatting.WHITE, 0.15f),
                                                         Color.of(ChatFormatting.GRAY, 0.15f),
                                                         Color.of(ChatFormatting.DARK_GRAY, 0.15f)
-                                                ))
+                                                ), 1, 1)
                                         ),
                                         MinMaxBounds.Ints.between(1, 2)
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(BlockTags.REDSTONE_ORES)),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_REDSTONE)),
                                                 24,
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
@@ -232,7 +313,7 @@ public class AEEnchantments {
                                                         Color.of(ChatFormatting.DARK_RED, 0.15f),
                                                         Color.of(ChatFormatting.RED, 0.15f),
                                                         Color.of("#ff4d4d", 0.15f)
-                                                ))
+                                                ), 1, 1)
                                         ),
                                         MinMaxBounds.Ints.between(1, 2)
                                 ),
@@ -246,7 +327,7 @@ public class AEEnchantments {
                                                         Color.of("#9aa3ad", 0.15f),
                                                         Color.of("#b7c0c9", 0.15f),
                                                         Color.of("#d0d7df", 0.15f)
-                                                ))
+                                                ), 1, 1)
                                         ),
                                         MinMaxBounds.Ints.between(1, 2)
                                 ),
@@ -260,13 +341,13 @@ public class AEEnchantments {
                                                         Color.of(ChatFormatting.WHITE, 0.15f),
                                                         Color.of(ChatFormatting.GRAY, 0.15f),
                                                         Color.of("#dfe6ee", 0.15f)
-                                                ))
+                                                ), 1, 1)
                                         ),
                                         MinMaxBounds.Ints.between(1, 2)
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(BlockTags.LAPIS_ORES)),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_LAPIS)),
                                                 24,
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
@@ -274,13 +355,13 @@ public class AEEnchantments {
                                                         Color.of(ChatFormatting.DARK_BLUE, 0.15f),
                                                         Color.of(ChatFormatting.BLUE, 0.15f),
                                                         Color.of("#4169e1", 0.15f)
-                                                ))
+                                                ), 1, 1)
                                         ),
                                         MinMaxBounds.Ints.between(2, 3)
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(BlockTags.GOLD_ORES)),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_GOLD)),
                                                 24,
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
@@ -288,13 +369,13 @@ public class AEEnchantments {
                                                         Color.of(ChatFormatting.GOLD, 0.15f),
                                                         Color.of(ChatFormatting.YELLOW, 0.15f),
                                                         Color.of("#ffdd55", 0.15f)
-                                                ))
+                                                ), 1, 1)
                                         ),
                                         MinMaxBounds.Ints.between(2, 3)
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(BlockTags.EMERALD_ORES)),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_EMERALD)),
                                                 16,
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
@@ -302,13 +383,13 @@ public class AEEnchantments {
                                                         Color.of(ChatFormatting.DARK_GREEN, 0.15f),
                                                         Color.of(ChatFormatting.GREEN, 0.15f),
                                                         Color.of("#55ff88", 0.15f)
-                                                ))
+                                                ), 1, 1)
                                         ),
                                         MinMaxBounds.Ints.between(3, 3)
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(BlockTags.DIAMOND_ORES)),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_DIAMOND)),
                                                 16,
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
@@ -318,13 +399,13 @@ public class AEEnchantments {
                                                         Color.of("#3fc5ff", 0.15f),
                                                         Color.of("#8b7dff", 0.15f),
                                                         Color.of("#55ff88", 0.15f)
-                                                ))
+                                                ), 1, 1)
                                         ),
                                         MinMaxBounds.Ints.between(3, 3)
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(BlockTags.EMERALD_ORES)),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_EMERALD)),
                                                 16,
                                                 BlockVision.DisplayType.OUTLINE,
                                                 0,
@@ -332,13 +413,13 @@ public class AEEnchantments {
                                                         Color.of(ChatFormatting.DARK_GREEN),
                                                         Color.of(ChatFormatting.GREEN),
                                                         Color.of("#55ff88")
-                                                ))
+                                                ), 1, 1)
                                         ),
                                         MinMaxBounds.Ints.atLeast(4)
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
-                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(BlockTags.DIAMOND_ORES)),
+                                                Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_DIAMOND)),
                                                 16,
                                                 BlockVision.DisplayType.OUTLINE,
                                                 0,
@@ -348,7 +429,7 @@ public class AEEnchantments {
                                                         Color.of("#3fc5ff"),
                                                         Color.of("#8b7dff"),
                                                         Color.of("#55ff88")
-                                                ))
+                                                ), 1, 1)
                                         ),
                                         MinMaxBounds.Ints.atLeast(4)
                                 ),
@@ -359,10 +440,10 @@ public class AEEnchantments {
                                                 BlockVision.DisplayType.OUTLINE,
                                                 0,
                                                 ShiftingColor.of(List.of(
-                                                        Color.of(ChatFormatting.DARK_GRAY),
-                                                        Color.of("#3b3b3b"),
-                                                        Color.of("#6e4a3a")
-                                                ))
+                                                        Color.of("#8a502b"),
+                                                        Color.of("#8a312c"),
+                                                        Color.of("#852747")
+                                                ), 1, 1)
                                         ),
                                         MinMaxBounds.Ints.atLeast(4)
                                 ),
@@ -379,7 +460,7 @@ public class AEEnchantments {
                                                         Color.of("#ff5fd2"),
                                                         Color.of("#5fd9ff"),
                                                         Color.of("#ffffff")
-                                                ))
+                                                ), 1, 1)
                                         ),
                                         MinMaxBounds.Ints.atLeast(1)
                                 )

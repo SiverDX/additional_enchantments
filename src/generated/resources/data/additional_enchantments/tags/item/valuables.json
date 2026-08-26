@@ -1,14 +1,9 @@
 {
   "values": [
-    "minecraft:netherite_helmet",
-    "minecraft:netherite_chestplate",
-    "minecraft:netherite_leggings",
-    "minecraft:netherite_boots",
-    "minecraft:netherite_sword",
-    "minecraft:netherite_pickaxe",
-    "minecraft:netherite_axe",
-    "minecraft:netherite_shovel",
-    "minecraft:netherite_hoe",
+    "#minecraft:trim_templates",
+    "#c:music_discs",
+    "#c:gems/diamond",
+    "#additional_enchantments:limited_valuables",
     "minecraft:diamond_helmet",
     "minecraft:diamond_chestplate",
     "minecraft:diamond_leggings",
@@ -18,16 +13,9 @@
     "minecraft:diamond_axe",
     "minecraft:diamond_shovel",
     "minecraft:diamond_hoe",
-    "minecraft:elytra",
     "minecraft:trident",
     "minecraft:mace",
     "minecraft:golden_apple",
-    "minecraft:enchanted_golden_apple",
-    "minecraft:totem_of_undying",
-    "minecraft:diamond",
-    "minecraft:netherite_ingot",
-    "minecraft:netherite_scrap",
-    "minecraft:ancient_debris",
     "minecraft:shulker_shell",
     "minecraft:echo_shard",
     "minecraft:heart_of_the_sea",
@@ -35,10 +23,6 @@
     "minecraft:enchanted_book",
     "minecraft:heavy_core",
     "minecraft:beacon",
-    "minecraft:dragon_egg",
-    "minecraft:dragon_head",
-    "minecraft:wither_skeleton_skull",
-    "#minecraft:trim_templates",
-    "#c:music_discs"
+    "minecraft:wither_skeleton_skull"
   ]
 }

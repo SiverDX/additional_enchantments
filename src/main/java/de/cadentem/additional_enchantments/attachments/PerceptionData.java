@@ -30,15 +30,21 @@ public class PerceptionData implements INBTSerializable<CompoundTag> {
     private int maxRange;
 
     public ShiftingColor.Mapped getMappedColor(final ServerLevel serverLevel, final LivingEntity perceptionHolder, final Entity entity) {
+        ShiftingColor.Mapped result = ShiftingColor.Mapped.NONE;
+
         for (Perception perception : perceptions.values()) {
             ShiftingColor.Mapped color = perception.getColor(serverLevel, perceptionHolder, entity);
 
-            if (color != ShiftingColor.Mapped.NONE) {
-                return color;
+            if (color == ShiftingColor.Mapped.NONE) {
+                continue;
+            }
+
+            if (result == ShiftingColor.Mapped.NONE || result.priority() < color.priority()) {
+                result = color;
             }
         }
 
-        return ShiftingColor.Mapped.NONE;
+        return result;
     }
 
     public int getMaxRange() {
@@ -94,11 +100,6 @@ public class PerceptionData implements INBTSerializable<CompoundTag> {
             PacketDistributor.sendToPlayer(serverPlayer, new SyncPerceptionEntries(perceptionEntries));
         });
     }
-
-//    @SubscribeEvent
-//    public static void removeEntry(final EntityLeaveLevelEvent event) {
-//        AE.PROXY.removePerceptionEntry(event.getEntity());
-//    }
 
     @Override
     public CompoundTag serializeNBT(@NotNull final HolderLookup.Provider provider) {

@@ -1,0 +1,18 @@
+{
+  "remove": [
+    "#c:ores/coal",
+    "#c:ores/copper",
+    "#c:ores/iron",
+    "#c:ores/redstone",
+    "#c:ores/zinc",
+    "#c:ores/silver",
+    "#c:ores/lapis",
+    "#c:ores/gold",
+    "#c:ores/emerald",
+    "#c:ores/diamond",
+    "#c:ores/netherite_scrap"
+  ],
+  "values": [
+    "#c:ores"
+  ]
+}

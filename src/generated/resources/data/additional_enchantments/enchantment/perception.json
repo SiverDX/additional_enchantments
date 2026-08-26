@@ -11,6 +11,61 @@
           "values": [
             {
               "level_range": {
+                "max": 2,
+                "min": 1
+              },
+              "value": [
+                {
+                  "color": {
+                    "colors": [
+                      {
+                        "color": "#55FFFF"
+                      },
+                      {
+                        "color": "#5B7CFF"
+                      },
+                      {
+                        "color": "#B45CFF"
+                      },
+                      {
+                        "color": "#FF5BD8"
+                      },
+                      {
+                        "color": "#FFD45B"
+                      },
+                      {
+                        "color": "#55FFFF"
+                      }
+                    ]
+                  },
+                  "condition": {
+                    "condition": "minecraft:any_of",
+                    "terms": [
+                      {
+                        "condition": "additional_enchantments:match_item_entity",
+                        "predicate": {
+                          "items": "#additional_enchantments:valuables"
+                        }
+                      },
+                      {
+                        "condition": "additional_enchantments:match_item_entity",
+                        "predicate": {
+                          "predicates": {
+                            "minecraft:enchantments": [
+                              {}
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "key": "additional_enchantments:perception_enchantment.valuables",
+                  "range": 24
+                }
+              ]
+            },
+            {
+              "level_range": {
                 "min": 1
               },
               "value": [
@@ -24,9 +79,10 @@
                         "color": "#FF6B35"
                       },
                       {
-                        "color": "#FF3030"
+                        "color": "#FF4855"
                       }
-                    ]
+                    ],
+                    "priority": 1
                   },
                   "condition": {
                     "type": "enemy",
@@ -80,18 +136,38 @@
                       {
                         "color": "#7B2CBF"
                       }
-                    ]
+                    ],
+                    "priority": 2
                   },
                   "condition": {
-                    "condition": "minecraft:entity_properties",
-                    "entity": "this",
-                    "predicate": {
-                      "type": "#c:bosses"
-                    }
+                    "condition": "minecraft:any_of",
+                    "terms": [
+                      {
+                        "condition": "minecraft:entity_properties",
+                        "entity": "this",
+                        "predicate": {
+                          "type": "#c:bosses"
+                        }
+                      },
+                      {
+                        "condition": "minecraft:entity_properties",
+                        "entity": "this",
+                        "predicate": {
+                          "type": "minecraft:warden"
+                        }
+                      }
+                    ]
                   },
                   "key": "additional_enchantments:perception_enchantment.bosses",
-                  "range": 24
-                },
+                  "range": 36
+                }
+              ]
+            },
+            {
+              "level_range": {
+                "min": 3
+              },
+              "value": [
                 {
                   "color": {
                     "colors": [
@@ -116,19 +192,194 @@
                     ]
                   },
                   "condition": {
-                    "condition": "minecraft:any_of",
-                    "terms": [
+                    "condition": "additional_enchantments:match_item_entity",
+                    "predicate": {
+                      "items": "#additional_enchantments:limited_valuables"
+                    }
+                  },
+                  "key": "additional_enchantments:perception_enchantment.limited_valuables",
+                  "range": 36
+                },
+                {
+                  "color": {
+                    "colors": [
                       {
-                        "condition": "additional_enchantments:item_check",
-                        "items": "#additional_enchantments:valuables"
+                        "color": "#5E35B1"
                       },
                       {
-                        "condition": "additional_enchantments:item_check"
+                        "color": "#7E57C2"
+                      },
+                      {
+                        "color": "#8279C2"
+                      },
+                      {
+                        "color": "#7E57C2"
+                      },
+                      {
+                        "color": "#5E35B1"
+                      }
+                    ],
+                    "priority": 1
+                  },
+                  "condition": {
+                    "condition": "minecraft:all_of",
+                    "terms": [
+                      {
+                        "condition": "additional_enchantments:match_item_entity",
+                        "predicate": {
+                          "items": "minecraft:enchanted_book"
+                        }
+                      },
+                      {
+                        "condition": "minecraft:any_of",
+                        "terms": [
+                          {
+                            "condition": "additional_enchantments:match_item_entity",
+                            "predicate": {
+                              "predicates": {
+                                "minecraft:stored_enchantments": [
+                                  {
+                                    "enchantments": "minecraft:unbreaking",
+                                    "levels": {
+                                      "min": 2
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "condition": "additional_enchantments:match_item_entity",
+                            "predicate": {
+                              "predicates": {
+                                "minecraft:stored_enchantments": [
+                                  {
+                                    "enchantments": "minecraft:mending"
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "condition": "additional_enchantments:match_item_entity",
+                            "predicate": {
+                              "predicates": {
+                                "minecraft:stored_enchantments": [
+                                  {
+                                    "enchantments": "minecraft:protection",
+                                    "levels": {
+                                      "min": 3
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "condition": "additional_enchantments:match_item_entity",
+                            "predicate": {
+                              "predicates": {
+                                "minecraft:stored_enchantments": [
+                                  {
+                                    "enchantments": "minecraft:sharpness",
+                                    "levels": {
+                                      "min": 4
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "condition": "additional_enchantments:match_item_entity",
+                            "predicate": {
+                              "predicates": {
+                                "minecraft:stored_enchantments": [
+                                  {
+                                    "enchantments": "minecraft:looting",
+                                    "levels": {
+                                      "min": 2
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "condition": "additional_enchantments:match_item_entity",
+                            "predicate": {
+                              "predicates": {
+                                "minecraft:stored_enchantments": [
+                                  {
+                                    "enchantments": "minecraft:efficiency",
+                                    "levels": {
+                                      "min": 4
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "condition": "additional_enchantments:match_item_entity",
+                            "predicate": {
+                              "predicates": {
+                                "minecraft:stored_enchantments": [
+                                  {
+                                    "enchantments": "minecraft:fortune",
+                                    "levels": {
+                                      "min": 2
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "condition": "additional_enchantments:match_item_entity",
+                            "predicate": {
+                              "predicates": {
+                                "minecraft:stored_enchantments": [
+                                  {
+                                    "enchantments": "minecraft:silk_touch"
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "condition": "additional_enchantments:match_item_entity",
+                            "predicate": {
+                              "predicates": {
+                                "minecraft:stored_enchantments": [
+                                  {
+                                    "enchantments": "minecraft:power",
+                                    "levels": {
+                                      "min": 4
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "condition": "additional_enchantments:match_item_entity",
+                            "predicate": {
+                              "predicates": {
+                                "minecraft:stored_enchantments": [
+                                  {
+                                    "enchantments": "minecraft:infinity"
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
                       }
                     ]
                   },
-                  "key": "additional_enchantments:perception_enchantment.valuables",
-                  "range": 24
+                  "key": "additional_enchantments:perception_enchantment.enchanted_books",
+                  "range": 36
                 }
               ]
             }
@@ -141,7 +392,7 @@
     "base": 50,
     "per_level_above_first": 10
   },
-  "max_level": 2,
+  "max_level": 3,
   "min_cost": {
     "base": 20,
     "per_level_above_first": 10

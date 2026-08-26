@@ -12,7 +12,7 @@
             {
               "level_range": 1,
               "value": {
-                "blocks": "#minecraft:copper_ores",
+                "blocks": "#c:ores/copper",
                 "color": {
                   "colors": [
                     {
@@ -27,7 +27,8 @@
                       "alpha": 0.15,
                       "color": "#3F7F5F"
                     }
-                  ]
+                  ],
+                  "priority": 1
                 },
                 "display_type": "simple_shader",
                 "range": 24
@@ -39,7 +40,7 @@
                 "min": 1
               },
               "value": {
-                "blocks": "#minecraft:iron_ores",
+                "blocks": "#c:ores/iron",
                 "color": {
                   "colors": [
                     {
@@ -54,7 +55,8 @@
                       "alpha": 0.15,
                       "color": "dark_gray"
                     }
-                  ]
+                  ],
+                  "priority": 1
                 },
                 "display_type": "simple_shader",
                 "range": 24
@@ -66,7 +68,7 @@
                 "min": 1
               },
               "value": {
-                "blocks": "#minecraft:redstone_ores",
+                "blocks": "#c:ores/redstone",
                 "color": {
                   "colors": [
                     {
@@ -81,7 +83,8 @@
                       "alpha": 0.15,
                       "color": "#FF4D4D"
                     }
-                  ]
+                  ],
+                  "priority": 1
                 },
                 "display_type": "simple_shader",
                 "range": 24
@@ -108,7 +111,8 @@
                       "alpha": 0.15,
                       "color": "#D0D7DF"
                     }
-                  ]
+                  ],
+                  "priority": 1
                 },
                 "display_type": "simple_shader",
                 "range": 24
@@ -135,7 +139,8 @@
                       "alpha": 0.15,
                       "color": "#DFE6EE"
                     }
-                  ]
+                  ],
+                  "priority": 1
                 },
                 "display_type": "simple_shader",
                 "range": 24
@@ -147,7 +152,7 @@
                 "min": 2
               },
               "value": {
-                "blocks": "#minecraft:lapis_ores",
+                "blocks": "#c:ores/lapis",
                 "color": {
                   "colors": [
                     {
@@ -162,7 +167,8 @@
                       "alpha": 0.15,
                       "color": "#4169E1"
                     }
-                  ]
+                  ],
+                  "priority": 1
                 },
                 "display_type": "simple_shader",
                 "range": 24
@@ -174,7 +180,7 @@
                 "min": 2
               },
               "value": {
-                "blocks": "#minecraft:gold_ores",
+                "blocks": "#c:ores/gold",
                 "color": {
                   "colors": [
                     {
@@ -189,7 +195,8 @@
                       "alpha": 0.15,
                       "color": "#FFDD55"
                     }
-                  ]
+                  ],
+                  "priority": 1
                 },
                 "display_type": "simple_shader",
                 "range": 24
@@ -198,7 +205,7 @@
             {
               "level_range": 3,
               "value": {
-                "blocks": "#minecraft:emerald_ores",
+                "blocks": "#c:ores/emerald",
                 "color": {
                   "colors": [
                     {
@@ -213,7 +220,8 @@
                       "alpha": 0.15,
                       "color": "#55FF88"
                     }
-                  ]
+                  ],
+                  "priority": 1
                 },
                 "display_type": "simple_shader",
                 "range": 16
@@ -222,7 +230,7 @@
             {
               "level_range": 3,
               "value": {
-                "blocks": "#minecraft:diamond_ores",
+                "blocks": "#c:ores/diamond",
                 "color": {
                   "colors": [
                     {
@@ -245,7 +253,8 @@
                       "alpha": 0.15,
                       "color": "#55FF88"
                     }
-                  ]
+                  ],
+                  "priority": 1
                 },
                 "display_type": "simple_shader",
                 "range": 16
@@ -256,7 +265,7 @@
                 "min": 4
               },
               "value": {
-                "blocks": "#minecraft:emerald_ores",
+                "blocks": "#c:ores/emerald",
                 "color": {
                   "colors": [
                     {
@@ -268,7 +277,8 @@
                     {
                       "color": "#55FF88"
                     }
-                  ]
+                  ],
+                  "priority": 1
                 },
                 "display_type": "outline",
                 "range": 16
@@ -279,7 +289,7 @@
                 "min": 4
               },
               "value": {
-                "blocks": "#minecraft:diamond_ores",
+                "blocks": "#c:ores/diamond",
                 "color": {
                   "colors": [
                     {
@@ -297,7 +307,8 @@
                     {
                       "color": "#55FF88"
                     }
-                  ]
+                  ],
+                  "priority": 1
                 },
                 "display_type": "outline",
                 "range": 16
@@ -312,15 +323,16 @@
                 "color": {
                   "colors": [
                     {
-                      "color": "dark_gray"
+                      "color": "#8A502B"
                     },
                     {
-                      "color": "#3B3B3B"
+                      "color": "#8A312C"
                     },
                     {
-                      "color": "#6E4A3A"
+                      "color": "#852747"
                     }
-                  ]
+                  ],
+                  "priority": 1
                 },
                 "display_type": "outline",
                 "range": 16
@@ -352,7 +364,8 @@
                     {
                       "color": "#FFFFFF"
                     }
-                  ]
+                  ],
+                  "priority": 1
                 },
                 "display_type": "particles",
                 "particle_rate": 10,

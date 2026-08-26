@@ -9,5 +9,5 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class AELootItemConditions {
     public static final DeferredRegister<LootItemConditionType> REGISTRY = DeferredRegister.create(BuiltInRegistries.LOOT_CONDITION_TYPE, AE.MODID);
     public static final DeferredHolder<LootItemConditionType, LootItemConditionType> ENTITY_TYPE = REGISTRY.register("entity_type", () -> new LootItemConditionType(EntityTypeCondition.CODEC));
-    public static final DeferredHolder<LootItemConditionType, LootItemConditionType> ITEM_CHECK = REGISTRY.register("item_check", () -> new LootItemConditionType(ItemCheckCondition.CODEC));
+    public static final DeferredHolder<LootItemConditionType, LootItemConditionType> MATCH_ITEM_ENTITY = REGISTRY.register("match_item_entity", () -> new LootItemConditionType(MatchItemEntityCondition.CODEC));
 }

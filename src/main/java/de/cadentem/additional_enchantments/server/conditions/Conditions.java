@@ -2,7 +2,6 @@ package de.cadentem.additional_enchantments.server.conditions;
 
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -11,7 +10,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
-import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 
 import java.util.Optional;
 
@@ -31,10 +29,6 @@ public class Conditions {
 
     public static LootItemCondition.Builder thisEntity(final EntityPredicate predicate) {
         return LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, predicate);
-    }
-
-    public static LootItemCondition.Builder tool(final ItemPredicate predicate) {
-        return () -> new MatchTool(Optional.of(predicate));
     }
 
     public static ContextAwarePredicate none() {

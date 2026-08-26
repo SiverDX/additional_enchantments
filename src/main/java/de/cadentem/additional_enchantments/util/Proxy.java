@@ -9,16 +9,11 @@ public interface Proxy {
         return 1;
     }
 
-    default void addPerceptionEntry(final Entity... entities) { /* Nothing to do */ }
+    default void setPerceptionEntries(final Map<Integer, ShiftingColor.Mapped> entries) { /* Nothing to do */ }
 
-    default void removePerceptionEntry(final Entity... entities) { /* Nothing to do */ }
+    default void clearPerceptionEntries() { /* Nothing to do */ }
 
     default int getPerceptionColor(final Entity entity) {
         return Colors.NONE;
     }
-
-    // TODO :: check if needed
-    default void clearPerceptionEntries() { /* Nothing to do */ };
-
-    default void setPerceptionEntries(final Map<Integer, ShiftingColor.Mapped> entries) { /* Nothing to do */ };
 }

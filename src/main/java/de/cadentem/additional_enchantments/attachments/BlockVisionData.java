@@ -82,15 +82,21 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
             return ShiftingColor.Mapped.NONE;
         }
 
-        for (BlockVision instance : visions) {
-            ShiftingColor.Mapped mappedColors = instance.getMappedColors(block);
+        ShiftingColor.Mapped result = ShiftingColor.Mapped.NONE;
 
-            if (mappedColors != ShiftingColor.Mapped.NONE) {
-                return mappedColors;
+        for (BlockVision instance : visions) {
+            ShiftingColor.Mapped color = instance.getMappedColors(block);
+
+            if (color == ShiftingColor.Mapped.NONE) {
+                continue;
+            }
+
+            if (result == ShiftingColor.Mapped.NONE || result.priority() < color.priority()) {
+                result = color;
             }
         }
 
-        return ShiftingColor.Mapped.NONE;
+        return result;
     }
 
     private BlockVision.DisplayType storeDisplayType(final Block block) {
@@ -119,22 +125,6 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
 
             if (particleRate != -1) {
                 return particleRate;
-            }
-        }
-
-        return -1;
-    }
-
-    private double storeColorShiftRate(final Block block) {
-        if (visions == null) {
-            return -1;
-        }
-
-        for (BlockVision instance : visions) {
-            double colorShiftRate = instance.getColorShiftRate(block);
-
-            if (colorShiftRate != -1) {
-                return colorShiftRate;
             }
         }
 

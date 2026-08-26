@@ -23,6 +23,7 @@ public class AEBlockTags extends BlockTagsProvider {
     public static final TagKey<Block> BRACEWALK = TagKey.create(Registries.BLOCK, AE.location("bracewalk"));
     public static final TagKey<Block> TREASURES = TagKey.create(Registries.BLOCK, AE.location("treasures"));
     public static final TagKey<Block> SLIPPERY = TagKey.create(Registries.BLOCK, AE.location("slippery"));
+    public static final TagKey<Block> MISC_ORES = TagKey.create(Registries.BLOCK, AE.location("misc_ores"));
 
     // Compatibility
     public static final TagKey<Block> ZINC_ORES = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("c", "ores/zinc"));
@@ -40,6 +41,23 @@ public class AEBlockTags extends BlockTagsProvider {
                 .addTag(BlockTags.ICE)
                 .addTag(Tags.Blocks.GLASS_BLOCKS)
                 .addTag(Tags.Blocks.GLASS_PANES);
+
+        tag(MISC_ORES)
+                .addTag(Tags.Blocks.ORES)
+                // Not worth displaying
+                .remove(Tags.Blocks.ORES_COAL)
+                // Have specific entries
+                .remove(Tags.Blocks.ORES_COPPER)
+                .remove(Tags.Blocks.ORES_IRON)
+                .remove(Tags.Blocks.ORES_REDSTONE)
+                .remove(ZINC_ORES)
+                .remove(SILVER_ORES)
+                .remove(Tags.Blocks.ORES_LAPIS)
+                .remove(Tags.Blocks.ORES_GOLD)
+                .remove(Tags.Blocks.ORES_EMERALD)
+                .remove(Tags.Blocks.ORES_DIAMOND)
+                .remove(Tags.Blocks.ORES_NETHERITE_SCRAP)
+        ;
 
         tag(HUNTER_RELEVANT)
                 .addTag(BlockTags.FLOWERS)
