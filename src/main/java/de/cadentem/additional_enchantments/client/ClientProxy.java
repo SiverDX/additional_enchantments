@@ -22,7 +22,7 @@ public class ClientProxy implements Proxy {
         return AEClient.TIMER;
     }
 
-    @Override // TODO :: check if the update per tick is enough to not clutter it
+    @Override
     public void setPerceptionEntries(final Map<Integer, ShiftingColor.Mapped> entries) {
         this.entityPerceptionColors = entries;
     }

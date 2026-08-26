@@ -31,7 +31,8 @@
                   "priority": 1
                 },
                 "display_type": "simple_shader",
-                "range": 24
+                "id": "additional_enchantments:block_vision_enchantment.copper",
+                "range": 24.0
               }
             },
             {
@@ -59,7 +60,8 @@
                   "priority": 1
                 },
                 "display_type": "simple_shader",
-                "range": 24
+                "id": "additional_enchantments:block_vision_enchantment.iron",
+                "range": 24.0
               }
             },
             {
@@ -87,7 +89,8 @@
                   "priority": 1
                 },
                 "display_type": "simple_shader",
-                "range": 24
+                "id": "additional_enchantments:block_vision_enchantment.redstone",
+                "range": 24.0
               }
             },
             {
@@ -115,7 +118,8 @@
                   "priority": 1
                 },
                 "display_type": "simple_shader",
-                "range": 24
+                "id": "additional_enchantments:block_vision_enchantment.zinc",
+                "range": 24.0
               }
             },
             {
@@ -143,7 +147,8 @@
                   "priority": 1
                 },
                 "display_type": "simple_shader",
-                "range": 24
+                "id": "additional_enchantments:block_vision_enchantment.silver",
+                "range": 24.0
               }
             },
             {
@@ -171,7 +176,8 @@
                   "priority": 1
                 },
                 "display_type": "simple_shader",
-                "range": 24
+                "id": "additional_enchantments:block_vision_enchantment.lapis",
+                "range": 24.0
               }
             },
             {
@@ -199,7 +205,8 @@
                   "priority": 1
                 },
                 "display_type": "simple_shader",
-                "range": 24
+                "id": "additional_enchantments:block_vision_enchantment.gold",
+                "range": 24.0
               }
             },
             {
@@ -224,7 +231,8 @@
                   "priority": 1
                 },
                 "display_type": "simple_shader",
-                "range": 16
+                "id": "additional_enchantments:block_vision_enchantment.emerald",
+                "range": 24.0
               }
             },
             {
@@ -257,7 +265,8 @@
                   "priority": 1
                 },
                 "display_type": "simple_shader",
-                "range": 16
+                "id": "additional_enchantments:block_vision_enchantment.diamond",
+                "range": 24.0
               }
             },
             {
@@ -281,7 +290,8 @@
                   "priority": 1
                 },
                 "display_type": "outline",
-                "range": 16
+                "id": "additional_enchantments:block_vision_enchantment.emerald",
+                "range": 16.0
               }
             },
             {
@@ -311,7 +321,8 @@
                   "priority": 1
                 },
                 "display_type": "outline",
-                "range": 16
+                "id": "additional_enchantments:block_vision_enchantment.diamond",
+                "range": 16.0
               }
             },
             {
@@ -335,7 +346,8 @@
                   "priority": 1
                 },
                 "display_type": "outline",
-                "range": 16
+                "id": "additional_enchantments:block_vision_enchantment.netherite",
+                "range": 16.0
               }
             },
             {
@@ -368,8 +380,9 @@
                   "priority": 1
                 },
                 "display_type": "particles",
+                "id": "additional_enchantments:block_vision_enchantment.copper",
                 "particle_rate": 10,
-                "range": 24
+                "range": 24.0
               }
             }
           ]

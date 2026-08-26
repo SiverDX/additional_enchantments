@@ -7,22 +7,25 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class BlockVisionData implements INBTSerializable<CompoundTag> {
     // Concurrent because the worker thread (for searching) and the render thread modify it
     private final Map<Block, CacheEntry> cache = new ConcurrentHashMap<>();
     private int maximumRange = -1;
 
-    // TODO :: convert to map to support multiple enchantments that grand block visions
-    private @Nullable List<BlockVision> visions;
+    private @Unmodifiable Map<ResourceLocation, BlockVision.Mapped> visions = Map.of();
 
     record CacheEntry(int range, ShiftingColor.Mapped mappedColors, BlockVision.DisplayType displayType, int particleRate) { }
 
@@ -62,11 +65,7 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
     private int storeRange(@Nullable final Block block) {
         int currentRange = 0;
 
-        if (visions == null) {
-            return 0;
-        }
-
-        for (BlockVision vision : visions) {
+        for (BlockVision.Mapped vision : visions.values()) {
             int range = vision.getRange(block);
 
             if (range > currentRange) {
@@ -78,13 +77,9 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
     }
 
     private ShiftingColor.Mapped storeMappedColors(final Block block) {
-        if (visions == null) {
-            return ShiftingColor.Mapped.NONE;
-        }
-
         ShiftingColor.Mapped result = ShiftingColor.Mapped.NONE;
 
-        for (BlockVision instance : visions) {
+        for (BlockVision.Mapped instance : visions.values()) {
             ShiftingColor.Mapped color = instance.getMappedColors(block);
 
             if (color == ShiftingColor.Mapped.NONE) {
@@ -100,11 +95,7 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
     }
 
     private BlockVision.DisplayType storeDisplayType(final Block block) {
-        if (visions == null) {
-            return BlockVision.DisplayType.NONE;
-        }
-
-        for (BlockVision instance : visions) {
+        for (BlockVision.Mapped instance : visions.values()) {
             BlockVision.DisplayType displayType = instance.getDisplayType(block);
 
             if (displayType != BlockVision.DisplayType.NONE) {
@@ -116,11 +107,7 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
     }
 
     private int storeParticleRate(final Block block) {
-        if (visions == null) {
-            return -1;
-        }
-
-        for (BlockVision instance : visions) {
+        for (BlockVision.Mapped instance : visions.values()) {
             int particleRate = instance.getParticleRate(block);
 
             if (particleRate != -1) {
@@ -131,19 +118,14 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
         return -1;
     }
 
-    public void setVision(@Nullable final List<BlockVision> visions) {
-        List<BlockVision> previous = this.visions;
-
+    public void setVisions(@Nullable final List<BlockVision> visions, final int level) {
         if (visions == null || visions.isEmpty()) {
-            this.visions = null;
-            invalidateCache();
+            this.visions = Map.of();
         } else {
-            this.visions = visions;
-
-            if (!this.visions.equals(previous)) {
-                invalidateCache();
-            }
+            this.visions = visions.stream().collect(Collectors.toUnmodifiableMap(BlockVision::id, vision -> vision.map(level)));
         }
+
+        invalidateCache();
     }
 
     public int size() {
@@ -159,21 +141,16 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
     public CompoundTag serializeNBT(@NotNull final HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
 
-        if (visions != null) {
-            BlockVision.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), visions)
-                    .resultOrPartial(AE.LOG::error).ifPresent(data -> tag.put("visions", data));
-        }
+        BlockVision.Mapped.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), visions.values().stream().toList())
+                .resultOrPartial(AE.LOG::error).ifPresent(data -> tag.put("visions", data));
 
         return tag;
     }
 
     @Override
     public void deserializeNBT(@NotNull final HolderLookup.Provider provider, @NotNull final CompoundTag tag) {
-        visions = null;
-
-        if (tag.contains("visions")) {
-            visions = BlockVision.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.getList("visions", Tag.TAG_COMPOUND))
-                    .resultOrPartial(AE.LOG::error).orElse(null);
-        }
+        visions = BlockVision.Mapped.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.getList("visions", Tag.TAG_COMPOUND))
+                .resultOrPartial(AE.LOG::error).map(data -> data.stream().collect(Collectors.toUnmodifiableMap(BlockVision.Mapped::id, Function.identity())))
+                .orElse(Map.of());
     }
 }

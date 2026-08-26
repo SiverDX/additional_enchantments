@@ -13,18 +13,19 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record SyncBlockVision(List<BlockVision> visions) implements CustomPacketPayload {
+public record SyncBlockVision(List<BlockVision> visions, int level) implements CustomPacketPayload {
     public static final Type<SyncBlockVision> TYPE = new Type<>(AE.location("sync_block_vision"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncBlockVision> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.fromCodecWithRegistries(BlockVision.CODEC.listOf()), SyncBlockVision::visions,
+            ByteBufCodecs.INT, SyncBlockVision::level,
             SyncBlockVision::new
     );
 
     public static void handleClient(final SyncBlockVision packet, final IPayloadContext context) {
         context.enqueueWork(() -> {
             BlockVisionData data = context.player().getData(AEDataAttachments.BLOCK_VISION);
-            data.setVision(packet.visions());
+            data.setVisions(packet.visions(), packet.level());
         });
     }
 

@@ -38,6 +38,7 @@ import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.LevelBasedValue;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.AllOfCondition;
@@ -277,8 +278,9 @@ public class AEEnchantments {
                         BlockVisionEffect.single(
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
+                                                AE.location("block_vision_enchantment.copper"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_COPPER)),
-                                                24,
+                                                LevelBasedValue.constant(24),
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
@@ -291,8 +293,9 @@ public class AEEnchantments {
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
+                                                AE.location("block_vision_enchantment.iron"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_IRON)),
-                                                24,
+                                                LevelBasedValue.constant(24),
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
@@ -305,8 +308,9 @@ public class AEEnchantments {
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
+                                                AE.location("block_vision_enchantment.redstone"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_REDSTONE)),
-                                                24,
+                                                LevelBasedValue.constant(24),
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
@@ -319,8 +323,9 @@ public class AEEnchantments {
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
+                                                AE.location("block_vision_enchantment.zinc"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(AEBlockTags.ZINC_ORES)),
-                                                24,
+                                                LevelBasedValue.constant(24),
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
@@ -333,8 +338,9 @@ public class AEEnchantments {
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
+                                                AE.location("block_vision_enchantment.silver"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(AEBlockTags.SILVER_ORES)),
-                                                24,
+                                                LevelBasedValue.constant(24),
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
@@ -347,8 +353,9 @@ public class AEEnchantments {
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
+                                                AE.location("block_vision_enchantment.lapis"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_LAPIS)),
-                                                24,
+                                                LevelBasedValue.constant(24),
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
@@ -361,8 +368,9 @@ public class AEEnchantments {
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
+                                                AE.location("block_vision_enchantment.gold"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_GOLD)),
-                                                24,
+                                                LevelBasedValue.constant(24),
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
@@ -375,8 +383,9 @@ public class AEEnchantments {
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
+                                                AE.location("block_vision_enchantment.emerald"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_EMERALD)),
-                                                16,
+                                                LevelBasedValue.constant(24),
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
@@ -389,8 +398,9 @@ public class AEEnchantments {
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
+                                                AE.location("block_vision_enchantment.diamond"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_DIAMOND)),
-                                                16,
+                                                LevelBasedValue.constant(24),
                                                 BlockVision.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
@@ -405,8 +415,9 @@ public class AEEnchantments {
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
+                                                AE.location("block_vision_enchantment.emerald"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_EMERALD)),
-                                                16,
+                                                LevelBasedValue.constant(16),
                                                 BlockVision.DisplayType.OUTLINE,
                                                 0,
                                                 ShiftingColor.of(List.of(
@@ -419,8 +430,9 @@ public class AEEnchantments {
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
+                                                AE.location("block_vision_enchantment.diamond"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_DIAMOND)),
-                                                16,
+                                                LevelBasedValue.constant(16),
                                                 BlockVision.DisplayType.OUTLINE,
                                                 0,
                                                 ShiftingColor.of(List.of(
@@ -435,8 +447,9 @@ public class AEEnchantments {
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
+                                                AE.location("block_vision_enchantment.netherite"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_NETHERITE_SCRAP)),
-                                                16,
+                                                LevelBasedValue.constant(16),
                                                 BlockVision.DisplayType.OUTLINE,
                                                 0,
                                                 ShiftingColor.of(List.of(
@@ -449,8 +462,9 @@ public class AEEnchantments {
                                 ),
                                 new LevelBasedBlockVision.Entry(
                                         new BlockVision(
+                                                AE.location("block_vision_enchantment.copper"),
                                                 Either.left(BlockVision.SpecialBlockType.TREASURES),
-                                                24,
+                                                LevelBasedValue.constant(24),
                                                 BlockVision.DisplayType.PARTICLES,
                                                 10,
                                                 ShiftingColor.of(List.of(

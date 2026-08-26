@@ -9,82 +9,88 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.enchantment.LevelBasedValue;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
 
 @ParametersAreNonnullByDefault
-public record BlockVision(Either<SpecialBlockType, HolderSet<Block>> blocks, int range, DisplayType displayType, int particleRate, ShiftingColor color) {
+public record BlockVision(ResourceLocation id, Either<SpecialBlockType, HolderSet<Block>> blocks, LevelBasedValue range, DisplayType displayType, int particleRate, ShiftingColor color) {
     public static final Codec<BlockVision> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            ResourceLocation.CODEC.fieldOf("id").forGetter(BlockVision::id),
             Codec.either(SpecialBlockType.CODEC, RegistryCodecs.homogeneousList(Registries.BLOCK)).fieldOf("blocks").forGetter(BlockVision::blocks),
-            Codec.INT.fieldOf("range").forGetter(BlockVision::range),
+            LevelBasedValue.CODEC.fieldOf("range").forGetter(BlockVision::range),
             DisplayType.CODEC.fieldOf("display_type").forGetter(BlockVision::displayType),
             Codec.INT.optionalFieldOf("particle_rate", 0).forGetter(BlockVision::particleRate),
             ShiftingColor.CODEC.fieldOf("color").forGetter(BlockVision::color)
     ).apply(instance, BlockVision::new));
 
-    /** If the passed state is 'null', it will return the range as well */
-    public int getRange(@Nullable final Block block) {
-        if (block == null) {
-            return range;
-        }
-
-        //noinspection deprecation -> ignore
-        Holder.Reference<Block> holder = block.builtInRegistryHolder();
-
-        if (blocks.map(data -> holder.is(AEBlockTags.TREASURES), data -> data.contains(holder))) {
-            return range;
-        }
-
-        return 0;
+    public Mapped map(final int level) {
+        return new Mapped(id, blocks, (int) range.calculate(level), displayType, particleRate, color.map());
     }
 
-    public ShiftingColor.Mapped getMappedColors(final Block block) {
-        //noinspection deprecation -> ignore
-        Holder.Reference<Block> holder = block.builtInRegistryHolder();
+    public record Mapped(ResourceLocation id, Either<SpecialBlockType, HolderSet<Block>> blocks, int range, DisplayType displayType, int particleRate, ShiftingColor.Mapped color) {
+        public static final Codec<Mapped> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                ResourceLocation.CODEC.fieldOf("id").forGetter(Mapped::id),
+                Codec.either(SpecialBlockType.CODEC, RegistryCodecs.homogeneousList(Registries.BLOCK)).fieldOf("blocks").forGetter(Mapped::blocks),
+                Codec.INT.fieldOf("range").forGetter(Mapped::range),
+                DisplayType.CODEC.fieldOf("display_type").forGetter(Mapped::displayType),
+                Codec.INT.optionalFieldOf("particle_rate", 0).forGetter(Mapped::particleRate),
+                ShiftingColor.Mapped.CODEC.fieldOf("color").forGetter(Mapped::color)
+        ).apply(instance, Mapped::new));
 
-        if (blocks.map(data -> holder.is(AEBlockTags.TREASURES), data -> data.contains(holder))) {
-            return color.map();
+        /** If the passed state is 'null', it will return the range as well */
+        public int getRange(@Nullable final Block block) {
+            if (block == null) {
+                return range;
+            }
+
+            //noinspection deprecation -> ignore
+            Holder.Reference<Block> holder = block.builtInRegistryHolder();
+
+            if (blocks.map(data -> holder.is(AEBlockTags.TREASURES), data -> data.contains(holder))) {
+                return range;
+            }
+
+            return 0;
         }
 
-        return ShiftingColor.Mapped.NONE;
-    }
+        public ShiftingColor.Mapped getMappedColors(final Block block) {
+            //noinspection deprecation -> ignore
+            Holder.Reference<Block> holder = block.builtInRegistryHolder();
 
-    public DisplayType getDisplayType(final Block block) {
-        //noinspection deprecation -> ignore
-        Holder.Reference<Block> holder = block.builtInRegistryHolder();
+            if (blocks.map(data -> holder.is(AEBlockTags.TREASURES), data -> data.contains(holder))) {
+                return color;
+            }
 
-        if (blocks.map(data -> holder.is(AEBlockTags.TREASURES), data -> data.contains(holder))) {
-            return displayType;
+            return ShiftingColor.Mapped.NONE;
         }
 
-        return DisplayType.NONE;
-    }
+        public DisplayType getDisplayType(final Block block) {
+            //noinspection deprecation -> ignore
+            Holder.Reference<Block> holder = block.builtInRegistryHolder();
 
-    public int getParticleRate(final Block block) {
-        //noinspection deprecation -> ignore
-        Holder.Reference<Block> holder = block.builtInRegistryHolder();
+            if (blocks.map(data -> holder.is(AEBlockTags.TREASURES), data -> data.contains(holder))) {
+                return displayType;
+            }
 
-        if (blocks.map(data -> holder.is(AEBlockTags.TREASURES), data -> data.contains(holder))) {
-            return particleRate;
+            return DisplayType.NONE;
         }
 
-        return -1;
-    }
+        public int getParticleRate(final Block block) {
+            //noinspection deprecation -> ignore
+            Holder.Reference<Block> holder = block.builtInRegistryHolder();
 
-    public double getColorShiftRate(final Block block) {
-        //noinspection deprecation -> ignore
-        Holder.Reference<Block> holder = block.builtInRegistryHolder();
+            if (blocks.map(data -> holder.is(AEBlockTags.TREASURES), data -> data.contains(holder))) {
+                return particleRate;
+            }
 
-        if (blocks.map(data -> holder.is(AEBlockTags.TREASURES), data -> data.contains(holder))) {
-            return color.colorShiftRate();
+            return -1;
         }
-
-        return -1;
     }
 
     public enum SpecialBlockType implements StringRepresentable {

@@ -27,9 +27,9 @@ public record BlockVisionEffect(LevelBasedBlockVision vision) implements Enchant
             List<BlockVision> visions = vision.get(enchantmentLevel);
 
             BlockVisionData data = player.getData(AEDataAttachments.BLOCK_VISION);
-            data.setVision(visions);
+            data.setVisions(visions, enchantmentLevel);
 
-            PacketDistributor.sendToPlayer(player, new SyncBlockVision(visions));
+            PacketDistributor.sendToPlayer(player, new SyncBlockVision(visions, enchantmentLevel));
         }
     }
 
@@ -39,9 +39,9 @@ public record BlockVisionEffect(LevelBasedBlockVision vision) implements Enchant
 
         if (entity instanceof ServerPlayer player) {
             BlockVisionData data = player.getData(AEDataAttachments.BLOCK_VISION);
-            data.setVision(null);
+            data.setVisions(null, 0);
 
-            PacketDistributor.sendToPlayer(player, new SyncBlockVision(List.of()));
+            PacketDistributor.sendToPlayer(player, new SyncBlockVision(List.of(), 0));
         }
     }
 
