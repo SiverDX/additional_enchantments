@@ -24,13 +24,11 @@ public class ApplyMixinPlugin implements IMixinConfigPlugin {
         String directory = mixinClassName.replace(PREFIX, "");
         // Remove directories which are not related to mods
         directory = directory.replace("client.", "");
-        directory = directory.replace("tool_swap.", "");
         // If a directory is still present, it will run through the check below
         String[] elements = directory.split("\\.");
 
         if (elements.length == 2) {
-            String modid = elements[0];
-            return ModCheck.isModLoaded(modid);
+            return ModCheck.isModLoaded(/* Mod ID */ elements[0]);
         }
 
         return true;

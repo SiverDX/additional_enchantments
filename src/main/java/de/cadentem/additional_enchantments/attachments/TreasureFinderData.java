@@ -116,8 +116,17 @@ public class TreasureFinderData implements INBTSerializable<CompoundTag> {
         return -1;
     }
 
+    public Collection<TreasureFinder.Mapped> getEntries() {
+        return entries.values();
+    }
+
     public boolean isEmpty() {
         return entries.isEmpty();
+    }
+
+    public void setVisions(final Collection<TreasureFinder.Mapped> entries) {
+        this.entries.clear();
+        addVisions(entries);
     }
 
     public void addVisions(final Collection<TreasureFinder.Mapped> entries) {

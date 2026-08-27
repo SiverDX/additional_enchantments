@@ -50,7 +50,7 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
      */
     private SyncClimbFlag.ClimbingType climbingType = SyncClimbFlag.ClimbingType.NONE;
 
-    private final Map<ResourceLocation, Climbable> climbables = new HashMap<>();
+    private final Map<ResourceLocation, Climbable> entries = new HashMap<>();
 
     public boolean isApprovedClimbPosition(final BlockPos position) {
         return approvedClimbPositions != null && approvedClimbPositions.contains(position);
@@ -73,13 +73,13 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
     }
 
     public boolean canClimb(final WorldGenLevel level, final BlockPos position, final LivingEntity entity) {
-        if (climbables.isEmpty()) {
+        if (entries.isEmpty()) {
             return false;
         }
 
         boolean isCeiling = position.getY() > entity.getBlockY();
 
-        for (final Climbable climbable : climbables.values()) {
+        for (final Climbable climbable : entries.values()) {
             if (isCeiling && !climbable.canClimbCeilings()) {
                 continue;
             }
@@ -106,11 +106,11 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
     }
 
     public boolean canClimbCeilings() {
-        if (climbables.isEmpty()) {
+        if (entries.isEmpty()) {
             return false;
         }
 
-        for (final Climbable climbable : climbables.values()) {
+        for (final Climbable climbable : entries.values()) {
             if (climbable.canClimbCeilings()) {
                 return true;
             }
@@ -120,13 +120,13 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
     }
 
     public boolean canStickToWalls(final WorldGenLevel level) {
-        if (climbables.isEmpty() || climbPosition == null) {
+        if (entries.isEmpty() || climbPosition == null) {
             return false;
         }
 
         boolean isCeilingCandidate = isCeilingClimbing;
 
-        for (final Climbable climbable : climbables.values()) {
+        for (final Climbable climbable : entries.values()) {
             if (isCeilingCandidate && !climbable.canClimbCeilings()) {
                 continue;
             }
@@ -139,23 +139,32 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
         return false;
     }
 
+    public Collection<Climbable> getEntries() {
+        return entries.values();
+    }
+
     public boolean isEmpty() {
-        return climbables.isEmpty();
+        return entries.isEmpty();
+    }
+
+    public void setEntries(final Collection<Climbable> entries) {
+        this.entries.clear();
+        addClimbables(entries);
     }
 
     public void addClimbables(final Collection<Climbable> climbables) {
-        climbables.forEach(climbable -> this.climbables.put(climbable.id(), climbable));
+        climbables.forEach(climbable -> this.entries.put(climbable.id(), climbable));
     }
 
     public void removeClimbables(final Collection<ResourceLocation> ids) {
-        ids.forEach(climbables::remove);
+        ids.forEach(entries::remove);
     }
 
     @Override
     public CompoundTag serializeNBT(@NotNull final HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
 
-        Climbable.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), climbables.values().stream().toList())
+        Climbable.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), entries.values().stream().toList())
                 .resultOrPartial(AE.LOG::error)
                 .ifPresent(data -> tag.put("data", data));
 
@@ -164,10 +173,10 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
 
     @Override
     public void deserializeNBT(@NotNull final HolderLookup.Provider provider, @NotNull final CompoundTag tag) {
-        climbables.clear();
+        entries.clear();
 
         Climbable.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.get("data"))
                 .resultOrPartial(AE.LOG::error)
-                .ifPresent(entries -> entries.forEach(entry -> climbables.put(entry.id(), entry)));
+                .ifPresent(entries -> entries.forEach(entry -> this.entries.put(entry.id(), entry)));
     }
 }

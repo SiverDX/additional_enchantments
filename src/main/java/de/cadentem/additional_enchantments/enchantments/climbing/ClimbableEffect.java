@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.cadentem.additional_enchantments.attachments.AEDataAttachments;
 import de.cadentem.additional_enchantments.attachments.ClimbableData;
+import de.cadentem.additional_enchantments.common.network.NetworkHandler;
 import de.cadentem.additional_enchantments.common.network.SyncClimbable;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,7 +30,7 @@ public record ClimbableEffect(LevelBasedClimbable climbable) implements Enchantm
             ClimbableData data = player.getData(AEDataAttachments.CLIMBABLE);
             data.addClimbables(climbables);
 
-            PacketDistributor.sendToPlayer(player, new SyncClimbable(climbables, false));
+            PacketDistributor.sendToPlayer(player, new SyncClimbable(climbables, NetworkHandler.SyncType.ADD));
         }
     }
 
@@ -43,7 +44,7 @@ public record ClimbableEffect(LevelBasedClimbable climbable) implements Enchantm
             ClimbableData data = player.getData(AEDataAttachments.CLIMBABLE);
             data.removeClimbables(climbables.stream().map(Climbable::id).toList());
 
-            PacketDistributor.sendToPlayer(player, new SyncClimbable(climbables, true));
+            PacketDistributor.sendToPlayer(player, new SyncClimbable(climbables, NetworkHandler.SyncType.REMOVE));
         }
     }
 

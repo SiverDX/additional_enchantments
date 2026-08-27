@@ -17,7 +17,11 @@
                 {
                   "fluid_types": "minecraft:water",
                   "id": "additional_enchantments:fluid_vision_enchantment.water",
-                  "percentage": 0.35
+                  "percentage": {
+                    "type": "minecraft:linear",
+                    "base": 0.8,
+                    "per_level_above_first": -0.05
+                  }
                 }
               ]
             },
@@ -29,24 +33,29 @@
                 {
                   "fluid_types": "minecraft:lava",
                   "id": "additional_enchantments:fluid_vision_enchantment.lava",
-                  "percentage": 0.35
-                }
-              ]
-            },
-            {
-              "level_range": {
-                "min": 3
-              },
-              "value": [
+                  "percentage": {
+                    "type": "minecraft:linear",
+                    "base": 0.75,
+                    "per_level_above_first": -0.05
+                  }
+                },
                 {
                   "fluid_types": "#additional_enchantments:bumblezone",
                   "id": "additional_enchantments:fluid_vision_enchantment.bumblezone",
-                  "percentage": 0.35
+                  "percentage": {
+                    "type": "minecraft:linear",
+                    "base": 0.75,
+                    "per_level_above_first": -0.05
+                  }
                 },
                 {
                   "fluid_types": "#additional_enchantments:create",
                   "id": "additional_enchantments:fluid_vision_enchantment.create",
-                  "percentage": 0.35
+                  "percentage": {
+                    "type": "minecraft:linear",
+                    "base": 0.75,
+                    "per_level_above_first": -0.05
+                  }
                 }
               ]
             }
@@ -59,7 +68,7 @@
     "base": 50,
     "per_level_above_first": 10
   },
-  "max_level": 3,
+  "max_level": 4,
   "min_cost": {
     "base": 20,
     "per_level_above_first": 10

@@ -13,12 +13,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record SyncFluidVision(List<FluidVision.Mapped> visions, boolean remove) implements CustomPacketPayload {
+public record SyncFluidVision(List<FluidVision.Mapped> visions, NetworkHandler.SyncType syncType) implements CustomPacketPayload {
     public static final Type<SyncFluidVision> TYPE = new Type<>(AE.location("sync_fluid_vision"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncFluidVision> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.fromCodecWithRegistries(FluidVision.Mapped.CODEC.listOf()), SyncFluidVision::visions,
-            ByteBufCodecs.BOOL, SyncFluidVision::remove,
+            ByteBufCodecs.fromCodec(NetworkHandler.SyncType.CODEC), SyncFluidVision::syncType,
             SyncFluidVision::new
     );
 
@@ -26,10 +26,10 @@ public record SyncFluidVision(List<FluidVision.Mapped> visions, boolean remove) 
         context.enqueueWork(() -> {
             FluidVisionData data = context.player().getData(AEDataAttachments.FLUID_VISION);
 
-            if (packet.remove()) {
-                data.removeVisions(packet.visions().stream().map(FluidVision.Mapped::id).toList());
-            } else {
-                data.addVisions(packet.visions());
+            switch (packet.syncType()) {
+                case COMPLETE -> data.setEntries(packet.visions());
+                case ADD -> data.addVisions(packet.visions());
+                case REMOVE -> data.removeVisions(packet.visions().stream().map(FluidVision.Mapped::id).toList());
             }
         });
     }

@@ -27,14 +27,14 @@ import java.util.Map;
 
 @EventBusSubscriber
 public class PerceptionData implements INBTSerializable<CompoundTag> {
-    private final Map<ResourceLocation, Perception.Mapped> perceptions = new HashMap<>();
+    private final Map<ResourceLocation, Perception.Mapped> entries = new HashMap<>();
 
     private int maxRange;
 
     public ShiftingColor.Mapped getMappedColor(final ServerLevel serverLevel, final LivingEntity perceptionHolder, final Entity entity) {
         ShiftingColor.Mapped result = ShiftingColor.Mapped.NONE;
 
-        for (Perception.Mapped perception : perceptions.values()) {
+        for (Perception.Mapped perception : entries.values()) {
             ShiftingColor.Mapped color = perception.getColor(serverLevel, perceptionHolder, entity);
 
             if (color == ShiftingColor.Mapped.NONE) {
@@ -56,7 +56,7 @@ public class PerceptionData implements INBTSerializable<CompoundTag> {
     public void updateMaxRange() {
         int maxRange = 0;
 
-        for (Perception.Mapped perception : perceptions.values()) {
+        for (Perception.Mapped perception : entries.values()) {
             if (perception.range() > maxRange) {
                 maxRange = perception.range();
             }
@@ -65,17 +65,26 @@ public class PerceptionData implements INBTSerializable<CompoundTag> {
         this.maxRange = maxRange * maxRange;
     }
 
+    public Collection<Perception.Mapped> getEntries() {
+        return entries.values();
+    }
+
     public boolean isEmpty() {
-        return perceptions.isEmpty();
+        return entries.isEmpty();
+    }
+
+    public void setEntries(final Collection<Perception.Mapped> entries) {
+        this.entries.clear();
+        addPerceptions(entries);
     }
 
     public void addPerceptions(final Collection<Perception.Mapped> perceptions) {
-        perceptions.forEach(perception -> this.perceptions.put(perception.id(), perception));
+        perceptions.forEach(perception -> this.entries.put(perception.id(), perception));
         updateMaxRange();
     }
 
     public void removePerceptions(final Collection<ResourceLocation> ids) {
-        ids.forEach(perceptions::remove);
+        ids.forEach(entries::remove);
         updateMaxRange();
     }
 
@@ -107,7 +116,7 @@ public class PerceptionData implements INBTSerializable<CompoundTag> {
     public CompoundTag serializeNBT(@NotNull final HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
 
-        Perception.Mapped.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), perceptions.values().stream().toList())
+        Perception.Mapped.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), entries.values().stream().toList())
                 .resultOrPartial(AE.LOG::error)
                 .ifPresent(data -> tag.put("data", data));
 
@@ -116,10 +125,10 @@ public class PerceptionData implements INBTSerializable<CompoundTag> {
 
     @Override
     public void deserializeNBT(@NotNull final HolderLookup.Provider provider, @NotNull final CompoundTag tag) {
-        perceptions.clear();
+        entries.clear();
 
         Perception.Mapped.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.get("data"))
                 .resultOrPartial(AE.LOG::error)
-                .ifPresent(entries -> entries.forEach(entry -> perceptions.put(entry.id(), entry)));
+                .ifPresent(entries -> entries.forEach(entry -> this.entries.put(entry.id(), entry)));
     }
 }

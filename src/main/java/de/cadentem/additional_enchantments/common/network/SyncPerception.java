@@ -13,12 +13,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record SyncPerception(List<Perception.Mapped> perceptions, boolean remove) implements CustomPacketPayload {
+public record SyncPerception(List<Perception.Mapped> perceptions, NetworkHandler.SyncType syncType) implements CustomPacketPayload {
     public static final Type<SyncPerception> TYPE = new Type<>(AE.location("sync_perception"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncPerception> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.fromCodecWithRegistries(Perception.Mapped.CODEC.listOf()), SyncPerception::perceptions,
-            ByteBufCodecs.BOOL, SyncPerception::remove,
+            ByteBufCodecs.fromCodec(NetworkHandler.SyncType.CODEC), SyncPerception::syncType,
             SyncPerception::new
     );
 
@@ -26,10 +26,10 @@ public record SyncPerception(List<Perception.Mapped> perceptions, boolean remove
         context.enqueueWork(() -> {
             PerceptionData data = context.player().getData(AEDataAttachments.PERCEPTION);
 
-            if (packet.remove()) {
-                data.removePerceptions(packet.perceptions().stream().map(Perception.Mapped::id).toList());
-            } else {
-                data.addPerceptions(packet.perceptions());
+            switch (packet.syncType()) {
+                case COMPLETE -> data.setEntries(packet.perceptions());
+                case ADD -> data.addPerceptions(packet.perceptions());
+                case REMOVE -> data.removePerceptions(packet.perceptions().stream().map(Perception.Mapped::id).toList());
             }
         });
     }

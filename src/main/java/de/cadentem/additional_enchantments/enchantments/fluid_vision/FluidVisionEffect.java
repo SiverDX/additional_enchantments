@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.cadentem.additional_enchantments.attachments.AEDataAttachments;
 import de.cadentem.additional_enchantments.attachments.FluidVisionData;
+import de.cadentem.additional_enchantments.common.network.NetworkHandler;
 import de.cadentem.additional_enchantments.common.network.SyncFluidVision;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,7 +30,7 @@ public record FluidVisionEffect(LevelBasedFluidVision vision) implements Enchant
             FluidVisionData data = player.getData(AEDataAttachments.FLUID_VISION);
             data.addVisions(visions);
 
-            PacketDistributor.sendToPlayer(player, new SyncFluidVision(visions, false));
+            PacketDistributor.sendToPlayer(player, new SyncFluidVision(visions, NetworkHandler.SyncType.ADD));
         }
     }
 
@@ -43,7 +44,7 @@ public record FluidVisionEffect(LevelBasedFluidVision vision) implements Enchant
             FluidVisionData data = player.getData(AEDataAttachments.FLUID_VISION);
             data.removeVisions(visions.stream().map(FluidVision.Mapped::id).toList());
 
-            PacketDistributor.sendToPlayer(player, new SyncFluidVision(visions, true));
+            PacketDistributor.sendToPlayer(player, new SyncFluidVision(visions, NetworkHandler.SyncType.REMOVE));
         }
     }
 

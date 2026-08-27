@@ -13,12 +13,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record SyncTreasureFinder(List<TreasureFinder.Mapped> visions, boolean remove) implements CustomPacketPayload {
+public record SyncTreasureFinder(List<TreasureFinder.Mapped> visions, NetworkHandler.SyncType syncType) implements CustomPacketPayload {
     public static final Type<SyncTreasureFinder> TYPE = new Type<>(AE.location("sync_treasure_finder"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncTreasureFinder> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.fromCodecWithRegistries(TreasureFinder.Mapped.CODEC.listOf()), SyncTreasureFinder::visions,
-            ByteBufCodecs.BOOL, SyncTreasureFinder::remove,
+            ByteBufCodecs.fromCodec(NetworkHandler.SyncType.CODEC), SyncTreasureFinder::syncType,
             SyncTreasureFinder::new
     );
 
@@ -26,10 +26,10 @@ public record SyncTreasureFinder(List<TreasureFinder.Mapped> visions, boolean re
         context.enqueueWork(() -> {
             TreasureFinderData data = context.player().getData(AEDataAttachments.TREASURE_FINDER);
 
-            if (packet.remove()) {
-                data.removeVisions(packet.visions().stream().map(TreasureFinder.Mapped::id).toList());
-            } else {
-                data.addVisions(packet.visions());
+            switch (packet.syncType()) {
+                case COMPLETE -> data.setVisions(packet.visions());
+                case ADD -> data.addVisions(packet.visions());
+                case REMOVE -> data.removeVisions(packet.visions().stream().map(TreasureFinder.Mapped::id).toList());
             }
         });
     }

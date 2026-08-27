@@ -13,12 +13,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record SyncClimbable(List<Climbable> climbable, boolean remove) implements CustomPacketPayload {
+public record SyncClimbable(List<Climbable> climbable, NetworkHandler.SyncType syncType) implements CustomPacketPayload {
     public static final Type<SyncClimbable> TYPE = new Type<>(AE.location("sync_climbable"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncClimbable> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.fromCodecWithRegistries(Climbable.CODEC.listOf()), SyncClimbable::climbable,
-            ByteBufCodecs.BOOL, SyncClimbable::remove,
+            ByteBufCodecs.fromCodec(NetworkHandler.SyncType.CODEC), SyncClimbable::syncType,
             SyncClimbable::new
     );
 
@@ -26,10 +26,10 @@ public record SyncClimbable(List<Climbable> climbable, boolean remove) implement
         context.enqueueWork(() -> {
             ClimbableData data = context.player().getData(AEDataAttachments.CLIMBABLE);
 
-            if (packet.remove()) {
-                data.removeClimbables(packet.climbable().stream().map(Climbable::id).toList());
-            } else {
-                data.addClimbables(packet.climbable());
+            switch (packet.syncType()) {
+                case COMPLETE -> data.setEntries(packet.climbable());
+                case ADD -> data.addClimbables(packet.climbable());
+                case REMOVE -> data.removeClimbables(packet.climbable().stream().map(Climbable::id).toList());
             }
         });
     }

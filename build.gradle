@@ -79,12 +79,12 @@ dependencies {
 
     // Bumblezone
     // https://www.curseforge.com/minecraft/mc-mods/the-bumblezone-forge/files/all?page=1&pageSize=20&version=1.21.1&gameVersionTypeId=6&showAlphaFiles=show
-//    implementation "curse.maven:the-bumblezone-forge-362479:8548224" // v7.15.3
+    implementation "curse.maven:the-bumblezone-forge-362479:8548224" // v7.15.3
     // https://www.curseforge.com/minecraft/mc-mods/resourceful-lib/files/all?page=1&pageSize=20&version=1.21.1&gameVersionTypeId=6&showAlphaFiles=show
-    compileOnly "curse.maven:resourceful-lib-570073:5973188" // 3.0.12
+    implementation "curse.maven:resourceful-lib-570073:5973188" // 3.0.12
 
     // Create
-    compileOnly "maven.modrinth:create:6.0.10+mc1.21.1"
+    implementation "maven.modrinth:create:6.0.10+mc1.21.1"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

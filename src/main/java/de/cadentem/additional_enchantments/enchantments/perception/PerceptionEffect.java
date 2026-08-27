@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.cadentem.additional_enchantments.attachments.AEDataAttachments;
 import de.cadentem.additional_enchantments.attachments.PerceptionData;
+import de.cadentem.additional_enchantments.common.network.NetworkHandler;
 import de.cadentem.additional_enchantments.common.network.SyncPerception;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,7 +30,7 @@ public record PerceptionEffect(LevelBasedPerception perception) implements Encha
             PerceptionData data = player.getData(AEDataAttachments.PERCEPTION);
             data.addPerceptions(perceptions);
 
-            PacketDistributor.sendToPlayer(player, new SyncPerception(perceptions, false));
+            PacketDistributor.sendToPlayer(player, new SyncPerception(perceptions, NetworkHandler.SyncType.ADD));
         }
     }
 
@@ -43,7 +44,7 @@ public record PerceptionEffect(LevelBasedPerception perception) implements Encha
             PerceptionData data = player.getData(AEDataAttachments.PERCEPTION);
             data.removePerceptions(perceptions.stream().map(Perception.Mapped::id).toList());
 
-            PacketDistributor.sendToPlayer(player, new SyncPerception(perceptions, true));
+            PacketDistributor.sendToPlayer(player, new SyncPerception(perceptions, NetworkHandler.SyncType.REMOVE));
         }
     }
 

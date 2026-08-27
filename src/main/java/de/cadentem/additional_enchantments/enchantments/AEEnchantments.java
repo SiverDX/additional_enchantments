@@ -5,9 +5,6 @@ import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
 import de.cadentem.additional_enchantments.data.AEFluidTypesTags;
 import de.cadentem.additional_enchantments.data.AEItemTags;
-import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinder;
-import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinderEffect;
-import de.cadentem.additional_enchantments.enchantments.treasure_finder.LevelBasedTreasureFinder;
 import de.cadentem.additional_enchantments.enchantments.climbing.Climbable;
 import de.cadentem.additional_enchantments.enchantments.climbing.ClimbableEffect;
 import de.cadentem.additional_enchantments.enchantments.climbing.LevelBasedClimbable;
@@ -17,6 +14,9 @@ import de.cadentem.additional_enchantments.enchantments.fluid_vision.LevelBasedF
 import de.cadentem.additional_enchantments.enchantments.perception.LevelBasedPerception;
 import de.cadentem.additional_enchantments.enchantments.perception.Perception;
 import de.cadentem.additional_enchantments.enchantments.perception.PerceptionEffect;
+import de.cadentem.additional_enchantments.enchantments.treasure_finder.LevelBasedTreasureFinder;
+import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinder;
+import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinderEffect;
 import de.cadentem.additional_enchantments.server.conditions.Conditions;
 import de.cadentem.additional_enchantments.server.conditions.EntityConditions;
 import de.cadentem.additional_enchantments.server.conditions.EntityTypeCondition;
@@ -67,7 +67,7 @@ public class AEEnchantments {
                         context.lookup(Registries.ITEM).getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
                         Optional.empty(),
                         1,
-                        3,
+                        4,
                         Enchantment.dynamicCost(20, 10),
                         Enchantment.dynamicCost(50, 10),
                         1,
@@ -81,28 +81,26 @@ public class AEEnchantments {
                                         new FluidVision(
                                                 AE.location("fluid_vision_enchantment.water"),
                                                 HolderSet.direct(NeoForgeMod.WATER_TYPE),
-                                                LevelBasedValue.constant(0.35f)
+                                                LevelBasedValue.perLevel(0.8f, -0.05f)
                                         )
                                 ), MinMaxBounds.Ints.atLeast(1)),
                                 new LevelBasedFluidVision.Entry(List.of(
                                         new FluidVision(
                                                 AE.location("fluid_vision_enchantment.lava"),
                                                 HolderSet.direct(NeoForgeMod.LAVA_TYPE),
-                                                LevelBasedValue.constant(0.35f)
-                                        )
-                                ), MinMaxBounds.Ints.atLeast(2)),
-                                new LevelBasedFluidVision.Entry(List.of(
+                                                LevelBasedValue.perLevel(0.75f, -0.05f)
+                                        ),
                                         new FluidVision(
                                                 AE.location("fluid_vision_enchantment.bumblezone"),
                                                 context.lookup(NeoForgeRegistries.FLUID_TYPES.key()).getOrThrow(AEFluidTypesTags.BUMBLEZONE),
-                                                LevelBasedValue.constant(0.35f)
+                                                LevelBasedValue.perLevel(0.75f, -0.05f)
                                         ),
                                         new FluidVision(
                                                 AE.location("fluid_vision_enchantment.create"),
                                                 context.lookup(NeoForgeRegistries.FLUID_TYPES.key()).getOrThrow(AEFluidTypesTags.CREATE),
-                                                LevelBasedValue.constant(0.35f)
+                                                LevelBasedValue.perLevel(0.75f, -0.05f)
                                         )
-                                ), MinMaxBounds.Ints.atLeast(3))
+                                ), MinMaxBounds.Ints.atLeast(2))
                         )
                 ).build()
         ));
