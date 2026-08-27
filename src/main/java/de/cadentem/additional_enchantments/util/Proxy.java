@@ -1,6 +1,8 @@
 package de.cadentem.additional_enchantments.util;
 
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -16,4 +18,10 @@ public interface Proxy {
     default int getPerceptionColor(final Entity entity) {
         return Colors.NONE;
     }
+
+    default @Nullable Player getLocalPlayer() {
+        return null;
+    }
+
+    default void requestCacheClear() { /* Nothing to do */ }
 }

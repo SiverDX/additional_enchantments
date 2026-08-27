@@ -68,7 +68,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     // Sodium & Iris
     // https://www.curseforge.com/minecraft/mc-mods/sodium/files/all?page=1&pageSize=20&version=1.21.1&gameVersionTypeId=6&showAlphaFiles=show
-    compileOnly "curse.maven:sodium-394468:8591792" // 0.8.13
+    implementation "curse.maven:sodium-394468:8591792" // 0.8.13
     // https://www.curseforge.com/minecraft/mc-mods/irisshaders/files/all?page=1&pageSize=20&version=1.21.1&gameVersionTypeId=6&showAlphaFiles=show
     compileOnly "curse.maven:irisshaders-455508:8242804" // 1.8.14
 }

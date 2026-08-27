@@ -1,5 +1,6 @@
 {
   "enchantment.additional_enchantments.block_vision": "Ore Vision",
   "enchantment.additional_enchantments.climbable": "Climbable",
-  "enchantment.additional_enchantments.perception": "Perception"
+  "enchantment.additional_enchantments.perception": "Perception",
+  "enchantment.additional_enchantments.fluid_vision": "Fluid Vision"
 }

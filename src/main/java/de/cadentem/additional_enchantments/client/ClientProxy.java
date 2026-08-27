@@ -1,14 +1,17 @@
 package de.cadentem.additional_enchantments.client;
 
 import de.cadentem.additional_enchantments.AE;
+import de.cadentem.additional_enchantments.client.block_vision.BlockVisionHandler;
 import de.cadentem.additional_enchantments.util.Proxy;
 import de.cadentem.additional_enchantments.util.ShiftingColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Map;
@@ -35,6 +38,16 @@ public class ClientProxy implements Proxy {
     @Override
     public int getPerceptionColor(final Entity entity) {
         return entityPerceptionColors.getOrDefault(entity.getId(), ShiftingColor.Mapped.NONE).getColor();
+    }
+
+    @Override
+    public @Nullable Player getLocalPlayer() {
+        return Minecraft.getInstance().player;
+    }
+
+    @Override
+    public void requestCacheClear() {
+        BlockVisionHandler.requestCacheClear();
     }
 
     @SubscribeEvent

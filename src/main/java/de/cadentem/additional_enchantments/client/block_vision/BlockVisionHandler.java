@@ -2,7 +2,9 @@ package de.cadentem.additional_enchantments.client.block_vision;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.attachments.AEDataAttachments;
 import de.cadentem.additional_enchantments.attachments.BlockVisionData;
 import de.cadentem.additional_enchantments.compat.Compat;
@@ -13,6 +15,7 @@ import de.cadentem.additional_enchantments.mixin.client.FrustumAccess;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.entity.player.Player;
@@ -27,9 +30,11 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -44,15 +49,15 @@ public class BlockVisionHandler {
     /** Extend the search as a buffer while the background thread is searching */
     private static final int EXTENDED_SEARCH_RANGE = 16;
 
-    private static Cache<LevelChunkSection, Boolean[]> CHUNK_CACHE;
-
     private static final List<Data> RENDER_DATA = new ArrayList<>();
     private static final List<Data> SHADER_RENDER_DATA = new ArrayList<>();
     private static final List<Data> SEARCH_RESULT = new ArrayList<>();
     private static final List<BlockPos> REMOVAL = new ArrayList<>();
 
-    private static BlockVisionData vision;
     private static Vec3 lastScanCenter;
+    private static ShaderInstance shader;
+    private static BlockVisionData vision;
+    private static Cache<LevelChunkSection, Boolean[]> CHUNK_CACHE;
 
     private static boolean isSearching;
     private static boolean hasPendingUpdate;
@@ -81,7 +86,7 @@ public class BlockVisionHandler {
         LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
         vision = player.getExistingData(AEDataAttachments.BLOCK_VISION).orElse(null);
 
-        if (vision.isEmpty()) {
+        if (vision == null || vision.isEmpty()) {
             clear();
             return;
         }
@@ -193,9 +198,18 @@ public class BlockVisionHandler {
         pose.mulPose(event.getModelViewMatrix());
         pose.translate(-camera.x(), -camera.y(), -camera.z());
 
-        BlockVisionShaderSimple.beginBatch();
+        List<Data> blockEntities = new ArrayList<>();
+
+        // Normal blocks
+        ShaderSimple.beginBatch();
 
         for (Data data : SHADER_RENDER_DATA) {
+            if (data.state().hasBlockEntity()) {
+                // Need separate rendering handling
+                blockEntities.add(data);
+                continue;
+            }
+
             pose.pushPose();
             pose.translate(data.x(), data.y(), data.z());
 
@@ -203,13 +217,31 @@ public class BlockVisionHandler {
 
             //noinspection SwitchStatementWithTooFewBranches -> ignore for clarity
             switch (data.displayType()) {
-                case SIMPLE_SHADER -> BlockVisionShaderSimple.render(data, pose, colorARGB);
+                case SIMPLE_SHADER -> ShaderSimple.render(data, pose, colorARGB);
             }
 
             pose.popPose();
         }
 
-        BlockVisionShaderSimple.endBatch();
+        ShaderSimple.endBatch();
+        ShaderSimpleBlockEntities.beginBatch();
+
+        // Block entities
+        for (Data data : blockEntities) {
+            pose.pushPose();
+            pose.translate(data.x(), data.y(), data.z());
+
+            int colorARGB = vision.getColor(data.state().getBlock());
+
+            //noinspection SwitchStatementWithTooFewBranches -> ignore for clarity
+            switch (data.displayType()) {
+                case SIMPLE_SHADER -> ShaderSimpleBlockEntities.render(data, pose, colorARGB);
+            }
+
+            pose.popPose();
+        }
+
+        ShaderSimpleBlockEntities.endBatch();
 
         pose.popPose();
         SHADER_RENDER_DATA.clear();
@@ -220,6 +252,11 @@ public class BlockVisionHandler {
         if (event.getEntity() == Minecraft.getInstance().player) {
             clear();
         }
+    }
+
+    @SubscribeEvent
+    public static void registerShaders(final RegisterShadersEvent event) throws IOException {
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), AE.location("treasure_finder_simple"), DefaultVertexFormat.BLOCK), instance -> shader = instance);
     }
 
     public static void updateEntry(final BlockPos position, final BlockState oldState, final BlockState newState) {
@@ -279,6 +316,14 @@ public class BlockVisionHandler {
         if (!RENDER_DATA.isEmpty()) {
             REMOVAL.add(position);
         }
+    }
+
+    public static void requestCacheClear() {
+        requestCacheClear = true;
+    }
+
+    public static ShaderInstance getShader() {
+        return shader;
     }
 
     /** The searching algorithm is referenced from <a href="https://github.com/TelepathicGrunt/Bumblezone/blob/d4b2a29d7075749e1f4e8289debbc4cef3fc74c4/common/src/main/java/com/telepathicgrunt/the_bumblezone/items/essence/LifeEssence.java#L127">TelepathicGrunt</a> */

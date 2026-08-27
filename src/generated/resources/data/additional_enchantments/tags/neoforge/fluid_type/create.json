@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "create:honey",
+      "required": false
+    },
+    {
+      "id": "create:chocolate",
+      "required": false
+    }
+  ]
+}

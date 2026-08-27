@@ -1,0 +1,16 @@
+{
+  "values": [
+    {
+      "id": "bumblezone:sugar_water",
+      "required": false
+    },
+    {
+      "id": "bumblezone:honey",
+      "required": false
+    },
+    {
+      "id": "bumblezone:royal_jelly",
+      "required": false
+    }
+  ]
+}

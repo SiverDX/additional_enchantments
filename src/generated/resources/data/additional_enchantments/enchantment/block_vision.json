@@ -39,8 +39,8 @@
                     ],
                     "priority": 1
                   },
-                  "display_type": "particles",
-                  "id": "additional_enchantments:block_vision_enchantment.copper",
+                  "display_type": "simple_shader",
+                  "id": "additional_enchantments:block_vision_enchantment.treasures",
                   "particle_rate": 10,
                   "range": 24.0
                 }

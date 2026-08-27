@@ -8,13 +8,11 @@ import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.compat.ModID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -25,20 +23,13 @@ import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.GlStateBackup;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-@EventBusSubscriber(value = Dist.CLIENT)
-public class BlockVisionShaderSimple {
-    private static ShaderInstance shader;
+public class ShaderSimple {
     private static GlStateBackup backup;
 
     /**
@@ -55,6 +46,10 @@ public class BlockVisionShaderSimple {
         int red = FastColor.ARGB32.red(colorARGB);
         int green = FastColor.ARGB32.green(colorARGB);
         int blue = FastColor.ARGB32.blue(colorARGB);
+
+        if (alpha == 0) {
+            return;
+        }
 
         BlockPos position = BlockPos.containing(data.x(), data.y(), data.z());
         Level level = Objects.requireNonNull(Minecraft.getInstance().level);
@@ -78,9 +73,9 @@ public class BlockVisionShaderSimple {
             if (irisBuffer != null) {
                 mapped = type;
             } else if (type == RenderType.cutout() || type == RenderType.cutoutMipped()) {
-                mapped = BlockVisionRenderTypes.blockVisionCutout();
+                mapped = BlockVisionRenderTypes.treasureFinderCutout();
             } else {
-                mapped = BlockVisionRenderTypes.blockVisionTranslucent();
+                mapped = BlockVisionRenderTypes.treasureFinderTranslucent();
             }
 
             VertexConsumer buffer = irisBuffer == null ? Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(mapped) : irisBuffer;
@@ -116,8 +111,8 @@ public class BlockVisionShaderSimple {
         prepare();
 
         MultiBufferSource.BufferSource source = Minecraft.getInstance().renderBuffers().bufferSource();
-        source.endBatch(BlockVisionRenderTypes.blockVisionCutout());
-        source.endBatch(BlockVisionRenderTypes.blockVisionTranslucent());
+        source.endBatch(BlockVisionRenderTypes.treasureFinderCutout());
+        source.endBatch(BlockVisionRenderTypes.treasureFinderTranslucent());
 
         if (irisBuffer != null) {
             MeshData meshData = irisBuffer.build();
@@ -128,30 +123,20 @@ public class BlockVisionShaderSimple {
         }
 
         RenderSystem.restoreGlState(backup);
-        shader.clear();
+        BlockVisionHandler.getShader().clear();
 
         backup = null;
         irisBuffer = null;
     }
 
-    @SubscribeEvent
-    public static void registerShaders(final RegisterShadersEvent event) throws IOException {
-        event.registerShader(new ShaderInstance(event.getResourceProvider(), AE.location("block_vision_simple"), DefaultVertexFormat.BLOCK), instance -> shader = instance);
-    }
-
-    public static ShaderInstance getShader() {
-        return shader;
-    }
-
     @SuppressWarnings("DataFlowIssue") // Shader variables should be present
     private static void prepare() {
-        RenderSystem.setShader(() -> shader);
-        shader.getUniform("ProjMat").set(RenderSystem.getProjectionMatrix());
-        shader.getUniform("ModelViewMat").set(RenderSystem.getModelViewMatrix());
-        shader.apply();
+        RenderSystem.setShader(BlockVisionHandler::getShader);
+        BlockVisionHandler.getShader().getUniform("ProjMat").set(RenderSystem.getProjectionMatrix());
+        BlockVisionHandler.getShader().getUniform("ModelViewMat").set(RenderSystem.getModelViewMatrix());
+        BlockVisionHandler.getShader().apply();
 
         RenderSystem.enableDepthTest();
-        // Emulate vanilla cutout state: no blending and write depth
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.depthMask(false);

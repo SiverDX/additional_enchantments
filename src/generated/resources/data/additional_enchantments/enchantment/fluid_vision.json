@@ -1,0 +1,72 @@
+{
+  "anvil_cost": 1,
+  "description": {
+    "translate": "enchantment.additional_enchantments.fluid_vision"
+  },
+  "effects": {
+    "additional_enchantments:equipment_change_trigger": [
+      {
+        "type": "additional_enchantments:fluid_vision",
+        "vision": {
+          "values": [
+            {
+              "level_range": {
+                "min": 1
+              },
+              "value": [
+                {
+                  "fluid_types": "minecraft:water",
+                  "id": "additional_enchantments:fluid_vision_enchantment.water",
+                  "percentage": 0.35
+                }
+              ]
+            },
+            {
+              "level_range": {
+                "min": 2
+              },
+              "value": [
+                {
+                  "fluid_types": "minecraft:lava",
+                  "id": "additional_enchantments:fluid_vision_enchantment.lava",
+                  "percentage": 0.35
+                }
+              ]
+            },
+            {
+              "level_range": {
+                "min": 3
+              },
+              "value": [
+                {
+                  "fluid_types": "#additional_enchantments:bumblezone",
+                  "id": "additional_enchantments:fluid_vision_enchantment.bumblezone",
+                  "percentage": 0.35
+                },
+                {
+                  "fluid_types": "#additional_enchantments:create",
+                  "id": "additional_enchantments:fluid_vision_enchantment.create",
+                  "percentage": 0.35
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "max_cost": {
+    "base": 50,
+    "per_level_above_first": 10
+  },
+  "max_level": 3,
+  "min_cost": {
+    "base": 20,
+    "per_level_above_first": 10
+  },
+  "slots": [
+    "head"
+  ],
+  "supported_items": "#minecraft:enchantable/head_armor",
+  "weight": 1
+}

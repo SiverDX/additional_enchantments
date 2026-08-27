@@ -8,20 +8,17 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 
 /**
  * This mostly exists due to the cutout render type, otherwise it will render full planes instead of the proper texture </br>
- * (Only happens when 'Iris' is not present - likely due to its heavy adjustments to the MC rendering pipeline) </br>
- * If we just use the render type as-is, it will not make use of our custom shader
+ * Only happens when 'Iris' is not present, causing the rendering pipeline to not apply the custom shader
  */
 public final class BlockVisionRenderTypes {
     private static RenderType CUTOUT;
     private static RenderType TRANSLUCENT;
 
-    private BlockVisionRenderTypes() {}
-
-    public static RenderType blockVisionCutout() {
+    public static RenderType treasureFinderCutout() {
         if (CUTOUT == null) {
             //noinspection deprecation -> ignore
             RenderType.CompositeState state = RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(BlockVisionShaderSimple::getShader))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(BlockVisionHandler::getShader))
                     .setTextureState(new RenderStateShard.TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                     .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
@@ -29,7 +26,7 @@ public final class BlockVisionRenderTypes {
                     .createCompositeState(true);
 
             CUTOUT = RenderType.create(
-                    "additional_enchantments:block_vision_cutout",
+                    "additional_enchantments:treasure_finder_cutout",
                     DefaultVertexFormat.BLOCK,
                     VertexFormat.Mode.QUADS,
                     4194304, // Size of RenderType#SOLID
@@ -42,11 +39,11 @@ public final class BlockVisionRenderTypes {
         return CUTOUT;
     }
 
-    public static RenderType blockVisionTranslucent() {
+    public static RenderType treasureFinderTranslucent() {
         if (TRANSLUCENT == null) {
             //noinspection deprecation -> ignore
             RenderType.CompositeState state = RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(BlockVisionShaderSimple::getShader))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(BlockVisionHandler::getShader))
                     .setTextureState(new RenderStateShard.TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                     .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
@@ -54,7 +51,7 @@ public final class BlockVisionRenderTypes {
                     .createCompositeState(true);
 
             TRANSLUCENT = RenderType.create(
-                    "additional_enchantments:block_vision_translucent",
+                    "additional_enchantments:treasure_finder_translucent",
                     DefaultVertexFormat.BLOCK,
                     VertexFormat.Mode.QUADS,
                     786432, // Size of RenderType#CUTOUT

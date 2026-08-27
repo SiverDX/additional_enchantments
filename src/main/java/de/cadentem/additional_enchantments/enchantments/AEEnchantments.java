@@ -3,6 +3,7 @@ package de.cadentem.additional_enchantments.enchantments;
 import com.mojang.datafixers.util.Either;
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
+import de.cadentem.additional_enchantments.data.AEFluidTypesTags;
 import de.cadentem.additional_enchantments.data.AEItemTags;
 import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVision;
 import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVisionEffect;
@@ -10,6 +11,9 @@ import de.cadentem.additional_enchantments.enchantments.block_vision.LevelBasedB
 import de.cadentem.additional_enchantments.enchantments.climbing.Climbable;
 import de.cadentem.additional_enchantments.enchantments.climbing.ClimbableEffect;
 import de.cadentem.additional_enchantments.enchantments.climbing.LevelBasedClimbable;
+import de.cadentem.additional_enchantments.enchantments.fluid_vision.FluidVision;
+import de.cadentem.additional_enchantments.enchantments.fluid_vision.FluidVisionEffect;
+import de.cadentem.additional_enchantments.enchantments.fluid_vision.LevelBasedFluidVision;
 import de.cadentem.additional_enchantments.enchantments.perception.LevelBasedPerception;
 import de.cadentem.additional_enchantments.enchantments.perception.Perception;
 import de.cadentem.additional_enchantments.enchantments.perception.PerceptionEffect;
@@ -43,7 +47,9 @@ import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.AllOfCondition;
 import net.minecraft.world.level.storage.loot.predicates.AnyOfCondition;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,8 +58,55 @@ public class AEEnchantments {
     public static ResourceKey<Enchantment> BLOCK_VISION = key("block_vision");
     public static ResourceKey<Enchantment> CLIMBABLE = key("climbable");
     public static ResourceKey<Enchantment> PERCEPTION = key("perception");
+    public static ResourceKey<Enchantment> FLUID_VISION = key("fluid_vision");
 
     public static void bootstrap(final BootstrapContext<Enchantment> context) {
+        context.register(FLUID_VISION, new Enchantment(
+                Component.translatable("enchantment.additional_enchantments.fluid_vision"),
+                new Enchantment.EnchantmentDefinition(
+                        context.lookup(Registries.ITEM).getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
+                        Optional.empty(),
+                        1,
+                        3,
+                        Enchantment.dynamicCost(20, 10),
+                        Enchantment.dynamicCost(50, 10),
+                        1,
+                        List.of(EquipmentSlotGroup.HEAD)
+                ),
+                HolderSet.empty(), // TODO
+                DataComponentMap.builder().set(
+                        AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value(),
+                        FluidVisionEffect.single(
+                                new LevelBasedFluidVision.Entry(List.of(
+                                        new FluidVision(
+                                                AE.location("fluid_vision_enchantment.water"),
+                                                HolderSet.direct(NeoForgeMod.WATER_TYPE),
+                                                LevelBasedValue.constant(0.35f)
+                                        )
+                                ), MinMaxBounds.Ints.atLeast(1)),
+                                new LevelBasedFluidVision.Entry(List.of(
+                                        new FluidVision(
+                                                AE.location("fluid_vision_enchantment.lava"),
+                                                HolderSet.direct(NeoForgeMod.LAVA_TYPE),
+                                                LevelBasedValue.constant(0.35f)
+                                        )
+                                ), MinMaxBounds.Ints.atLeast(2)),
+                                new LevelBasedFluidVision.Entry(List.of(
+                                        new FluidVision(
+                                                AE.location("fluid_vision_enchantment.bumblezone"),
+                                                context.lookup(NeoForgeRegistries.FLUID_TYPES.key()).getOrThrow(AEFluidTypesTags.BUMBLEZONE),
+                                                LevelBasedValue.constant(0.35f)
+                                        ),
+                                        new FluidVision(
+                                                AE.location("fluid_vision_enchantment.create"),
+                                                context.lookup(NeoForgeRegistries.FLUID_TYPES.key()).getOrThrow(AEFluidTypesTags.CREATE),
+                                                LevelBasedValue.constant(0.35f)
+                                        )
+                                ), MinMaxBounds.Ints.atLeast(3))
+                        )
+                ).build()
+        ));
+
         context.register(PERCEPTION, new Enchantment(
                 Component.translatable("enchantment.additional_enchantments.perception"),
                 new Enchantment.EnchantmentDefinition(
@@ -275,10 +328,10 @@ public class AEEnchantments {
                         BlockVisionEffect.single(
                                 new LevelBasedBlockVision.Entry(List.of(
                                         new BlockVision(
-                                                AE.location("block_vision_enchantment.copper"),
+                                                AE.location("block_vision_enchantment.treasures"),
                                                 Either.left(BlockVision.SpecialBlockType.TREASURES),
                                                 LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.PARTICLES,
+                                                BlockVision.DisplayType.SIMPLE_SHADER,
                                                 10,
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#a87c1a"),

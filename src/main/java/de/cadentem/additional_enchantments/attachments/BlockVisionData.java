@@ -121,24 +121,19 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
     }
 
     public void addVisions(final Collection<BlockVision.Mapped> visions) {
-        for (BlockVision.Mapped vision : visions) {
-            this.visions.put(vision.id(), vision);
-        }
-
+        visions.forEach(vision -> this.visions.put(vision.id(), vision));
         invalidateCache();
     }
 
     public void removeVisions(final Collection<ResourceLocation> ids) {
-        for (ResourceLocation id : ids) {
-            visions.remove(id);
-        }
-
+        ids.forEach(visions::remove);
         invalidateCache();
     }
 
     public void invalidateCache() {
         cache.clear();
         maximumRange = -1;
+        AE.PROXY.requestCacheClear();
     }
 
     @Override

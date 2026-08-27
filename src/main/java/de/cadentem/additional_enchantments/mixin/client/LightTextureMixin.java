@@ -5,9 +5,8 @@ import com.llamalad7.mixinextras.sugar.Local;
 import de.cadentem.additional_enchantments.attachments.AEDataAttachments;
 import de.cadentem.additional_enchantments.enchantments.fluid_vision.FluidVision;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LightTexture;
-import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -21,15 +20,12 @@ public abstract class LightTextureMixin {
         }
 
         if (waterVision > 0) {
-            LocalPlayer player = Minecraft.getInstance().player;
             //noinspection DataFlowIssue -> player is present
-            FluidType fluid = player.getEyeInFluidType();
-
             return Minecraft.getInstance().player.getExistingData(AEDataAttachments.FLUID_VISION)
-                    .map(vision -> vision.get(fluid, player.registryAccess())  != FluidVision.Mapped.NONE)
+                    .map(vision -> vision.get(NeoForgeMod.WATER_TYPE) != FluidVision.Mapped.NONE)
                     .orElse(false);
         }
 
-        return original;
+        return false;
     }
 }

@@ -37,5 +37,6 @@ public class DataGeneration {
         AEBlockTags blockTags = new AEBlockTags(output, provider, helper);
         generator.addProvider(event.includeServer(), blockTags);
         generator.addProvider(event.includeServer(), new AEItemTags(output, provider, blockTags.contentsGetter(), helper));
+        generator.addProvider(event.includeServer(), new AEFluidTypesTags(output, provider, helper));
     }
 }

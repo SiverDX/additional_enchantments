@@ -1,6 +1,6 @@
 {
-  "vertex": "additional_enchantments:block_vision_simple",
-  "fragment": "additional_enchantments:block_vision_simple",
+  "vertex": "additional_enchantments:treasure_finder_simple",
+  "fragment": "additional_enchantments:treasure_finder_simple",
   "samplers": [
     { "name": "Sampler0" }
   ],

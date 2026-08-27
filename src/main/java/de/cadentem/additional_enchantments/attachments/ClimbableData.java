@@ -147,8 +147,8 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
         climbables.forEach(climbable -> this.climbables.put(climbable.id(), climbable));
     }
 
-    public void removeClimbables(final Collection<ResourceLocation> climbables) {
-        climbables.forEach(this.climbables::remove);
+    public void removeClimbables(final Collection<ResourceLocation> ids) {
+        ids.forEach(climbables::remove);
     }
 
     @Override

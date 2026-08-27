@@ -15,14 +15,18 @@
     "RandomizableContainerBlockEntityMixin"
   ],
   "client": [
+    "client.BlockEntityRenderDispatcherMixin",
     "client.ClientLevelMixin",
     "client.FrustumAccess",
+    "client.ItemBlockRenderTypesMixin",
     "client.LevelRendererMixin",
     "client.LightTextureMixin",
     "client.LiquidBlockRendererMixin",
     "client.LivingEntityRendererMixin",
+    "client.LocalPlayerMixin",
     "client.MinecraftMixin",
-    "iris.GameRendererMixin"
+    "iris.GameRendererMixin",
+    "sodium.DefaultFluidRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
