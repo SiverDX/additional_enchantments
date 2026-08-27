@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.client.block_vision;
+package de.cadentem.additional_enchantments.client.treasure_finder;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -6,10 +6,10 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.attachments.AEDataAttachments;
-import de.cadentem.additional_enchantments.attachments.BlockVisionData;
+import de.cadentem.additional_enchantments.attachments.TreasureFinderData;
 import de.cadentem.additional_enchantments.compat.Compat;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
-import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVision;
+import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinder;
 import de.cadentem.additional_enchantments.mixin.RandomizableContainerBlockEntityAccess;
 import de.cadentem.additional_enchantments.mixin.client.FrustumAccess;
 import net.minecraft.Util;
@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  * TODO :: find a performant way to check and potentially skip such blocks
  */
 @EventBusSubscriber(Dist.CLIENT)
-public class BlockVisionHandler {
+public class TreasureFinderHandler {
     /** Extend the search as a buffer while the background thread is searching */
     private static final int EXTENDED_SEARCH_RANGE = 16;
 
@@ -57,14 +57,14 @@ public class BlockVisionHandler {
 
     private static Vec3 lastScanCenter;
     private static ShaderInstance shader;
-    private static BlockVisionData vision;
+    private static TreasureFinderData vision;
     private static Cache<LevelChunkSection, Boolean[]> CHUNK_CACHE;
 
     private static boolean isSearching;
     private static boolean hasPendingUpdate;
     private static boolean requestCacheClear;
 
-    public record Data(BlockState state, int range, BlockVision.DisplayType displayType, int particleRate, float x, float y, float z) {
+    public record Data(BlockState state, int range, TreasureFinder.DisplayType displayType, int particleRate, float x, float y, float z) {
         public boolean isInRange(final Vec3 position, final int visibleRange) {
             return position.distanceToSqr(x + 0.5, y + 0.5, z + 0.5) <= visibleRange * visibleRange;
         }
@@ -87,7 +87,7 @@ public class BlockVisionHandler {
         // TODO :: re-try search within x time after joining
 
         LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
-        vision = player.getExistingData(AEDataAttachments.BLOCK_VISION).orElse(null);
+        vision = player.getExistingData(AEDataAttachments.TREASURE_FINDER).orElse(null);
 
         if (vision == null || vision.isEmpty()) {
             clear();
@@ -132,7 +132,7 @@ public class BlockVisionHandler {
         pose.mulPose(event.getModelViewMatrix());
         pose.translate(-camera.x(), -camera.y(), -camera.z());
 
-        BlockVisionOutline.beginBatch();
+        TreasureFinderOutline.beginBatch();
 
         for (int index = 0; index < RENDER_DATA.size(); index++) {
             Data data = RENDER_DATA.get(index);
@@ -156,8 +156,8 @@ public class BlockVisionHandler {
                 int colorARGB = vision.getColor(data.state().getBlock());
 
                 switch (data.displayType()) {
-                    case OUTLINE -> BlockVisionOutline.render(pose, colorARGB);
-                    case PARTICLES -> BlockVisionParticle.spawnParticle(data, player);
+                    case OUTLINE -> TreasureFinderOutline.render(pose, colorARGB);
+                    case PARTICLES -> TreasureFinderParticle.spawnParticle(data, player);
                     case SIMPLE_SHADER -> {
                         if (data.state().hasBlockEntity()) {
                             // Rendering the shader for block entities at 'AFTER_CUTOUT_BLOCKS' will cause it to hide (block)entities
@@ -172,7 +172,7 @@ public class BlockVisionHandler {
             }
         }
 
-        BlockVisionOutline.endBatch();
+        TreasureFinderOutline.endBatch();
         pose.popPose();
     }
 

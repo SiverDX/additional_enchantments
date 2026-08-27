@@ -5,9 +5,9 @@ import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
 import de.cadentem.additional_enchantments.data.AEFluidTypesTags;
 import de.cadentem.additional_enchantments.data.AEItemTags;
-import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVision;
-import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVisionEffect;
-import de.cadentem.additional_enchantments.enchantments.block_vision.LevelBasedBlockVision;
+import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinder;
+import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinderEffect;
+import de.cadentem.additional_enchantments.enchantments.treasure_finder.LevelBasedTreasureFinder;
 import de.cadentem.additional_enchantments.enchantments.climbing.Climbable;
 import de.cadentem.additional_enchantments.enchantments.climbing.ClimbableEffect;
 import de.cadentem.additional_enchantments.enchantments.climbing.LevelBasedClimbable;
@@ -55,7 +55,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class AEEnchantments {
-    public static ResourceKey<Enchantment> BLOCK_VISION = key("block_vision");
+    public static ResourceKey<Enchantment> TREASURE_FINDER = key("treasure_finder");
     public static ResourceKey<Enchantment> CLIMBABLE = key("climbable");
     public static ResourceKey<Enchantment> PERCEPTION = key("perception");
     public static ResourceKey<Enchantment> FLUID_VISION = key("fluid_vision");
@@ -310,8 +310,8 @@ public class AEEnchantments {
                         )
                 ).build()));
 
-        context.register(BLOCK_VISION, new Enchantment(
-                Component.translatable("enchantment.additional_enchantments.block_vision"),
+        context.register(TREASURE_FINDER, new Enchantment(
+                Component.translatable("enchantment.additional_enchantments.treasure_finder"),
                 new Enchantment.EnchantmentDefinition(
                         context.lookup(Registries.ITEM).getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
                         Optional.empty(),
@@ -325,13 +325,13 @@ public class AEEnchantments {
                 HolderSet.empty(), // TODO
                 DataComponentMap.builder().set(
                         AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value(),
-                        BlockVisionEffect.single(
-                                new LevelBasedBlockVision.Entry(List.of(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.treasures"),
-                                                Either.left(BlockVision.SpecialBlockType.TREASURES),
+                        TreasureFinderEffect.single(
+                                new LevelBasedTreasureFinder.Entry(List.of(
+                                        new TreasureFinder(
+                                                AE.location("treasure_finder_enchantment.treasures"),
+                                                Either.left(TreasureFinder.SpecialBlockType.TREASURES),
                                                 LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                TreasureFinder.DisplayType.PARTICLES,
                                                 10,
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#a87c1a"),
@@ -343,12 +343,12 @@ public class AEEnchantments {
                                                 ), 1, 1)
                                         )
                                 ), MinMaxBounds.Ints.atLeast(1)),
-                                new LevelBasedBlockVision.Entry(List.of(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.copper"),
+                                new LevelBasedTreasureFinder.Entry(List.of(
+                                        new TreasureFinder(
+                                                AE.location("treasure_finder_enchantment.copper"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_COPPER)),
                                                 LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                TreasureFinder.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#7a4a2e", 0.15f),
@@ -357,12 +357,12 @@ public class AEEnchantments {
                                                 ), 1, 1)
                                         )
                                 ), MinMaxBounds.Ints.between(1, 1)),
-                                new LevelBasedBlockVision.Entry(List.of(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.iron"),
+                                new LevelBasedTreasureFinder.Entry(List.of(
+                                        new TreasureFinder(
+                                                AE.location("treasure_finder_enchantment.iron"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_IRON)),
                                                 LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                TreasureFinder.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
                                                         Color.of(ChatFormatting.WHITE, 0.15f),
@@ -370,11 +370,11 @@ public class AEEnchantments {
                                                         Color.of(ChatFormatting.DARK_GRAY, 0.15f)
                                                 ), 1, 1)
                                         ),
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.redstone"),
+                                        new TreasureFinder(
+                                                AE.location("treasure_finder_enchantment.redstone"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_REDSTONE)),
                                                 LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                TreasureFinder.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
                                                         Color.of(ChatFormatting.DARK_RED, 0.15f),
@@ -382,11 +382,11 @@ public class AEEnchantments {
                                                         Color.of("#ff4d4d", 0.15f)
                                                 ), 1, 1)
                                         ),
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.zinc"),
+                                        new TreasureFinder(
+                                                AE.location("treasure_finder_enchantment.zinc"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(AEBlockTags.ZINC_ORES)),
                                                 LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                TreasureFinder.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#9aa3ad", 0.15f),
@@ -394,11 +394,11 @@ public class AEEnchantments {
                                                         Color.of("#d0d7df", 0.15f)
                                                 ), 1, 1)
                                         ),
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.silver"),
+                                        new TreasureFinder(
+                                                AE.location("treasure_finder_enchantment.silver"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(AEBlockTags.SILVER_ORES)),
                                                 LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                TreasureFinder.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
                                                         Color.of(ChatFormatting.WHITE, 0.15f),
@@ -407,12 +407,12 @@ public class AEEnchantments {
                                                 ), 1, 1)
                                         )
                                 ), MinMaxBounds.Ints.between(1, 2)),
-                                new LevelBasedBlockVision.Entry(List.of(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.lapis"),
+                                new LevelBasedTreasureFinder.Entry(List.of(
+                                        new TreasureFinder(
+                                                AE.location("treasure_finder_enchantment.lapis"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_LAPIS)),
                                                 LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                TreasureFinder.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
                                                         Color.of(ChatFormatting.DARK_BLUE, 0.15f),
@@ -420,11 +420,11 @@ public class AEEnchantments {
                                                         Color.of("#4169e1", 0.15f)
                                                 ), 1, 1)
                                         ),
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.gold"),
+                                        new TreasureFinder(
+                                                AE.location("treasure_finder_enchantment.gold"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_GOLD)),
                                                 LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                TreasureFinder.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
                                                         Color.of(ChatFormatting.GOLD, 0.15f),
@@ -433,12 +433,12 @@ public class AEEnchantments {
                                                 ), 1, 1)
                                         )
                                 ), MinMaxBounds.Ints.between(2, 3)),
-                                new LevelBasedBlockVision.Entry(List.of(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.emerald"),
+                                new LevelBasedTreasureFinder.Entry(List.of(
+                                        new TreasureFinder(
+                                                AE.location("treasure_finder_enchantment.emerald"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_EMERALD)),
                                                 LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                TreasureFinder.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
                                                         Color.of(ChatFormatting.DARK_GREEN, 0.15f),
@@ -446,11 +446,11 @@ public class AEEnchantments {
                                                         Color.of("#55ff88", 0.15f)
                                                 ), 1, 1)
                                         ),
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.diamond"),
+                                        new TreasureFinder(
+                                                AE.location("treasure_finder_enchantment.diamond"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_DIAMOND)),
                                                 LevelBasedValue.constant(24),
-                                                BlockVision.DisplayType.SIMPLE_SHADER,
+                                                TreasureFinder.DisplayType.SIMPLE_SHADER,
                                                 0,
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#3fffdc", 0.15f),
@@ -461,12 +461,12 @@ public class AEEnchantments {
                                                 ), 1, 1)
                                         )
                                 ), MinMaxBounds.Ints.between(3, 3)),
-                                new LevelBasedBlockVision.Entry(List.of(
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.emerald"),
+                                new LevelBasedTreasureFinder.Entry(List.of(
+                                        new TreasureFinder(
+                                                AE.location("treasure_finder_enchantment.emerald"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_EMERALD)),
                                                 LevelBasedValue.constant(16),
-                                                BlockVision.DisplayType.OUTLINE,
+                                                TreasureFinder.DisplayType.OUTLINE,
                                                 0,
                                                 ShiftingColor.of(List.of(
                                                         Color.of(ChatFormatting.DARK_GREEN),
@@ -474,11 +474,11 @@ public class AEEnchantments {
                                                         Color.of("#55ff88")
                                                 ), 1, 1)
                                         ),
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.diamond"),
+                                        new TreasureFinder(
+                                                AE.location("treasure_finder_enchantment.diamond"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_DIAMOND)),
                                                 LevelBasedValue.constant(16),
-                                                BlockVision.DisplayType.OUTLINE,
+                                                TreasureFinder.DisplayType.OUTLINE,
                                                 0,
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#3fffdc"),
@@ -488,11 +488,11 @@ public class AEEnchantments {
                                                         Color.of("#55ff88")
                                                 ), 1, 1)
                                         ),
-                                        new BlockVision(
-                                                AE.location("block_vision_enchantment.netherite"),
+                                        new TreasureFinder(
+                                                AE.location("treasure_finder_enchantment.netherite"),
                                                 Either.right(context.lookup(Registries.BLOCK).getOrThrow(Tags.Blocks.ORES_NETHERITE_SCRAP)),
                                                 LevelBasedValue.constant(16),
-                                                BlockVision.DisplayType.OUTLINE,
+                                                TreasureFinder.DisplayType.OUTLINE,
                                                 0,
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#8a502b"),

@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.client.block_vision;
+package de.cadentem.additional_enchantments.client.treasure_finder;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -29,7 +29,7 @@ public class ShaderSimpleBlockEntities {
     private static BufferBuilder buffer;
     private static GlStateBackup backup;
 
-    public static void render(final BlockVisionHandler.Data data, final PoseStack pose, final int colorARGB) {
+    public static void render(final TreasureFinderHandler.Data data, final PoseStack pose, final int colorARGB) {
         if (buffer == null) {
             return;
         }
@@ -127,7 +127,7 @@ public class ShaderSimpleBlockEntities {
             RenderSystem.restoreGlState(backup);
         }
 
-        BlockVisionHandler.getShader().clear();
+        TreasureFinderHandler.getShader().clear();
 
         backup = null;
         buffer = null;
@@ -135,10 +135,10 @@ public class ShaderSimpleBlockEntities {
 
     @SuppressWarnings("DataFlowIssue") // Shader variables should be present
     private static void prepare() {
-        RenderSystem.setShader(BlockVisionHandler::getShader);
-        BlockVisionHandler.getShader().getUniform("ProjMat").set(RenderSystem.getProjectionMatrix());
-        BlockVisionHandler.getShader().getUniform("ModelViewMat").set(RenderSystem.getModelViewMatrix());
-        BlockVisionHandler.getShader().apply();
+        RenderSystem.setShader(TreasureFinderHandler::getShader);
+        TreasureFinderHandler.getShader().getUniform("ProjMat").set(RenderSystem.getProjectionMatrix());
+        TreasureFinderHandler.getShader().getUniform("ModelViewMat").set(RenderSystem.getModelViewMatrix());
+        TreasureFinderHandler.getShader().apply();
 
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();

@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.enchantments.block_vision;
+package de.cadentem.additional_enchantments.enchantments.treasure_finder;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
@@ -19,15 +19,15 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public record BlockVision(ResourceLocation id, Either<SpecialBlockType, HolderSet<Block>> blocks, LevelBasedValue range, DisplayType displayType, int particleRate, ShiftingColor color) {
-    public static final Codec<BlockVision> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ResourceLocation.CODEC.fieldOf("id").forGetter(BlockVision::id),
-            Codec.either(SpecialBlockType.CODEC, RegistryCodecs.homogeneousList(Registries.BLOCK)).fieldOf("blocks").forGetter(BlockVision::blocks),
-            LevelBasedValue.CODEC.fieldOf("range").forGetter(BlockVision::range),
-            DisplayType.CODEC.fieldOf("display_type").forGetter(BlockVision::displayType),
-            Codec.INT.optionalFieldOf("particle_rate", 0).forGetter(BlockVision::particleRate),
-            ShiftingColor.CODEC.fieldOf("color").forGetter(BlockVision::color)
-    ).apply(instance, BlockVision::new));
+public record TreasureFinder(ResourceLocation id, Either<SpecialBlockType, HolderSet<Block>> blocks, LevelBasedValue range, DisplayType displayType, int particleRate, ShiftingColor color) {
+    public static final Codec<TreasureFinder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            ResourceLocation.CODEC.fieldOf("id").forGetter(TreasureFinder::id),
+            Codec.either(SpecialBlockType.CODEC, RegistryCodecs.homogeneousList(Registries.BLOCK)).fieldOf("blocks").forGetter(TreasureFinder::blocks),
+            LevelBasedValue.CODEC.fieldOf("range").forGetter(TreasureFinder::range),
+            DisplayType.CODEC.fieldOf("display_type").forGetter(TreasureFinder::displayType),
+            Codec.INT.optionalFieldOf("particle_rate", 0).forGetter(TreasureFinder::particleRate),
+            ShiftingColor.CODEC.fieldOf("color").forGetter(TreasureFinder::color)
+    ).apply(instance, TreasureFinder::new));
 
     public Mapped map(final int level) {
         return new Mapped(id, blocks, (int) range.calculate(level), displayType, particleRate, color.map());

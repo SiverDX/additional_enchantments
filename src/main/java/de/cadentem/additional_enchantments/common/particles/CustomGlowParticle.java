@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.common.particles;
 
 import de.cadentem.additional_enchantments.attachments.AEDataAttachments;
-import de.cadentem.additional_enchantments.attachments.BlockVisionData;
+import de.cadentem.additional_enchantments.attachments.TreasureFinderData;
 import de.cadentem.additional_enchantments.util.Colors;
 import de.cadentem.additional_enchantments.util.Functions;
 import net.minecraft.client.Minecraft;
@@ -61,7 +61,7 @@ public class CustomGlowParticle extends GlowParticle {
             List<Integer> colors = List.of();
 
             //noinspection DataFlowIssue -> player is present
-            BlockVisionData vision = player.getExistingData(AEDataAttachments.BLOCK_VISION).orElse(null);
+            TreasureFinderData vision = player.getExistingData(AEDataAttachments.TREASURE_FINDER).orElse(null);
 
             if (vision != null) {
                 colors = vision.getColors(BuiltInRegistries.BLOCK.byId((int) blockId));

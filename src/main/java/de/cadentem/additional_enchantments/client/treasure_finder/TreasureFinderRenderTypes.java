@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.client.block_vision;
+package de.cadentem.additional_enchantments.client.treasure_finder;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
  * This mostly exists due to the cutout render type, otherwise it will render full planes instead of the proper texture </br>
  * Only happens when 'Iris' is not present, causing the rendering pipeline to not apply the custom shader
  */
-public final class BlockVisionRenderTypes {
+public final class TreasureFinderRenderTypes {
     private static RenderType CUTOUT;
     private static RenderType TRANSLUCENT;
 
@@ -18,7 +18,7 @@ public final class BlockVisionRenderTypes {
         if (CUTOUT == null) {
             //noinspection deprecation -> ignore
             RenderType.CompositeState state = RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(BlockVisionHandler::getShader))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(TreasureFinderHandler::getShader))
                     .setTextureState(new RenderStateShard.TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                     .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
@@ -43,7 +43,7 @@ public final class BlockVisionRenderTypes {
         if (TRANSLUCENT == null) {
             //noinspection deprecation -> ignore
             RenderType.CompositeState state = RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(BlockVisionHandler::getShader))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(TreasureFinderHandler::getShader))
                     .setTextureState(new RenderStateShard.TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                     .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)

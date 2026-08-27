@@ -2,7 +2,6 @@ package de.cadentem.additional_enchantments.enchantments.perception;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVision;
 import de.cadentem.additional_enchantments.server.conditions.Conditions;
 import de.cadentem.additional_enchantments.util.ShiftingColor;
 import net.minecraft.resources.ResourceLocation;

@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.client.block_vision;
+package de.cadentem.additional_enchantments.client.treasure_finder;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -12,7 +12,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.GameRenderer;
 import net.neoforged.neoforge.client.GlStateBackup;
 
-public class BlockVisionOutline {
+public class TreasureFinderOutline {
     private static BufferBuilder buffer;
     private static GlStateBackup backup;
 

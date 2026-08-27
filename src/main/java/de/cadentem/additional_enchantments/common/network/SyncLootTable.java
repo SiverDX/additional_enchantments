@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.common.network;
 
 import de.cadentem.additional_enchantments.AE;
-import de.cadentem.additional_enchantments.client.block_vision.BlockVisionHandler;
+import de.cadentem.additional_enchantments.client.treasure_finder.TreasureFinderHandler;
 import de.cadentem.additional_enchantments.mixin.RandomizableContainerBlockEntityAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -32,9 +32,9 @@ public record SyncLootTable(ResourceKey<LootTable> lootTable, BlockPos position)
                 access.additional_enchantments$setLootTable(packet.lootTable());
 
                 if (packet.lootTable() == BuiltInLootTables.EMPTY) {
-                    BlockVisionHandler.removeTreasure(packet.position());
+                    TreasureFinderHandler.removeTreasure(packet.position());
                 } else {
-                    BlockVisionHandler.addTreasure(packet.position(), blockEntity.getBlockState());
+                    TreasureFinderHandler.addTreasure(packet.position(), blockEntity.getBlockState());
                 }
             }
         });

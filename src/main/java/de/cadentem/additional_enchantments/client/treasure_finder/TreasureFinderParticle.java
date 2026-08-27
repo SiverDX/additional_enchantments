@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.client.block_vision;
+package de.cadentem.additional_enchantments.client.treasure_finder;
 
 import de.cadentem.additional_enchantments.client.AEParticles;
 import net.minecraft.client.Minecraft;
@@ -6,11 +6,11 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.effects.SpawnParticlesEffect;
 
-public class BlockVisionParticle {
+public class TreasureFinderParticle {
     // TODO :: make it configurable?
     private static final SpawnParticlesEffect.PositionSource PARTICLE_POSITION = SpawnParticlesEffect.inBoundingBox();
 
-    public static void spawnParticle(final BlockVisionHandler.Data data, final Player player) {
+    public static void spawnParticle(final TreasureFinderHandler.Data data, final Player player) {
         if (Minecraft.getInstance().isPaused()) {
             // Newly added particles will only render once the game is unpaused
             // Meaning if we don't skip here, all the added particles will be shown at once

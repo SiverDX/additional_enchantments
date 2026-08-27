@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.client;
 
 import de.cadentem.additional_enchantments.AE;
-import de.cadentem.additional_enchantments.client.block_vision.BlockVisionHandler;
+import de.cadentem.additional_enchantments.client.treasure_finder.TreasureFinderHandler;
 import de.cadentem.additional_enchantments.util.Proxy;
 import de.cadentem.additional_enchantments.util.ShiftingColor;
 import net.minecraft.client.Minecraft;
@@ -47,7 +47,7 @@ public class ClientProxy implements Proxy {
 
     @Override
     public void requestCacheClear() {
-        BlockVisionHandler.requestCacheClear();
+        TreasureFinderHandler.requestCacheClear();
     }
 
     @SubscribeEvent

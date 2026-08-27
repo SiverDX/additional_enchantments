@@ -14,7 +14,7 @@ public class NetworkHandler {
     public static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
 
-        registrar.playToClient(SyncBlockVision.TYPE, SyncBlockVision.STREAM_CODEC, SyncBlockVision::handleClient);
+        registrar.playToClient(SyncTreasureFinder.TYPE, SyncTreasureFinder.STREAM_CODEC, SyncTreasureFinder::handleClient);
         registrar.playToClient(SyncClimbable.TYPE, SyncClimbable.STREAM_CODEC, SyncClimbable::handleClient);
         registrar.playToClient(SyncPerception.TYPE, SyncPerception.STREAM_CODEC, SyncPerception::handleClient);
         registrar.playToClient(SyncFluidVision.TYPE, SyncFluidVision.STREAM_CODEC, SyncFluidVision::handleClient);

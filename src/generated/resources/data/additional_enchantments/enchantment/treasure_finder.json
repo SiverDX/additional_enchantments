@@ -1,12 +1,12 @@
 {
   "anvil_cost": 1,
   "description": {
-    "translate": "enchantment.additional_enchantments.block_vision"
+    "translate": "enchantment.additional_enchantments.treasure_finder"
   },
   "effects": {
     "additional_enchantments:equipment_change_trigger": [
       {
-        "type": "additional_enchantments:block_vision",
+        "type": "additional_enchantments:treasure_finder",
         "vision": {
           "values": [
             {
@@ -39,8 +39,8 @@
                     ],
                     "priority": 1
                   },
-                  "display_type": "simple_shader",
-                  "id": "additional_enchantments:block_vision_enchantment.treasures",
+                  "display_type": "particles",
+                  "id": "additional_enchantments:treasure_finder_enchantment.treasures",
                   "particle_rate": 10,
                   "range": 24.0
                 }
@@ -69,7 +69,7 @@
                     "priority": 1
                   },
                   "display_type": "simple_shader",
-                  "id": "additional_enchantments:block_vision_enchantment.copper",
+                  "id": "additional_enchantments:treasure_finder_enchantment.copper",
                   "range": 24.0
                 }
               ]
@@ -100,7 +100,7 @@
                     "priority": 1
                   },
                   "display_type": "simple_shader",
-                  "id": "additional_enchantments:block_vision_enchantment.iron",
+                  "id": "additional_enchantments:treasure_finder_enchantment.iron",
                   "range": 24.0
                 },
                 {
@@ -123,7 +123,7 @@
                     "priority": 1
                   },
                   "display_type": "simple_shader",
-                  "id": "additional_enchantments:block_vision_enchantment.redstone",
+                  "id": "additional_enchantments:treasure_finder_enchantment.redstone",
                   "range": 24.0
                 },
                 {
@@ -146,7 +146,7 @@
                     "priority": 1
                   },
                   "display_type": "simple_shader",
-                  "id": "additional_enchantments:block_vision_enchantment.zinc",
+                  "id": "additional_enchantments:treasure_finder_enchantment.zinc",
                   "range": 24.0
                 },
                 {
@@ -169,7 +169,7 @@
                     "priority": 1
                   },
                   "display_type": "simple_shader",
-                  "id": "additional_enchantments:block_vision_enchantment.silver",
+                  "id": "additional_enchantments:treasure_finder_enchantment.silver",
                   "range": 24.0
                 }
               ]
@@ -200,7 +200,7 @@
                     "priority": 1
                   },
                   "display_type": "simple_shader",
-                  "id": "additional_enchantments:block_vision_enchantment.lapis",
+                  "id": "additional_enchantments:treasure_finder_enchantment.lapis",
                   "range": 24.0
                 },
                 {
@@ -223,7 +223,7 @@
                     "priority": 1
                   },
                   "display_type": "simple_shader",
-                  "id": "additional_enchantments:block_vision_enchantment.gold",
+                  "id": "additional_enchantments:treasure_finder_enchantment.gold",
                   "range": 24.0
                 }
               ]
@@ -251,7 +251,7 @@
                     "priority": 1
                   },
                   "display_type": "simple_shader",
-                  "id": "additional_enchantments:block_vision_enchantment.emerald",
+                  "id": "additional_enchantments:treasure_finder_enchantment.emerald",
                   "range": 24.0
                 },
                 {
@@ -282,7 +282,7 @@
                     "priority": 1
                   },
                   "display_type": "simple_shader",
-                  "id": "additional_enchantments:block_vision_enchantment.diamond",
+                  "id": "additional_enchantments:treasure_finder_enchantment.diamond",
                   "range": 24.0
                 }
               ]
@@ -309,7 +309,7 @@
                     "priority": 1
                   },
                   "display_type": "outline",
-                  "id": "additional_enchantments:block_vision_enchantment.emerald",
+                  "id": "additional_enchantments:treasure_finder_enchantment.emerald",
                   "range": 16.0
                 },
                 {
@@ -335,7 +335,7 @@
                     "priority": 1
                   },
                   "display_type": "outline",
-                  "id": "additional_enchantments:block_vision_enchantment.diamond",
+                  "id": "additional_enchantments:treasure_finder_enchantment.diamond",
                   "range": 16.0
                 },
                 {
@@ -355,7 +355,7 @@
                     "priority": 1
                   },
                   "display_type": "outline",
-                  "id": "additional_enchantments:block_vision_enchantment.netherite",
+                  "id": "additional_enchantments:treasure_finder_enchantment.netherite",
                   "range": 16.0
                 }
               ]

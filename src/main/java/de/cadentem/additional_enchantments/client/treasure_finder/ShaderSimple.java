@@ -1,4 +1,4 @@
-package de.cadentem.additional_enchantments.client.block_vision;
+package de.cadentem.additional_enchantments.client.treasure_finder;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -40,7 +40,7 @@ public class ShaderSimple {
      */
     private static @Nullable BufferBuilder irisBuffer;
 
-    public static void render(final BlockVisionHandler.Data data, final PoseStack pose, final int colorARGB) {
+    public static void render(final TreasureFinderHandler.Data data, final PoseStack pose, final int colorARGB) {
         prepare();
 
         int alpha = FastColor.ARGB32.alpha(colorARGB);
@@ -74,9 +74,9 @@ public class ShaderSimple {
             if (irisBuffer != null) {
                 mapped = type;
             } else if (type == RenderType.cutout() || type == RenderType.cutoutMipped()) {
-                mapped = BlockVisionRenderTypes.treasureFinderCutout();
+                mapped = TreasureFinderRenderTypes.treasureFinderCutout();
             } else {
-                mapped = BlockVisionRenderTypes.treasureFinderTranslucent();
+                mapped = TreasureFinderRenderTypes.treasureFinderTranslucent();
             }
 
             VertexConsumer buffer = irisBuffer == null ? Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(mapped) : irisBuffer;
@@ -112,8 +112,8 @@ public class ShaderSimple {
         prepare();
 
         MultiBufferSource.BufferSource source = Minecraft.getInstance().renderBuffers().bufferSource();
-        source.endBatch(BlockVisionRenderTypes.treasureFinderCutout());
-        source.endBatch(BlockVisionRenderTypes.treasureFinderTranslucent());
+        source.endBatch(TreasureFinderRenderTypes.treasureFinderCutout());
+        source.endBatch(TreasureFinderRenderTypes.treasureFinderTranslucent());
 
         if (irisBuffer != null) {
             MeshData meshData = irisBuffer.build();
@@ -127,7 +127,7 @@ public class ShaderSimple {
             RenderSystem.restoreGlState(backup);
         }
 
-        BlockVisionHandler.getShader().clear();
+        TreasureFinderHandler.getShader().clear();
 
         backup = null;
         irisBuffer = null;
@@ -135,10 +135,10 @@ public class ShaderSimple {
 
     @SuppressWarnings("DataFlowIssue") // Shader variables should be present
     private static void prepare() {
-        RenderSystem.setShader(BlockVisionHandler::getShader);
-        BlockVisionHandler.getShader().getUniform("ProjMat").set(RenderSystem.getProjectionMatrix());
-        BlockVisionHandler.getShader().getUniform("ModelViewMat").set(RenderSystem.getModelViewMatrix());
-        BlockVisionHandler.getShader().apply();
+        RenderSystem.setShader(TreasureFinderHandler::getShader);
+        TreasureFinderHandler.getShader().getUniform("ProjMat").set(RenderSystem.getProjectionMatrix());
+        TreasureFinderHandler.getShader().getUniform("ModelViewMat").set(RenderSystem.getModelViewMatrix());
+        TreasureFinderHandler.getShader().apply();
 
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();

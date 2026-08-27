@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.attachments;
 
 import de.cadentem.additional_enchantments.AE;
-import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVision;
+import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinder;
 import de.cadentem.additional_enchantments.util.ShiftingColor;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -18,14 +18,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class BlockVisionData implements INBTSerializable<CompoundTag> {
+public class TreasureFinderData implements INBTSerializable<CompoundTag> {
     // Concurrent because the worker thread (for searching) and the render thread modify it
     private final Map<Block, CacheEntry> cache = new ConcurrentHashMap<>();
     private int maximumRange = -1;
 
-    private final Map<ResourceLocation, BlockVision.Mapped> visions = new HashMap<>();
+    private final Map<ResourceLocation, TreasureFinder.Mapped> entries = new HashMap<>();
 
-    record CacheEntry(int range, ShiftingColor.Mapped mappedColors, BlockVision.DisplayType displayType, int particleRate) { }
+    record CacheEntry(int range, ShiftingColor.Mapped mappedColors, TreasureFinder.DisplayType displayType, int particleRate) { }
 
     public int getRange(@Nullable final Block block) {
         if (block == null) {
@@ -47,7 +47,7 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
         return cache.computeIfAbsent(block, this::storeData).mappedColors().colors();
     }
 
-    public BlockVision.DisplayType getDisplayType(final Block block) {
+    public TreasureFinder.DisplayType getDisplayType(final Block block) {
         return cache.computeIfAbsent(block, this::storeData).displayType();
     }
 
@@ -63,8 +63,8 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
     private int storeRange(@Nullable final Block block) {
         int currentRange = 0;
 
-        for (BlockVision.Mapped vision : visions.values()) {
-            int range = vision.getRange(block);
+        for (TreasureFinder.Mapped finder : entries.values()) {
+            int range = finder.getRange(block);
 
             if (range > currentRange) {
                 currentRange = range;
@@ -77,7 +77,7 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
     private ShiftingColor.Mapped storeMappedColors(final Block block) {
         ShiftingColor.Mapped result = ShiftingColor.Mapped.NONE;
 
-        for (BlockVision.Mapped instance : visions.values()) {
+        for (TreasureFinder.Mapped instance : entries.values()) {
             ShiftingColor.Mapped color = instance.getMappedColors(block);
 
             if (color == ShiftingColor.Mapped.NONE) {
@@ -92,20 +92,20 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
         return result;
     }
 
-    private BlockVision.DisplayType storeDisplayType(final Block block) {
-        for (BlockVision.Mapped instance : visions.values()) {
-            BlockVision.DisplayType displayType = instance.getDisplayType(block);
+    private TreasureFinder.DisplayType storeDisplayType(final Block block) {
+        for (TreasureFinder.Mapped instance : entries.values()) {
+            TreasureFinder.DisplayType displayType = instance.getDisplayType(block);
 
-            if (displayType != BlockVision.DisplayType.NONE) {
+            if (displayType != TreasureFinder.DisplayType.NONE) {
                 return displayType;
             }
         }
 
-        return BlockVision.DisplayType.NONE;
+        return TreasureFinder.DisplayType.NONE;
     }
 
     private int storeParticleRate(final Block block) {
-        for (BlockVision.Mapped instance : visions.values()) {
+        for (TreasureFinder.Mapped instance : entries.values()) {
             int particleRate = instance.getParticleRate(block);
 
             if (particleRate != -1) {
@@ -117,16 +117,16 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
     }
 
     public boolean isEmpty() {
-        return visions.isEmpty();
+        return entries.isEmpty();
     }
 
-    public void addVisions(final Collection<BlockVision.Mapped> visions) {
-        visions.forEach(vision -> this.visions.put(vision.id(), vision));
+    public void addVisions(final Collection<TreasureFinder.Mapped> entries) {
+        entries.forEach(finder -> this.entries.put(finder.id(), finder));
         invalidateCache();
     }
 
     public void removeVisions(final Collection<ResourceLocation> ids) {
-        ids.forEach(visions::remove);
+        ids.forEach(entries::remove);
         invalidateCache();
     }
 
@@ -140,7 +140,7 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
     public CompoundTag serializeNBT(@NotNull final HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
 
-        BlockVision.Mapped.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), visions.values().stream().toList())
+        TreasureFinder.Mapped.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), entries.values().stream().toList())
                 .resultOrPartial(AE.LOG::error)
                 .ifPresent(data -> tag.put("data", data));
 
@@ -149,10 +149,10 @@ public class BlockVisionData implements INBTSerializable<CompoundTag> {
 
     @Override
     public void deserializeNBT(@NotNull final HolderLookup.Provider provider, @NotNull final CompoundTag tag) {
-        visions.clear();
+        entries.clear();
 
-        BlockVision.Mapped.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.get("data"))
+        TreasureFinder.Mapped.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.get("data"))
                 .resultOrPartial(AE.LOG::error)
-                .ifPresent(entries -> entries.forEach(entry -> visions.put(entry.id(), entry)));
+                .ifPresent(entries -> entries.forEach(entry -> this.entries.put(entry.id(), entry)));
     }
 }

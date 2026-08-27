@@ -2,7 +2,7 @@ package de.cadentem.additional_enchantments.enchantments;
 
 import com.mojang.serialization.MapCodec;
 import de.cadentem.additional_enchantments.AE;
-import de.cadentem.additional_enchantments.enchantments.block_vision.BlockVisionEffect;
+import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinderEffect;
 import de.cadentem.additional_enchantments.enchantments.climbing.ClimbableEffect;
 import de.cadentem.additional_enchantments.enchantments.fluid_vision.FluidVisionEffect;
 import de.cadentem.additional_enchantments.enchantments.perception.PerceptionEffect;
@@ -27,7 +27,7 @@ public class AEEnchantmentRegistry {
     public static final DeferredRegister<MapCodec<? extends EnchantmentEntityEffect>> ENTITY_EFFECT_REGISTRY = DeferredRegister.create(Registries.ENCHANTMENT_ENTITY_EFFECT_TYPE, AE.MODID);
 
     static {
-        ENTITY_EFFECT_REGISTRY.register("block_vision", () -> BlockVisionEffect.CODEC);
+        ENTITY_EFFECT_REGISTRY.register("treasure_finder", () -> TreasureFinderEffect.CODEC);
         ENTITY_EFFECT_REGISTRY.register("climbable", () -> ClimbableEffect.CODEC);
         ENTITY_EFFECT_REGISTRY.register("perception", () -> PerceptionEffect.CODEC);
         ENTITY_EFFECT_REGISTRY.register("fluid_vision", () -> FluidVisionEffect.CODEC);
