@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 public abstract class DefaultFluidRendererMixin {
     /** The change from 'LiquidBlockRenderer' does not apply with sodium present */
     @ModifyArg(method = "updateQuad", at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/api/util/ColorARGB;toABGR(I)I"))
-    private int additional_enchantments$applyVisionAlpha(final int colorARGB, @Local(argsOnly = true) final FluidState state) {
+    private int additional_enchantments$adjustAlpha(final int colorARGB, @Local(argsOnly = true) final FluidState state) {
         LocalPlayer player = Minecraft.getInstance().player;
 
         //noinspection DataFlowIssue -> player is present
