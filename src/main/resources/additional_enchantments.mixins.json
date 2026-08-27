@@ -26,6 +26,7 @@
     "client.LocalPlayerMixin",
     "client.MinecraftMixin",
     "iris.GameRendererMixin",
+    "resourcefullib.MixinResourcefulFluidType",
     "sodium.DefaultFluidRendererMixin"
   ],
   "injectors": {

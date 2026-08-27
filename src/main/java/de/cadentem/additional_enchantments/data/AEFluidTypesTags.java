@@ -25,9 +25,9 @@ public class AEFluidTypesTags extends TagsProvider<FluidType> {
     @Override
     protected void addTags(@NotNull final HolderLookup.Provider provider) {
         tag(BUMBLEZONE)
-                .addOptional(ResourceLocation.fromNamespaceAndPath("bumblezone", "sugar_water"))
-                .addOptional(ResourceLocation.fromNamespaceAndPath("bumblezone", "honey"))
-                .addOptional(ResourceLocation.fromNamespaceAndPath("bumblezone", "royal_jelly"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("the_bumblezone", "sugar_water"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("the_bumblezone", "honey"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("the_bumblezone", "royal_jelly"))
         ;
 
         tag(CREATE)

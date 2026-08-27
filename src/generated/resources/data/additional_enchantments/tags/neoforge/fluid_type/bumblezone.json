@@ -1,15 +1,15 @@
 {
   "values": [
     {
-      "id": "bumblezone:sugar_water",
+      "id": "the_bumblezone:sugar_water",
       "required": false
     },
     {
-      "id": "bumblezone:honey",
+      "id": "the_bumblezone:honey",
       "required": false
     },
     {
-      "id": "bumblezone:royal_jelly",
+      "id": "the_bumblezone:royal_jelly",
       "required": false
     }
   ]

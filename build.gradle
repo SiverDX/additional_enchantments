@@ -67,17 +67,21 @@ neoForge {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
-    // https://www.curseforge.com/minecraft/mc-mods/sodium/files/all?page=1&pageSize=20&version=1.21.1&gameVersionTypeId=6&showAlphaFiles=show
-//    implementation "curse.maven:sodium-394468:8242014" // 0.8.12-beta.1
-    implementation "maven.modrinth:sodium:mc1.21.1-0.8.13-beta.2-neoforge"
+    compileOnly "maven.modrinth:sodium:mc1.21.1-0.8.13-beta.2-neoforge"
     // For some reason 'Sodium' is considered a non-minecraft library due to the weird jar-in-jar setup
     // See https://docs.neoforged.net/toolchain/docs/dependencies/nonmclibs/
-    additionalRuntimeClasspath "maven.modrinth:sodium:mc1.21.1-0.8.13-beta.2-neoforge"
-    implementation "net.caffeinemc:sodium-neoforge-mod:0.8.13-beta.2+mc1.21.1"
-//    additionalRuntimeClasspath "net.caffeinemc:sodium-neoforge-mod:0.8.13-beta.2+mc1.21.1"
+//    additionalRuntimeClasspath "maven.modrinth:sodium:mc1.21.1-0.8.13-beta.2-neoforge"
+    // Jar-in-jar setup from the whole mod prevents the source from being available
+    compileOnly "net.caffeinemc:sodium-neoforge-mod:0.8.13-beta.2+mc1.21.1"
 
     // https://www.curseforge.com/minecraft/mc-mods/irisshaders/files/all?page=1&pageSize=20&version=1.21.1&gameVersionTypeId=6&showAlphaFiles=show
-    implementation "curse.maven:irisshaders-455508:8242804" // 1.8.14 Beta 1
+    compileOnly "curse.maven:irisshaders-455508:8242804" // 1.8.14 Beta 1
+
+    // Bumblezone
+    // https://www.curseforge.com/minecraft/mc-mods/the-bumblezone-forge/files/all?page=1&pageSize=20&version=1.21.1&gameVersionTypeId=6&showAlphaFiles=show
+    implementation "curse.maven:the-bumblezone-forge-362479:8548224" // v7.15.3
+    // https://www.curseforge.com/minecraft/mc-mods/resourceful-lib/files/all?page=1&pageSize=20&version=1.21.1&gameVersionTypeId=6&showAlphaFiles=show
+    implementation "curse.maven:resourceful-lib-570073:5973188" // 3.0.12
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
