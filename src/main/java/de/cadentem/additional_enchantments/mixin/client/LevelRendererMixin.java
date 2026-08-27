@@ -7,12 +7,10 @@ import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.util.Colors;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.world.entity.Entity;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-@Debug(export = true)
 @Mixin(LevelRenderer.class)
 public abstract class LevelRendererMixin {
     @Definition(id = "getTeamColor", method = "Lnet/minecraft/world/entity/Entity;getTeamColor()I")

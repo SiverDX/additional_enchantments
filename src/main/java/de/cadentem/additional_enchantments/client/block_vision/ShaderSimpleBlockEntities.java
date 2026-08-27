@@ -2,7 +2,9 @@ package de.cadentem.additional_enchantments.client.block_vision;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -17,17 +19,21 @@ import net.minecraft.util.FastColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.GlStateBackup;
 
 import java.util.Objects;
 
 public class ShaderSimpleBlockEntities {
     private static final ResourceLocation FLAT_TEXTURE = AE.location("textures/white.png");
 
-    // No special handling needed here since we render a simple box
     private static BufferBuilder buffer;
-    private static Tesselator tesselator;
+    private static GlStateBackup backup;
 
     public static void render(final BlockVisionHandler.Data data, final PoseStack pose, final int colorARGB) {
+        if (buffer == null) {
+            return;
+        }
+
         prepare();
 
         int alpha = FastColor.ARGB32.alpha(colorARGB);
@@ -101,25 +107,29 @@ public class ShaderSimpleBlockEntities {
     }
 
     public static void beginBatch() {
-        tesselator = RenderSystem.renderThreadTesselator();
-        buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
+        backup = new GlStateBackup();
+        RenderSystem.backupGlState(backup);
+        buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
     }
 
     public static void endBatch() {
         prepare();
 
-        if (tesselator != null) {
-            tesselator.clear();
+        if (buffer != null) {
+            MeshData meshData = buffer.build();
+
+            if (meshData != null) {
+                BufferUploader.drawWithShader(meshData);
+            }
         }
 
-        // Revert back to default values
-        RenderSystem.depthMask(true);
-        RenderSystem.polygonOffset(0, 0);
-        RenderSystem.disablePolygonOffset();
+        if (backup != null) {
+            RenderSystem.restoreGlState(backup);
+        }
 
         BlockVisionHandler.getShader().clear();
 
-        tesselator = null;
+        backup = null;
         buffer = null;
     }
 
@@ -133,7 +143,6 @@ public class ShaderSimpleBlockEntities {
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.depthMask(false);
         // Don't render both sides of transparent blocks (like plants)
         RenderSystem.enableCull();
         RenderSystem.enablePolygonOffset();

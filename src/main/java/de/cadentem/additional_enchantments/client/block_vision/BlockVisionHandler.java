@@ -51,6 +51,7 @@ public class BlockVisionHandler {
 
     private static final List<Data> RENDER_DATA = new ArrayList<>();
     private static final List<Data> SHADER_RENDER_DATA = new ArrayList<>();
+    private static final List<Data> SHADER_RENDER_DATA_BLOCK_ENTITIES = new ArrayList<>();
     private static final List<Data> SEARCH_RESULT = new ArrayList<>();
     private static final List<BlockPos> REMOVAL = new ArrayList<>();
 
@@ -82,6 +83,8 @@ public class BlockVisionHandler {
         if (Compat.isRenderingShadows()) {
             return;
         }
+
+        // TODO :: re-try search within x time after joining
 
         LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
         vision = player.getExistingData(AEDataAttachments.BLOCK_VISION).orElse(null);
@@ -155,7 +158,14 @@ public class BlockVisionHandler {
                 switch (data.displayType()) {
                     case OUTLINE -> BlockVisionOutline.render(pose, colorARGB);
                     case PARTICLES -> BlockVisionParticle.spawnParticle(data, player);
-                    case SIMPLE_SHADER -> SHADER_RENDER_DATA.add(data);
+                    case SIMPLE_SHADER -> {
+                        if (data.state().hasBlockEntity()) {
+                            // Rendering the shader for block entities at 'AFTER_CUTOUT_BLOCKS' will cause it to hide (block)entities
+                            SHADER_RENDER_DATA_BLOCK_ENTITIES.add(data);
+                        } else {
+                            SHADER_RENDER_DATA.add(data);
+                        }
+                    }
                 }
 
                 pose.popPose();
@@ -177,19 +187,17 @@ public class BlockVisionHandler {
             return;
         }
 
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS && event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
+            return;
+        }
+
+        if (SHADER_RENDER_DATA.isEmpty() && SHADER_RENDER_DATA_BLOCK_ENTITIES.isEmpty()) {
+            return;
+        }
+
+        // Iris does not really support core shaders
+        // The only stage they work at is after it has finished doing its rendering
         boolean isUsingShader = Compat.isShaderActive();
-
-        if (isUsingShader && event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-            // Iris does not really support core shaders - the only stage they work at is after it has finished doing its rendering
-            return;
-        } else if (!isUsingShader && event.getStage() != RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS) {
-            // This stage allows rendering the shader through water
-            return;
-        }
-
-        if (SHADER_RENDER_DATA.isEmpty()) {
-            return;
-        }
 
         PoseStack pose = event.getPoseStack();
         pose.pushPose();
@@ -198,18 +206,23 @@ public class BlockVisionHandler {
         pose.mulPose(event.getModelViewMatrix());
         pose.translate(-camera.x(), -camera.y(), -camera.z());
 
-        List<Data> blockEntities = new ArrayList<>();
+        if (!isUsingShader && event.getStage() == RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS) {
+            renderForBlocks(pose);
+        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
+            renderForBlockEntities(pose);
 
-        // Normal blocks
+            if (isUsingShader) {
+                renderForBlocks(pose);
+            }
+        }
+
+        pose.popPose();
+    }
+
+    private static void renderForBlocks(PoseStack pose) {
         ShaderSimple.beginBatch();
 
         for (Data data : SHADER_RENDER_DATA) {
-            if (data.state().hasBlockEntity()) {
-                // Need separate rendering handling
-                blockEntities.add(data);
-                continue;
-            }
-
             pose.pushPose();
             pose.translate(data.x(), data.y(), data.z());
 
@@ -224,10 +237,14 @@ public class BlockVisionHandler {
         }
 
         ShaderSimple.endBatch();
+        SHADER_RENDER_DATA.clear();
+    }
+
+    private static void renderForBlockEntities(PoseStack pose) {
         ShaderSimpleBlockEntities.beginBatch();
 
         // Block entities
-        for (Data data : blockEntities) {
+        for (Data data : SHADER_RENDER_DATA_BLOCK_ENTITIES) {
             pose.pushPose();
             pose.translate(data.x(), data.y(), data.z());
 
@@ -242,9 +259,7 @@ public class BlockVisionHandler {
         }
 
         ShaderSimpleBlockEntities.endBatch();
-
-        pose.popPose();
-        SHADER_RENDER_DATA.clear();
+        SHADER_RENDER_DATA_BLOCK_ENTITIES.clear();
     }
 
     @SubscribeEvent

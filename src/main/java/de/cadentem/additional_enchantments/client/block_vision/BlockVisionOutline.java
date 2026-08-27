@@ -18,6 +18,7 @@ public class BlockVisionOutline {
 
     public static void render(final PoseStack pose, final int colorARGB) {
         prepare();
+        // TODO :: check if there are ways to fix lines not being x-ray behind block entities if the block entity is rendered
         drawLines(buffer, pose.last(), 0, 0, 0, 1, 1, 1, colorARGB);
     }
 

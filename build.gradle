@@ -12,6 +12,7 @@ repositories {
     mavenLocal()
     maven { url "https://cursemaven.com" }
     maven { url "https://api.modrinth.com/maven" }
+    maven { url "https://maven.caffeinemc.net/releases" }
 }
 
 base {
@@ -66,11 +67,17 @@ neoForge {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
-    // Sodium & Iris
     // https://www.curseforge.com/minecraft/mc-mods/sodium/files/all?page=1&pageSize=20&version=1.21.1&gameVersionTypeId=6&showAlphaFiles=show
-    implementation "curse.maven:sodium-394468:8591792" // 0.8.13
+//    implementation "curse.maven:sodium-394468:8242014" // 0.8.12-beta.1
+    implementation "maven.modrinth:sodium:mc1.21.1-0.8.13-beta.2-neoforge"
+    // For some reason 'Sodium' is considered a non-minecraft library due to the weird jar-in-jar setup
+    // See https://docs.neoforged.net/toolchain/docs/dependencies/nonmclibs/
+    additionalRuntimeClasspath "maven.modrinth:sodium:mc1.21.1-0.8.13-beta.2-neoforge"
+    implementation "net.caffeinemc:sodium-neoforge-mod:0.8.13-beta.2+mc1.21.1"
+//    additionalRuntimeClasspath "net.caffeinemc:sodium-neoforge-mod:0.8.13-beta.2+mc1.21.1"
+
     // https://www.curseforge.com/minecraft/mc-mods/irisshaders/files/all?page=1&pageSize=20&version=1.21.1&gameVersionTypeId=6&showAlphaFiles=show
-    compileOnly "curse.maven:irisshaders-455508:8242804" // 1.8.14
+    implementation "curse.maven:irisshaders-455508:8242804" // 1.8.14 Beta 1
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

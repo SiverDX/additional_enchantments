@@ -25,19 +25,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.GlStateBackup;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
 
 public class ShaderSimple {
-    private static GlStateBackup backup;
+    private static @Nullable GlStateBackup backup;
 
     /**
      * When Iris is installed using this single buffer works fine </br>
      * The alternative (our own render types) have issues and don't render correctly </br>
      * It might be possible to make them work in all cases, but properly testing that is too annoying at the moment
      */
-    private static BufferBuilder irisBuffer;
+    private static @Nullable BufferBuilder irisBuffer;
 
     public static void render(final BlockVisionHandler.Data data, final PoseStack pose, final int colorARGB) {
         prepare();
@@ -122,7 +123,10 @@ public class ShaderSimple {
             }
         }
 
-        RenderSystem.restoreGlState(backup);
+        if (backup != null) {
+            RenderSystem.restoreGlState(backup);
+        }
+
         BlockVisionHandler.getShader().clear();
 
         backup = null;
