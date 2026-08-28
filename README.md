@@ -28,7 +28,7 @@ New loot item conditions
 Allows broader checks for entities
 
 EntityType (LootItemCondition)
-```json
+```js
 {
   "type": Type,           // [Mandatory] || 
   "entity": EntityTarget  // [Mandatory] || Which entity of the loot context is checked
@@ -56,7 +56,7 @@ EntityTarget
 
 Allows using `ItemPredicates` to check the item of the `Item Entity` 
 
-```json
+```js
 {
   "predicate": ItemPredicate, // [Optional] || To match the item of the item entity, all are valid if left empty
   "target": EntityTarget      // [Optional] || Which entity of the loot context is checked (Default: 'this')
@@ -101,7 +101,7 @@ Level 3:
 <details>
 <summary>Technical Definition</summary>
 
-```json
+```js
 {
   "vision": {                                     // [Mandatory] || 
     "values": [                                   // [Mandatory] || 
@@ -161,7 +161,7 @@ Level 3:
 <details>
 <summary>Technical Definition</summary>
 
-```json
+```js
 {
   "perception": {                           // [Mandatory] ||  
     "values": [                             // [Mandatory] || 
@@ -185,7 +185,7 @@ Level 3:
 ```
 
 ShiftingColor
-```json
+```js
 {
   "colors": [                 // [Mandatory] || The colors defined in here will be smoothly cycled through based on the specified shift rate 
     {
@@ -248,7 +248,7 @@ Level 4:
 <details>
 <summary>Technical Definition</summary>
 
-```json
+```js
 {
   "vision": {                             // [Mandatory] || 
     "values": [                           // [Mandatory] || 
@@ -274,7 +274,7 @@ Level 4:
 ```
 
 ShiftingColor
-```json
+```js
 {
   "colors": [                 // [Mandatory] || The colors defined in here will be smoothly cycled through based on the specified shift rate 
     {
@@ -325,7 +325,7 @@ Level 3:
 <details>
 <summary>Technical Definition</summary>
 
-```json
+```js
 {
   "climbable": {                            // [Mandatory] || 
     "values": [                             // [Mandatory] || 
@@ -379,7 +379,7 @@ Level 3:
 <details>
 <summary>Technical Definition</summary>
 
-```json
+```js
 {
   "growth_entries": [                 // [Mandatory] ||  
     {
