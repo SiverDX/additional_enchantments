@@ -121,7 +121,7 @@ Level 4:
           {
             "id": ResourceLocation,               // [Mandatory] || Unique identifier for the effect
             "fluid_types": HolderSet<FluidType>,  // [Mandatory] || Defines to which fluids this effect will apply to 
-            "percentage": LevelBasedValue         // [Mandatory] || Defined by how see-through the fluid will be and by how much the viewing distance within the fluid will be improved
+            "percentage": LevelBasedValue         // [Mandatory] || Defines how see-through the fluid will be and by how much the viewing distance within the fluid will be improved
           }
         ]
       }
