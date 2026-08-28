@@ -81,6 +81,10 @@ EntityTarget
 - Improves visibility through fluids from above
 - Improves visibility while within the fluids
 
+![Water example](images/fluid_vision/water_example_resized.png)
+
+![Lava example](./images/fluid_vision/lava_example_resized.png)
+
 <details>
 <summary>Default Effects</summary>
 
@@ -94,6 +98,9 @@ Level 2:
 - Better visibility
 
 Level 3:
+- Better visibility
+
+Level 4:
 - Better visibility
 
 </details>
@@ -132,6 +139,8 @@ Additional explanations
 
 ## Perception
 - Displays entities as glowing using custom colors, see below to which entities are affected by default
+
+![Perception example](images/perception/example_resized.png)
 
 <details>
 <summary>Default Effects</summary>
@@ -208,6 +217,9 @@ Additional explanations
 
 ## Treasure Finder
 - Will highlight blocks using different ways, see below for more information
+
+![Treasure Finder example](images/treasure_finder/example_resized.png)
+(Compression combined with a still image makes this look worse than it actually is)
 
 <details>
 <summary>Default Effects</summary>
