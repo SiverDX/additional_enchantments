@@ -219,6 +219,7 @@ Additional explanations
 - Will highlight blocks using different ways, see below for more information
 
 ![Treasure Finder example](images/treasure_finder/example_resized.png)
+
 (Compression combined with a still image makes this look worse than it actually is)
 
 <details>
@@ -315,6 +316,8 @@ Additional explanations
 </details>
 
 ## Climbing
+- Allows climbing on most blocks, no ladder required
+- At further levels also disables the automatic sliding down and even allows climbing on ceilings
 
 <details>
 <summary>Default Effects</summary>

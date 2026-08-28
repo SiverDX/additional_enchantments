@@ -27,6 +27,16 @@ public abstract class DefaultFluidRendererMixin {
             return colorARGB;
         }
 
-        return FastColor.ARGB32.color((int) (FastColor.ABGR32.alpha(colorARGB) * percentage), colorARGB);
+        int alpha = FastColor.ABGR32.alpha(colorARGB);
+
+        if (alpha == 0) {
+            // Create fluids are set up with an alpha value of 0 - by setting the 'RenderType' to 'translucent' they become invisible due to said value
+            // Therefore, when a fluid is being rendered here (and it is invisible) just set it to the intended visibility
+            alpha = (int) (255 * percentage);
+        } else {
+            alpha = (int) (alpha * percentage);
+        }
+
+        return FastColor.ARGB32.color(alpha, colorARGB);
     }
 }

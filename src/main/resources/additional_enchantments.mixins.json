@@ -26,6 +26,7 @@
     "client.LocalPlayerMixin",
     "client.MinecraftMixin",
     "iris.GameRendererMixin",
+    "notenoughanimations.LadderAnimationMixin",
     "resourcefullib.MixinResourcefulFluidType",
     "sodium.DefaultFluidRendererMixin"
   ],
