@@ -5,6 +5,7 @@ import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.enchantments.climbing.ClimbableEffect;
 import de.cadentem.additional_enchantments.enchantments.fluid_vision.FluidVisionEffect;
 import de.cadentem.additional_enchantments.enchantments.green_foot.GreenFootEffect;
+import de.cadentem.additional_enchantments.enchantments.homing.HomingEffect;
 import de.cadentem.additional_enchantments.enchantments.perception.PerceptionEffect;
 import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinderEffect;
 import net.minecraft.core.component.DataComponentType;
@@ -35,12 +36,14 @@ public class AEEnchantmentRegistry {
         ENTITY_EFFECT_REGISTRY.register("perception", () -> PerceptionEffect.CODEC);
         ENTITY_EFFECT_REGISTRY.register("fluid_vision", () -> FluidVisionEffect.CODEC);
         ENTITY_EFFECT_REGISTRY.register("green_foot", () -> GreenFootEffect.CODEC);
+        ENTITY_EFFECT_REGISTRY.register("homing", () -> HomingEffect.CODEC);
 
         LOCATION_EFFECT_REGISTRY.register("treasure_finder", () -> TreasureFinderEffect.CODEC);
         LOCATION_EFFECT_REGISTRY.register("climbable", () -> ClimbableEffect.CODEC);
         LOCATION_EFFECT_REGISTRY.register("perception", () -> PerceptionEffect.CODEC);
         LOCATION_EFFECT_REGISTRY.register("fluid_vision", () -> FluidVisionEffect.CODEC);
         LOCATION_EFFECT_REGISTRY.register("green_foot", () -> GreenFootEffect.CODEC);
+        LOCATION_EFFECT_REGISTRY.register("homing", () -> HomingEffect.CODEC);
     }
 
     public static final DeferredRegister<DataComponentType<?>> COMPONENT_REGISTRY = DeferredRegister.create(Registries.ENCHANTMENT_EFFECT_COMPONENT_TYPE, AE.MODID);

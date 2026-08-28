@@ -19,7 +19,6 @@
               "predicate": {
                 "type": "minecraft:true"
               },
-              "priority": 0,
               "probability": 0.01
             },
             {

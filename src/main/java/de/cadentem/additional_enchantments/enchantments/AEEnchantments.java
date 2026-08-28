@@ -13,6 +13,9 @@ import de.cadentem.additional_enchantments.enchantments.fluid_vision.FluidVision
 import de.cadentem.additional_enchantments.enchantments.fluid_vision.FluidVisionEffect;
 import de.cadentem.additional_enchantments.enchantments.fluid_vision.LevelBasedFluidVision;
 import de.cadentem.additional_enchantments.enchantments.green_foot.GreenFootEffect;
+import de.cadentem.additional_enchantments.enchantments.homing.Homing;
+import de.cadentem.additional_enchantments.enchantments.homing.HomingEffect;
+import de.cadentem.additional_enchantments.enchantments.homing.LevelBasedHoming;
 import de.cadentem.additional_enchantments.enchantments.perception.LevelBasedPerception;
 import de.cadentem.additional_enchantments.enchantments.perception.Perception;
 import de.cadentem.additional_enchantments.enchantments.perception.PerceptionEffect;
@@ -63,12 +66,70 @@ public class AEEnchantments {
     public static ResourceKey<Enchantment> PERCEPTION = key("perception");
     public static ResourceKey<Enchantment> FLUID_VISION = key("fluid_vision");
     public static ResourceKey<Enchantment> GREEN_FOOT = key("green_foot");
+    public static ResourceKey<Enchantment> HOMING = key("homing");
 
     public static void bootstrap(final BootstrapContext<Enchantment> context) {
-        context.register(GREEN_FOOT, Enchantment.enchantment(new Enchantment.EnchantmentDefinition(
-                        context.lookup(Registries.ITEM).getOrThrow(ItemTags.FOOT_ARMOR_ENCHANTABLE),
+        context.register(HOMING, new Enchantment(
+                Component.translatable("enchantment.additional_enchantments.homing"),
+                new Enchantment.EnchantmentDefinition(
+                        context.lookup(Registries.ITEM).getOrThrow(AEItemTags.HOMING_ENCHANTABLES),
                         Optional.empty(),
                         1,
+                        3,
+                        Enchantment.dynamicCost(20, 10),
+                        Enchantment.dynamicCost(50, 10),
+                        1,
+                        List.of(EquipmentSlotGroup.MAINHAND)
+                ),
+                HolderSet.empty(),
+                DataComponentMap.builder().set(
+                        AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value(),
+                        HomingEffect.single(
+                                new LevelBasedHoming.Entry(List.of(
+                                        new Homing(
+                                                AE.location("homing.living"),
+                                                Optional.empty(),
+                                                new EntityTypeCondition(EntityTypeCondition.Type.LIVING_ENTITY, LootContext.EntityTarget.THIS),
+                                                LevelBasedValue.perLevel(5, 2),
+                                                LevelBasedValue.perLevel(0.95f, 0.01f),
+                                                0
+                                        ),
+                                        new Homing(
+                                                AE.location("homing.animals"),
+                                                Optional.empty(),
+                                                new EntityTypeCondition(EntityTypeCondition.Type.ANIMAL, LootContext.EntityTarget.THIS),
+                                                LevelBasedValue.perLevel(5, 2),
+                                                LevelBasedValue.perLevel(0.95f, 0.01f),
+                                                1
+                                        ),
+                                        new Homing(
+                                                AE.location("homing.enemies"),
+                                                Optional.empty(),
+                                                new EntityTypeCondition(EntityTypeCondition.Type.ENEMY, LootContext.EntityTarget.THIS),
+                                                LevelBasedValue.perLevel(5, 2),
+                                                LevelBasedValue.perLevel(0.95f, 0.01f),
+                                                2
+                                        ),
+                                        new Homing(
+                                                AE.location("homing.bosses"),
+                                                Optional.empty(),
+                                                AnyOfCondition.anyOf(
+                                                        Conditions.thisEntity(EntityConditions.isType(Tags.EntityTypes.BOSSES)),
+                                                        Conditions.thisEntity(EntityConditions.isType(EntityType.WARDEN))
+                                                ).build(),
+                                                LevelBasedValue.perLevel(5, 2),
+                                                LevelBasedValue.perLevel(0.95f, 0.01f),
+                                                3
+                                        )
+                                ), MinMaxBounds.Ints.atLeast(1))
+                        )
+                ).build()
+        ));
+
+        context.register(GREEN_FOOT, Enchantment.enchantment(new Enchantment.EnchantmentDefinition(
+                context.lookup(Registries.ITEM).getOrThrow(ItemTags.FOOT_ARMOR_ENCHANTABLE),
+                Optional.empty(),
+                1,
                         3,
                         Enchantment.dynamicCost(20, 10),
                         Enchantment.dynamicCost(50, 10),

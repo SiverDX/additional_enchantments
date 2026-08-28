@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class AEItemTags extends ItemTagsProvider {
     public static final TagKey<Item> VALUABLES = TagKey.create(Registries.ITEM, AE.location("valuables"));
     public static final TagKey<Item> LIMITED_VALUABLES = TagKey.create(Registries.ITEM, AE.location("limited_valuables"));
+    public static final TagKey<Item> HOMING_ENCHANTABLES = TagKey.create(Registries.ITEM, AE.location("homing_enchantables"));
 
     public AEItemTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> provider, final CompletableFuture<TagLookup<Block>> lookup, final ExistingFileHelper helper) {
         super(output, provider, lookup, AE.MODID, helper);
@@ -87,6 +88,12 @@ public class AEItemTags extends ItemTagsProvider {
                 .add(Items.BEACON)
                 // Trophies
                 .add(Items.WITHER_SKELETON_SKULL)
+        ;
+
+        tag(HOMING_ENCHANTABLES)
+                .addTag(ItemTags.BOW_ENCHANTABLE)
+                .addTag(ItemTags.CROSSBOW_ENCHANTABLE)
+                .addTag(ItemTags.TRIDENT_ENCHANTABLE)
         ;
     }
 }

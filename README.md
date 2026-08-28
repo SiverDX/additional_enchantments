@@ -17,6 +17,8 @@ Further enchantments are planned
 
 New trigger point for enchantment effects
 - `equipment_change_trigger`: When changing any equipped item
+  - Most enchantments in this mod apply data attachments to the target entity, which handle the logic
+  - Meaning it is unlikely that they work well with other trigger points for enchantments
 
 New loot item conditions
 - `entity_type`
@@ -211,6 +213,8 @@ Additional explanations
 - TextColor: Either a named minecraft color or Hex codes
 - [ResourceLocation](https://minecraft.wiki/w/Identifier)
 - [LootItemCondition](https://docs.neoforged.net/docs/1.21.1/resources/server/loottables/lootconditions)
+  - `this` entity context relates to the targeted entity that would receive the glow effect
+  - `origin` relates to the position of the targeted entity
 - [LevelBasedValue](https://minecraft.wiki/w/Enchantment_definition#Level-based_value)
 
 </details>
@@ -400,7 +404,7 @@ Level 3:
     {
       "predicate": BlockPredicate,    // [Mandatory] || Checks which block to apply this effect to 
       "probability": LevelBasedValue, // [Mandatory] || The chance for this effect to be applied, checked separately before each attempt for every position
-      "priority": integer,            // [Mandatory] || Which effect to pick if multiple predicates match - the highest priority is selected
+      "priority": integer,            // [Optional]  || Which effect to pick if multiple predicates match - the highest priority is selected (Default: 0)
       "damage": integer               // [Mandatory] || The amount the enchanted item will be damaged from each successful effect attempt 
     }
   ],

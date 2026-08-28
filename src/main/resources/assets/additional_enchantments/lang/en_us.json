@@ -1,12 +1,19 @@
 {
   "enchantment.additional_enchantments.climbable": "Climbable",
   "enchantment.additional_enchantments.climbable.desc": "Allows you to climb on walls and perhaps even ceilings",
+
   "enchantment.additional_enchantments.perception": "Perception",
   "enchantment.additional_enchantments.perception.desc": "Marks certain entities or valuable items with a glowing border",
+
   "enchantment.additional_enchantments.fluid_vision": "Fluid Vision",
   "enchantment.additional_enchantments.fluid_vision.desc": "Improves your vision through and within certain fluids",
+
   "enchantment.additional_enchantments.treasure_finder": "Treasure Finder",
   "enchantment.additional_enchantments.treasure_finder.desc": "Marks ores and unclaimed treasures",
+
   "enchantment.additional_enchantments.green_foot": "Green Foot",
-  "enchantment.additional_enchantments.green_foot.desc": "Merely walking allows nearby crops to grow and grass to flourish"
+  "enchantment.additional_enchantments.green_foot.desc": "Merely walking allows nearby crops to grow and grass to flourish",
+
+  "enchantment.additional_enchantments.homing": "Homing",
+  "enchantment.additional_enchantments.homing.desc": "Causes projectiles to home in on certain entities"
 }

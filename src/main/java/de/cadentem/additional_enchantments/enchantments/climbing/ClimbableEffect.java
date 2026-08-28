@@ -7,7 +7,6 @@ import de.cadentem.additional_enchantments.attachments.ClimbableData;
 import de.cadentem.additional_enchantments.common.network.NetworkHandler;
 import de.cadentem.additional_enchantments.common.network.SyncClimbable;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.enchantment.EnchantedItemInUse;
 import net.minecraft.world.item.enchantment.effects.EnchantmentEntityEffect;
@@ -24,28 +23,24 @@ public record ClimbableEffect(LevelBasedClimbable climbable) implements Enchantm
 
     @Override
     public void apply(@NotNull final ServerLevel level, final int enchantmentLevel, @NotNull final EnchantedItemInUse item, @NotNull final Entity entity, @NotNull final Vec3 position) {
-        if (entity instanceof ServerPlayer player) {
-            List<Climbable> climbables = climbable.get(enchantmentLevel);
+        List<Climbable> climbables = climbable.get(enchantmentLevel);
 
-            ClimbableData data = player.getData(AEDataAttachments.CLIMBABLE);
-            data.addClimbables(climbables);
+        ClimbableData data = entity.getData(AEDataAttachments.CLIMBABLE);
+        data.addClimbables(climbables);
 
-            PacketDistributor.sendToPlayer(player, new SyncClimbable(climbables, NetworkHandler.SyncType.ADD));
-        }
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new SyncClimbable(entity.getId(), climbables, NetworkHandler.SyncType.ADD));
     }
 
     @Override
     public void onDeactivated(@NotNull final EnchantedItemInUse item, @NotNull final Entity entity, @NotNull final Vec3 position, final int enchantmentLevel) {
         EnchantmentEntityEffect.super.onDeactivated(item, entity, position, enchantmentLevel);
 
-        if (entity instanceof ServerPlayer player) {
-            List<Climbable> climbables = climbable.get(enchantmentLevel);
+        List<Climbable> climbables = climbable.get(enchantmentLevel);
 
-            ClimbableData data = player.getData(AEDataAttachments.CLIMBABLE);
-            data.removeClimbables(climbables.stream().map(Climbable::id).toList());
+        ClimbableData data = entity.getData(AEDataAttachments.CLIMBABLE);
+        data.removeClimbables(climbables.stream().map(Climbable::id).toList());
 
-            PacketDistributor.sendToPlayer(player, new SyncClimbable(climbables, NetworkHandler.SyncType.REMOVE));
-        }
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new SyncClimbable(entity.getId(), climbables, NetworkHandler.SyncType.REMOVE));
     }
 
     public static List<EnchantmentEntityEffect> single(final LevelBasedClimbable.Entry... entries) {

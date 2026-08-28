@@ -1,0 +1,128 @@
+{
+  "anvil_cost": 1,
+  "description": {
+    "translate": "enchantment.additional_enchantments.homing"
+  },
+  "effects": {
+    "additional_enchantments:equipment_change_trigger": [
+      {
+        "type": "additional_enchantments:homing",
+        "homing": {
+          "values": [
+            {
+              "level_range": {
+                "min": 1
+              },
+              "value": [
+                {
+                  "id": "additional_enchantments:homing.living",
+                  "priority": 0,
+                  "range": {
+                    "type": "minecraft:linear",
+                    "base": 5.0,
+                    "per_level_above_first": 2.0
+                  },
+                  "target_condition": {
+                    "type": "living_entity",
+                    "condition": "additional_enchantments:entity_type",
+                    "entity": "this"
+                  },
+                  "velocity_multiplier": {
+                    "type": "minecraft:linear",
+                    "base": 0.95,
+                    "per_level_above_first": 0.01
+                  }
+                },
+                {
+                  "id": "additional_enchantments:homing.animals",
+                  "priority": 1,
+                  "range": {
+                    "type": "minecraft:linear",
+                    "base": 5.0,
+                    "per_level_above_first": 2.0
+                  },
+                  "target_condition": {
+                    "type": "animal",
+                    "condition": "additional_enchantments:entity_type",
+                    "entity": "this"
+                  },
+                  "velocity_multiplier": {
+                    "type": "minecraft:linear",
+                    "base": 0.95,
+                    "per_level_above_first": 0.01
+                  }
+                },
+                {
+                  "id": "additional_enchantments:homing.enemies",
+                  "priority": 2,
+                  "range": {
+                    "type": "minecraft:linear",
+                    "base": 5.0,
+                    "per_level_above_first": 2.0
+                  },
+                  "target_condition": {
+                    "type": "enemy",
+                    "condition": "additional_enchantments:entity_type",
+                    "entity": "this"
+                  },
+                  "velocity_multiplier": {
+                    "type": "minecraft:linear",
+                    "base": 0.95,
+                    "per_level_above_first": 0.01
+                  }
+                },
+                {
+                  "id": "additional_enchantments:homing.bosses",
+                  "priority": 3,
+                  "range": {
+                    "type": "minecraft:linear",
+                    "base": 5.0,
+                    "per_level_above_first": 2.0
+                  },
+                  "target_condition": {
+                    "condition": "minecraft:any_of",
+                    "terms": [
+                      {
+                        "condition": "minecraft:entity_properties",
+                        "entity": "this",
+                        "predicate": {
+                          "type": "#c:bosses"
+                        }
+                      },
+                      {
+                        "condition": "minecraft:entity_properties",
+                        "entity": "this",
+                        "predicate": {
+                          "type": "minecraft:warden"
+                        }
+                      }
+                    ]
+                  },
+                  "velocity_multiplier": {
+                    "type": "minecraft:linear",
+                    "base": 0.95,
+                    "per_level_above_first": 0.01
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "max_cost": {
+    "base": 50,
+    "per_level_above_first": 10
+  },
+  "max_level": 3,
+  "min_cost": {
+    "base": 20,
+    "per_level_above_first": 10
+  },
+  "slots": [
+    "mainhand"
+  ],
+  "supported_items": "#additional_enchantments:homing_enchantables",
+  "weight": 1
+}

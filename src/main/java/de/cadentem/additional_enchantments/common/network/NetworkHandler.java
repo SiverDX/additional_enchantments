@@ -21,10 +21,12 @@ public class NetworkHandler {
         registrar.playToClient(SyncClimbable.TYPE, SyncClimbable.STREAM_CODEC, SyncClimbable::handleClient);
         registrar.playToClient(SyncPerception.TYPE, SyncPerception.STREAM_CODEC, SyncPerception::handleClient);
         registrar.playToClient(SyncFluidVision.TYPE, SyncFluidVision.STREAM_CODEC, SyncFluidVision::handleClient);
+        registrar.playToClient(SyncHoming.TYPE, SyncHoming.STREAM_CODEC, SyncHoming::handleClient);
 
         registrar.playToClient(SyncLootTable.TYPE, SyncLootTable.STREAM_CODEC, SyncLootTable::handleClient);
         registrar.playToClient(SyncPerceptionEntries.TYPE, SyncPerceptionEntries.STREAM_CODEC, SyncPerceptionEntries::handleClient);
         registrar.playToClient(SyncClimbFlag.TYPE, SyncClimbFlag.STREAM_CODEC, SyncClimbFlag::handleClient);
+        registrar.playToClient(SyncHomingProjectileData.TYPE, SyncHomingProjectileData.STREAM_CODEC, SyncHomingProjectileData::handleClient);
 
         registrar.playBidirectional(SyncClimbablePositions.TYPE, SyncClimbablePositions.STREAM_CODEC, new DirectionalPayloadHandler<>(SyncClimbablePositions::handleClient, SyncClimbablePositions::handleServer));
     }

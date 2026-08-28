@@ -40,7 +40,7 @@ public record Perception(ResourceLocation id, LootItemCondition condition, Level
                 return ShiftingColor.Mapped.NONE;
             }
 
-            LootContext context = Conditions.createContext(level, target);
+            LootContext context = Conditions.perceptionContext(level, target);
 
             if (condition.test(context)) {
                 return color;

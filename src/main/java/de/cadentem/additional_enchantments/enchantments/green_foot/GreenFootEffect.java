@@ -84,7 +84,7 @@ public record GreenFootEffect(List<GrowthEntry> entries, LevelBasedValue extraRa
         public static final Codec<GrowthEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 BlockPredicate.CODEC.fieldOf("predicate").forGetter(GrowthEntry::predicate),
                 LevelBasedValue.CODEC.fieldOf("probability").forGetter(GrowthEntry::probability),
-                Codec.INT.fieldOf("priority").forGetter(GrowthEntry::priority),
+                Codec.INT.optionalFieldOf("priority", 0).forGetter(GrowthEntry::priority),
                 Codec.INT.fieldOf("damage").forGetter(GrowthEntry::damage)
         ).apply(instance, GrowthEntry::new));
 

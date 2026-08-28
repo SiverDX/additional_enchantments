@@ -1,6 +1,4 @@
-// 1.21.1	2026-08-26T18:35:11.1470691	Tags for minecraft:block mod id additional_enchantments
-431f9fb03d67d660a8d026cb1058f68edb7f1bcf data/additional_enchantments/tags/block/bracewalk.json
-237a6f86fdb9e3ce261c990e41237ca3af5ee619 data/additional_enchantments/tags/block/hunter_relevant.json
+// 1.21.1	2026-08-29T01:37:08.208	Tags for minecraft:block mod id additional_enchantments
 b88925d1056f80a7870497fbf9dd3a201ef1caa9 data/additional_enchantments/tags/block/misc_ores.json
 7f708c1e4a4e74bb2e1423a04d7a367ede8bc58f data/additional_enchantments/tags/block/slippery.json
 bd0378a7da7d950deb186650aa1a813c1cedc916 data/additional_enchantments/tags/block/treasures.json
