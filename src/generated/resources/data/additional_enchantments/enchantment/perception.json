@@ -404,6 +404,7 @@
       }
     ]
   },
+  "exclusive_set": "#additional_enchantments:visions",
   "max_cost": {
     "base": 50,
     "per_level_above_first": 10

@@ -3,6 +3,7 @@ package de.cadentem.additional_enchantments.enchantments;
 import com.mojang.datafixers.util.Either;
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
+import de.cadentem.additional_enchantments.data.AEEnchantmentTags;
 import de.cadentem.additional_enchantments.data.AEFluidTypesTags;
 import de.cadentem.additional_enchantments.data.AEItemTags;
 import de.cadentem.additional_enchantments.enchantments.climbing.Climbable;
@@ -11,6 +12,7 @@ import de.cadentem.additional_enchantments.enchantments.climbing.LevelBasedClimb
 import de.cadentem.additional_enchantments.enchantments.fluid_vision.FluidVision;
 import de.cadentem.additional_enchantments.enchantments.fluid_vision.FluidVisionEffect;
 import de.cadentem.additional_enchantments.enchantments.fluid_vision.LevelBasedFluidVision;
+import de.cadentem.additional_enchantments.enchantments.green_foot.GreenFootEffect;
 import de.cadentem.additional_enchantments.enchantments.perception.LevelBasedPerception;
 import de.cadentem.additional_enchantments.enchantments.perception.Perception;
 import de.cadentem.additional_enchantments.enchantments.perception.PerceptionEffect;
@@ -41,6 +43,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.LevelBasedValue;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
@@ -59,8 +62,44 @@ public class AEEnchantments {
     public static ResourceKey<Enchantment> CLIMBABLE = key("climbable");
     public static ResourceKey<Enchantment> PERCEPTION = key("perception");
     public static ResourceKey<Enchantment> FLUID_VISION = key("fluid_vision");
+    public static ResourceKey<Enchantment> GREEN_FOOT = key("green_foot");
 
     public static void bootstrap(final BootstrapContext<Enchantment> context) {
+        context.register(GREEN_FOOT, Enchantment.enchantment(new Enchantment.EnchantmentDefinition(
+                        context.lookup(Registries.ITEM).getOrThrow(ItemTags.FOOT_ARMOR_ENCHANTABLE),
+                        Optional.empty(),
+                        1,
+                        3,
+                        Enchantment.dynamicCost(20, 10),
+                        Enchantment.dynamicCost(50, 10),
+                        1,
+                        List.of(EquipmentSlotGroup.FEET)
+                )
+        ).withEffect(
+                EnchantmentEffectComponents.LOCATION_CHANGED,
+                new GreenFootEffect(List.of(
+                        new GreenFootEffect.GrowthEntry(
+                                BlockPredicate.alwaysTrue(),
+                                LevelBasedValue.constant(0.01f),
+                                0,
+                                0
+                        ),
+                        new GreenFootEffect.GrowthEntry(
+                                BlockPredicate.matchesTag(BlockTags.SAPLINGS),
+                                LevelBasedValue.perLevel(0.1f, 0.075f),
+                                1,
+                                1
+                        ),
+                        new GreenFootEffect.GrowthEntry(
+                                BlockPredicate.matchesTag(BlockTags.CROPS),
+                                LevelBasedValue.perLevel(0.3f, 0.1f),
+                                2,
+                                1
+                        )
+                ), LevelBasedValue.perLevel(1, 1)
+                )
+        ).build(GREEN_FOOT.location()));
+
         context.register(FLUID_VISION, new Enchantment(
                 Component.translatable("enchantment.additional_enchantments.fluid_vision"),
                 new Enchantment.EnchantmentDefinition(
@@ -73,7 +112,7 @@ public class AEEnchantments {
                         1,
                         List.of(EquipmentSlotGroup.HEAD)
                 ),
-                HolderSet.empty(), // TODO
+                context.lookup(Registries.ENCHANTMENT).getOrThrow(AEEnchantmentTags.VISIONS),
                 DataComponentMap.builder().set(
                         AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value(),
                         FluidVisionEffect.single(
@@ -117,7 +156,7 @@ public class AEEnchantments {
                         1,
                         List.of(EquipmentSlotGroup.HEAD)
                 ),
-                HolderSet.empty(), // TODO
+                context.lookup(Registries.ENCHANTMENT).getOrThrow(AEEnchantmentTags.VISIONS),
                 DataComponentMap.builder().set(
                         AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value(),
                         PerceptionEffect.single(
@@ -262,7 +301,7 @@ public class AEEnchantments {
                         1,
                         List.of(EquipmentSlotGroup.FEET)
                 ),
-                HolderSet.empty(), // TODO
+                HolderSet.empty(),
                 DataComponentMap.builder().set(
                         AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value(),
                         ClimbableEffect.single(
@@ -320,7 +359,7 @@ public class AEEnchantments {
                         1,
                         List.of(EquipmentSlotGroup.HEAD)
                 ),
-                HolderSet.empty(), // TODO
+                context.lookup(Registries.ENCHANTMENT).getOrThrow(AEEnchantmentTags.VISIONS),
                 DataComponentMap.builder().set(
                         AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value(),
                         TreasureFinderEffect.single(

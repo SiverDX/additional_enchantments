@@ -1,0 +1,70 @@
+{
+  "anvil_cost": 1,
+  "description": {
+    "translate": "enchantment.additional_enchantments.green_foot"
+  },
+  "effects": {
+    "minecraft:location_changed": [
+      {
+        "effect": {
+          "type": "additional_enchantments:green_foot",
+          "extra_range": {
+            "type": "minecraft:linear",
+            "base": 1.0,
+            "per_level_above_first": 1.0
+          },
+          "growth_entries": [
+            {
+              "damage": 0,
+              "predicate": {
+                "type": "minecraft:true"
+              },
+              "priority": 0,
+              "probability": 0.01
+            },
+            {
+              "damage": 1,
+              "predicate": {
+                "type": "minecraft:matching_block_tag",
+                "tag": "minecraft:saplings"
+              },
+              "priority": 1,
+              "probability": {
+                "type": "minecraft:linear",
+                "base": 0.1,
+                "per_level_above_first": 0.075
+              }
+            },
+            {
+              "damage": 1,
+              "predicate": {
+                "type": "minecraft:matching_block_tag",
+                "tag": "minecraft:crops"
+              },
+              "priority": 2,
+              "probability": {
+                "type": "minecraft:linear",
+                "base": 0.3,
+                "per_level_above_first": 0.1
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "max_cost": {
+    "base": 50,
+    "per_level_above_first": 10
+  },
+  "max_level": 3,
+  "min_cost": {
+    "base": 20,
+    "per_level_above_first": 10
+  },
+  "slots": [
+    "feet"
+  ],
+  "supported_items": "#minecraft:enchantable/foot_armor",
+  "weight": 1
+}

@@ -2,16 +2,18 @@ package de.cadentem.additional_enchantments.enchantments;
 
 import com.mojang.serialization.MapCodec;
 import de.cadentem.additional_enchantments.AE;
-import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinderEffect;
 import de.cadentem.additional_enchantments.enchantments.climbing.ClimbableEffect;
 import de.cadentem.additional_enchantments.enchantments.fluid_vision.FluidVisionEffect;
+import de.cadentem.additional_enchantments.enchantments.green_foot.GreenFootEffect;
 import de.cadentem.additional_enchantments.enchantments.perception.PerceptionEffect;
+import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinderEffect;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.enchantment.EnchantedItemInUse;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.effects.EnchantmentEntityEffect;
+import net.minecraft.world.item.enchantment.effects.EnchantmentLocationBasedEffect;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -25,12 +27,20 @@ import java.util.function.UnaryOperator;
 @EventBusSubscriber
 public class AEEnchantmentRegistry {
     public static final DeferredRegister<MapCodec<? extends EnchantmentEntityEffect>> ENTITY_EFFECT_REGISTRY = DeferredRegister.create(Registries.ENCHANTMENT_ENTITY_EFFECT_TYPE, AE.MODID);
+    public static final DeferredRegister<MapCodec<? extends EnchantmentLocationBasedEffect>> LOCATION_EFFECT_REGISTRY = DeferredRegister.create(Registries.ENCHANTMENT_LOCATION_BASED_EFFECT_TYPE, AE.MODID);
 
     static {
         ENTITY_EFFECT_REGISTRY.register("treasure_finder", () -> TreasureFinderEffect.CODEC);
         ENTITY_EFFECT_REGISTRY.register("climbable", () -> ClimbableEffect.CODEC);
         ENTITY_EFFECT_REGISTRY.register("perception", () -> PerceptionEffect.CODEC);
         ENTITY_EFFECT_REGISTRY.register("fluid_vision", () -> FluidVisionEffect.CODEC);
+        ENTITY_EFFECT_REGISTRY.register("green_foot", () -> GreenFootEffect.CODEC);
+
+        LOCATION_EFFECT_REGISTRY.register("treasure_finder", () -> TreasureFinderEffect.CODEC);
+        LOCATION_EFFECT_REGISTRY.register("climbable", () -> ClimbableEffect.CODEC);
+        LOCATION_EFFECT_REGISTRY.register("perception", () -> PerceptionEffect.CODEC);
+        LOCATION_EFFECT_REGISTRY.register("fluid_vision", () -> FluidVisionEffect.CODEC);
+        LOCATION_EFFECT_REGISTRY.register("green_foot", () -> GreenFootEffect.CODEC);
     }
 
     public static final DeferredRegister<DataComponentType<?>> COMPONENT_REGISTRY = DeferredRegister.create(Registries.ENCHANTMENT_EFFECT_COMPONENT_TYPE, AE.MODID);
