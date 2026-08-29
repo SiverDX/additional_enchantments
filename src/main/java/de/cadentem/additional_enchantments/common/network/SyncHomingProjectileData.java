@@ -11,13 +11,14 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-public record SyncHomingProjectileData(int projectileId, int targetId, float velocityMultiplier) implements CustomPacketPayload {
+public record SyncHomingProjectileData(int projectileId, int targetId, float velocityMultiplier, float maxTurnPerTick) implements CustomPacketPayload {
     public static final Type<SyncHomingProjectileData> TYPE = new Type<>(AE.location("sync_homing_projectile_data"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncHomingProjectileData> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, SyncHomingProjectileData::projectileId,
             ByteBufCodecs.INT, SyncHomingProjectileData::targetId,
             ByteBufCodecs.FLOAT, SyncHomingProjectileData::velocityMultiplier,
+            ByteBufCodecs.FLOAT, SyncHomingProjectileData::maxTurnPerTick,
             SyncHomingProjectileData::new
     );
 
@@ -25,7 +26,7 @@ public record SyncHomingProjectileData(int projectileId, int targetId, float vel
         context.enqueueWork(() -> {
             if (context.player().level().getEntity(packet.projectileId()) instanceof Projectile projectile) {
                 ProjectileHomingData data = projectile.getData(AEDataAttachments.PROJECTILE_HOMING_DATA);
-                data.setClientData(context.player().level().getEntity(packet.targetId()), packet.targetId(), packet.velocityMultiplier());
+                data.setClientData(context.player().level().getEntity(packet.targetId()), packet.targetId(), packet.velocityMultiplier(), packet.maxTurnPerTick());
             }
         });
     }

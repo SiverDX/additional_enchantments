@@ -15,6 +15,7 @@ import de.cadentem.additional_enchantments.enchantments.fluid_vision.LevelBasedF
 import de.cadentem.additional_enchantments.enchantments.green_foot.GreenFootEffect;
 import de.cadentem.additional_enchantments.enchantments.homing.Homing;
 import de.cadentem.additional_enchantments.enchantments.homing.HomingEffect;
+import de.cadentem.additional_enchantments.enchantments.homing.HomingRange;
 import de.cadentem.additional_enchantments.enchantments.homing.LevelBasedHoming;
 import de.cadentem.additional_enchantments.enchantments.perception.LevelBasedPerception;
 import de.cadentem.additional_enchantments.enchantments.perception.Perception;
@@ -90,25 +91,37 @@ public class AEEnchantments {
                                                 AE.location("homing.living"),
                                                 Optional.empty(),
                                                 new EntityTypeCondition(EntityTypeCondition.Type.LIVING_ENTITY, LootContext.EntityTarget.THIS),
-                                                LevelBasedValue.perLevel(5, 2),
+                                                HomingRange.builder()
+                                                        .all(LevelBasedValue.perLevel(10, 5))
+                                                        .back(LevelBasedValue.perLevel(2, 1))
+                                                        .build(),
                                                 LevelBasedValue.perLevel(0.95f, 0.01f),
-                                                0
+                                                0,
+                                                LevelBasedValue.perLevel(4, 3)
                                         ),
                                         new Homing(
                                                 AE.location("homing.animals"),
                                                 Optional.empty(),
                                                 new EntityTypeCondition(EntityTypeCondition.Type.ANIMAL, LootContext.EntityTarget.THIS),
-                                                LevelBasedValue.perLevel(5, 2),
+                                                HomingRange.builder()
+                                                        .all(LevelBasedValue.perLevel(10, 5))
+                                                        .back(LevelBasedValue.perLevel(3, 1))
+                                                        .build(),
                                                 LevelBasedValue.perLevel(0.95f, 0.01f),
-                                                1
+                                                1,
+                                                LevelBasedValue.perLevel(4, 3)
                                         ),
                                         new Homing(
                                                 AE.location("homing.enemies"),
                                                 Optional.empty(),
                                                 new EntityTypeCondition(EntityTypeCondition.Type.ENEMY, LootContext.EntityTarget.THIS),
-                                                LevelBasedValue.perLevel(5, 2),
+                                                HomingRange.builder()
+                                                        .all(LevelBasedValue.perLevel(10, 5))
+                                                        .back(LevelBasedValue.perLevel(3, 1))
+                                                        .build(),
                                                 LevelBasedValue.perLevel(0.95f, 0.01f),
-                                                2
+                                                2,
+                                                LevelBasedValue.perLevel(4, 3)
                                         ),
                                         new Homing(
                                                 AE.location("homing.bosses"),
@@ -117,9 +130,13 @@ public class AEEnchantments {
                                                         Conditions.thisEntity(EntityConditions.isType(Tags.EntityTypes.BOSSES)),
                                                         Conditions.thisEntity(EntityConditions.isType(EntityType.WARDEN))
                                                 ).build(),
-                                                LevelBasedValue.perLevel(5, 2),
+                                                HomingRange.builder()
+                                                        .all(LevelBasedValue.perLevel(10, 5))
+                                                        .back(LevelBasedValue.perLevel(3, 1))
+                                                        .build(),
                                                 LevelBasedValue.perLevel(0.95f, 0.01f),
-                                                3
+                                                3,
+                                                LevelBasedValue.perLevel(4, 3)
                                         )
                                 ), MinMaxBounds.Ints.atLeast(1))
                         )
