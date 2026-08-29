@@ -3,6 +3,10 @@ package de.cadentem.additional_enchantments.enchantments.homing;
 import com.mojang.serialization.Codec;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,8 +28,23 @@ public enum AimPoint implements StringRepresentable {
         this.positionSupplier = positionSupplier;
     }
 
-    public @Nullable Vec3 findPosition(final Entity target) {
+    public static @Nullable AimPoint findFreePoint(final Projectile projectile, final Entity target) {
+        for (AimPoint point : AimPoint.values()) {
+            if (point.isFree(projectile, point.getPosition(target))) {
+                return point;
+            }
+        }
+
+        return null;
+    }
+
+    public Vec3 getPosition(final Entity target) {
         return positionSupplier.apply(target);
+    }
+
+    private boolean isFree(final Projectile projectile, final Vec3 position) {
+        BlockHitResult hit = projectile.level().clip(new ClipContext(projectile.position(), position, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, projectile));
+        return hit.getType() == HitResult.Type.MISS;
     }
 
     @Override

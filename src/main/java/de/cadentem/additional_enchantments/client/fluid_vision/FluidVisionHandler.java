@@ -5,6 +5,7 @@ import de.cadentem.additional_enchantments.attachments.FluidVisionData;
 import de.cadentem.additional_enchantments.mixin.client.LiquidBlockRendererMixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -12,7 +13,7 @@ import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidType;
 
-@EventBusSubscriber
+@EventBusSubscriber(Dist.CLIENT)
 public class FluidVisionHandler {
     /** The alpha change in {@link LiquidBlockRendererMixin} requires the drawn blocks to be uncached and be re-rendered */
     @SubscribeEvent

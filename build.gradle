@@ -32,18 +32,24 @@ neoForge {
     runs {
         client {
             client()
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            gameDirectory = project.file('runs/client')
+            programArguments.addAll '--username', 'Dev####'
+        }
+
+        client_static {
+            client()
+            gameDirectory = project.file('runs/client_static')
+            // The UUID is the one that will get assigned in multiplayer based on the name 'Dev'
+            programArguments.addAll '--username', 'Dev', "--uuid", "380df991-f603-344c-a090-369bad2a924a"
         }
 
         server {
             server()
-            programArgument '--nogui'
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            gameDirectory = project.file('runs/server')
         }
 
         gameTestServer {
             type = "gameTestServer"
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         data {
@@ -53,6 +59,7 @@ neoForge {
 
         configureEach {
             systemProperty 'forge.logging.markers', 'REGISTRIES'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
             logLevel = org.slf4j.event.Level.DEBUG
         }
     }

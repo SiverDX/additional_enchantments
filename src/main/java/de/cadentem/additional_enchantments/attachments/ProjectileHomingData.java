@@ -19,10 +19,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -207,29 +204,19 @@ public class ProjectileHomingData implements INBTSerializable<CompoundTag> {
     private @Nullable Vec3 selectAimPoint(final Projectile projectile, final Entity target) {
         ticksUntilAimPointRefresh--;
 
-        if (this.aimPoint != null && ticksUntilAimPointRefresh > 0) {
-            return this.aimPoint.findPosition(target);
+        if (aimPoint != null && ticksUntilAimPointRefresh > 0) {
+            return aimPoint.getPosition(target);
         }
 
-        for (AimPoint aimPoint : AimPoint.values()) {
-            Vec3 point = aimPoint.findPosition(target);
+        aimPoint = AimPoint.findFreePoint(projectile, target);
 
-            if (isFree(projectile, point)) {
-                this.aimPoint = aimPoint;
-                ticksUntilAimPointRefresh = AIM_POINT_LIFETIME;
-                return point;
-            }
+        if (aimPoint != null) {
+            ticksUntilAimPointRefresh = AIM_POINT_LIFETIME;
+            return aimPoint.getPosition(target);
         }
 
-        this.aimPoint = null;
         ticksUntilAimPointRefresh = 0;
-
         return null;
-    }
-
-    private boolean isFree(final Projectile projectile, final Vec3 position) {
-        BlockHitResult hit = projectile.level().clip(new ClipContext(projectile.position(), position, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, projectile));
-        return hit.getType() == HitResult.Type.MISS;
     }
 
     /** @param entries Is expected to be sorted based on the priority (the highest value first) */
@@ -261,6 +248,10 @@ public class ProjectileHomingData implements INBTSerializable<CompoundTag> {
 
         for (Homing.Mapped homing : entries) {
             for (Entity target : targets) {
+                if (AimPoint.findFreePoint(projectile, target) == null) {
+                    continue;
+                }
+
                 if (homing.isValidTarget(level, projectile, target)) {
                     this.target = target;
                     targetId = target.getId();
