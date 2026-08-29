@@ -205,6 +205,11 @@ Level 3:
 Additional explanations
 - [ResourceLocation](https://minecraft.wiki/w/Identifier)
 - [HolderSet](https://developers.wiki.resourcefulbees.com/miscellaneous-data)
+- [LootItemCondition](https://docs.neoforged.net/docs/1.21.1/resources/server/loottables/lootconditions)
+  - `this` entity relates to the targeted entity
+  - `origin` relates to the position of the targeted entity
+  - `attacking_entity` relates to the owner of the projectile
+  - `direct_attacking_entity` relates to the actual projectile
 - [LevelBasedValue](https://minecraft.wiki/w/Enchantment_definition#Level-based_value)
 
 </details>
