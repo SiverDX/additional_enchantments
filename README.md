@@ -5,7 +5,6 @@
 - 1.20.1 documentation can be found [here](https://github.com/SiverDX/additional_enchantments/blob/1.20.1/README.md)
  
 Further enchantments are planned
-  - Homing
   - Hunter
   - Confusion (maybe)
   - Voiding (maybe)
