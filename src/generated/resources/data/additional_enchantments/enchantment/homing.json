@@ -21,7 +21,6 @@
                     "base": 4.0,
                     "per_level_above_first": 3.0
                   },
-                  "priority": 0,
                   "search_range": {
                     "back": {
                       "type": "minecraft:linear",
@@ -55,9 +54,44 @@
                     }
                   },
                   "target_condition": {
-                    "type": "living_entity",
-                    "condition": "additional_enchantments:entity_type",
-                    "entity": "this"
+                    "condition": "minecraft:all_of",
+                    "terms": [
+                      {
+                        "type": "living_entity",
+                        "condition": "additional_enchantments:entity_type",
+                        "entity": "this"
+                      },
+                      {
+                        "condition": "minecraft:inverted",
+                        "term": {
+                          "condition": "minecraft:entity_properties",
+                          "entity": "this",
+                          "predicate": {
+                            "type": "minecraft:villager"
+                          }
+                        }
+                      },
+                      {
+                        "condition": "minecraft:inverted",
+                        "term": {
+                          "condition": "minecraft:entity_properties",
+                          "entity": "this",
+                          "predicate": {
+                            "type": "minecraft:iron_golem"
+                          }
+                        }
+                      },
+                      {
+                        "condition": "minecraft:inverted",
+                        "term": {
+                          "condition": "minecraft:entity_properties",
+                          "entity": "this",
+                          "predicate": {
+                            "type": "minecraft:enderman"
+                          }
+                        }
+                      }
+                    ]
                   },
                   "velocity_multiplier": {
                     "type": "minecraft:linear",
@@ -157,9 +191,24 @@
                     }
                   },
                   "target_condition": {
-                    "type": "enemy",
-                    "condition": "additional_enchantments:entity_type",
-                    "entity": "this"
+                    "condition": "minecraft:all_of",
+                    "terms": [
+                      {
+                        "type": "enemy",
+                        "condition": "additional_enchantments:entity_type",
+                        "entity": "this"
+                      },
+                      {
+                        "condition": "minecraft:inverted",
+                        "term": {
+                          "condition": "minecraft:entity_properties",
+                          "entity": "this",
+                          "predicate": {
+                            "type": "minecraft:enderman"
+                          }
+                        }
+                      }
+                    ]
                   },
                   "velocity_multiplier": {
                     "type": "minecraft:linear",

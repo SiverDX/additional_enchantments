@@ -100,9 +100,11 @@ Level 2:
 - Better visibility
 
 Level 3:
+- Fluids from `Level 1` and `Level 2`
 - Better visibility
 
 Level 4:
+- Fluids from `Level 1` and `Level 2`
 - Better visibility
 
 </details>
@@ -124,6 +126,75 @@ Level 4:
             "id": ResourceLocation,               // [Mandatory] || Unique identifier for the effect
             "fluid_types": HolderSet<FluidType>,  // [Mandatory] || Defines to which fluids this effect will apply to 
             "percentage": LevelBasedValue         // [Mandatory] || Defines how see-through the fluid will be and by how much the viewing distance within the fluid will be improved
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Additional explanations
+- [ResourceLocation](https://minecraft.wiki/w/Identifier)
+- [HolderSet](https://developers.wiki.resourcefulbees.com/miscellaneous-data)
+- [LevelBasedValue](https://minecraft.wiki/w/Enchantment_definition#Level-based_value)
+
+</details>
+
+## Homing
+- Causes the projectile to home in on targets
+- Entities closest to the camera focus are prioritized (i.e., the entity you look at)
+- Friendly entities (your tamed animals, allies or their tamed animals, players if pvp is disabled) are ignored
+- The target definition with the highest priority is checked first
+
+<details>
+<summary>Default Effects</summary>
+
+All Levels:
+- Living entities (priority 0)
+  - Except `minecraft:villager`, `minecraft:iron_golem` and `minecraft:enderman`
+- Animals (priority 1)
+- Enemies (priority 2)
+  - Except `minecraft:enderman`
+- Bosses (priority 3)
+  - `#c:bosses` and `minecraft:warden`
+
+Level 2
+- Improved search range, velocity and turn angle per tick
+
+Level 3:
+- Improved search range, velocity and turn angle per tick
+
+</details>
+
+<details>
+<summary>Technical Definition</summary>
+
+```js
+{
+  "homing": {                                       // [Mandatory] || 
+    "values": [                                     // [Mandatory] || 
+      {
+        "level_range": {                            // [Mandatory] || Defines at which enchantment levels this effect will apply
+          "min": integer,                           // [Optional]  || 
+          "max": integer                            // [Optional]  || 
+        },
+        "value": [                                  // [Mandatory] || 
+          {
+            "id": ResourceLocation,                 // [Mandatory] || Unique identifier for the effect
+            "projectiles": HolderSet<EntityType>,   // [Optional]  || Projectiles this effect applies to (none specified = all) 
+            "target_condition": LootItemCondition,  // [Mandatory] || Determines which entities are targeted
+            "search_range": {                       // [Mandatory] || Specifies the search range used to pick targets
+                "front": LevelBasedValue,           // [Optional]  || (Default: 0)
+                "back": LevelBasedValue,            // [Optional]  || (Default: 0)
+                "left": LevelBasedValue,            // [Optional]  || (Default: 0)
+                "right": LevelBasedValue,           // [Optional]  || (Default: 0)
+                "up": LevelBasedValue,              // [Optional]  || (Default: 0)
+                "down": LevelBasedValue             // [Optional]  || (Default: 0)
+              },
+            "velocity_multiplier": LevelBasedValue, // [Mandatory] || A multiplier that is applied per tick to the projectiles velocity
+            "max_turn_per_tick": LevelBasedValue,   // [Optional]  || The maximum amount of degrees the projectile can turn per tick (Default: 180, meaning it will snap directly to the target)
+            "priority": integer                     // [Optional]  || The priority of this effect (Default: 0)
           }
         ]
       }

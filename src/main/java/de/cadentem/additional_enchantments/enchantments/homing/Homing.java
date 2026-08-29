@@ -17,30 +17,30 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 import java.util.Optional;
 
-public record Homing(ResourceLocation id, Optional<HolderSet<EntityType<?>>> projectiles, LootItemCondition targetCondition, HomingRange searchRange, LevelBasedValue velocityMultiplier, int priority, LevelBasedValue maxTurnPerTick) {
+public record Homing(ResourceLocation id, Optional<HolderSet<EntityType<?>>> projectiles, LootItemCondition targetCondition, HomingRange searchRange, LevelBasedValue velocityMultiplier, LevelBasedValue maxTurnPerTick, int priority) {
     public static final Codec<Homing> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ResourceLocation.CODEC.fieldOf("id").forGetter(Homing::id),
-            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).optionalFieldOf("projectiles").forGetter(Homing::projectiles),
+            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).optionalFieldOf("projectiles").forGetter(Homing::projectiles), // TODO :: check if it can be limited by item?
             LootItemCondition.DIRECT_CODEC.fieldOf("target_condition").forGetter(Homing::targetCondition),
             HomingRange.CODEC.fieldOf("search_range").forGetter(Homing::searchRange),
             LevelBasedValue.CODEC.fieldOf("velocity_multiplier").forGetter(Homing::velocityMultiplier),
-            Codec.INT.fieldOf("priority").forGetter(Homing::priority),
-            LevelBasedValue.CODEC.optionalFieldOf("max_turn_per_tick", LevelBasedValue.constant(ProjectileHomingData.NO_MAX_TURN)).forGetter(Homing::maxTurnPerTick)
+            LevelBasedValue.CODEC.optionalFieldOf("max_turn_per_tick", LevelBasedValue.constant(ProjectileHomingData.NO_MAX_TURN)).forGetter(Homing::maxTurnPerTick),
+            Codec.INT.optionalFieldOf("priority", 0).forGetter(Homing::priority)
     ).apply(instance, Homing::new));
 
     public Mapped map(final int enchantmentLevel) {
-        return new Mapped(id, projectiles, targetCondition, searchRange.map(enchantmentLevel), velocityMultiplier.calculate(enchantmentLevel), priority, maxTurnPerTick.calculate(enchantmentLevel));
+        return new Mapped(id, projectiles, targetCondition, searchRange.map(enchantmentLevel), velocityMultiplier.calculate(enchantmentLevel), maxTurnPerTick.calculate(enchantmentLevel), priority);
     }
 
-    public record Mapped(ResourceLocation id, Optional<HolderSet<EntityType<?>>> projectiles, LootItemCondition targetCondition, HomingRange.Mapped searchRange, float velocityMultiplier, int priority, float maxTurnPerTick) {
+    public record Mapped(ResourceLocation id, Optional<HolderSet<EntityType<?>>> projectiles, LootItemCondition targetCondition, HomingRange.Mapped searchRange, float velocityMultiplier, float maxTurnPerTick, int priority) {
         public static final Codec<Mapped> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 ResourceLocation.CODEC.fieldOf("id").forGetter(Mapped::id),
                 RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).optionalFieldOf("projectiles").forGetter(Mapped::projectiles),
                 LootItemCondition.DIRECT_CODEC.fieldOf("target_condition").forGetter(Mapped::targetCondition),
                 HomingRange.Mapped.CODEC.fieldOf("search_range").forGetter(Mapped::searchRange),
                 Codec.FLOAT.fieldOf("velocity_multiplier").forGetter(Mapped::velocityMultiplier),
-                Codec.INT.fieldOf("priority").forGetter(Mapped::priority),
-                Codec.FLOAT.fieldOf("max_turn_per_tick").forGetter(Mapped::maxTurnPerTick)
+                Codec.FLOAT.fieldOf("max_turn_per_tick").forGetter(Mapped::maxTurnPerTick),
+                Codec.INT.fieldOf("priority").forGetter(Mapped::priority)
         ).apply(instance, Mapped::new));
 
         public boolean isValidForProjectile(final Projectile projectile) {

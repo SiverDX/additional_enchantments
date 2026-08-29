@@ -90,14 +90,19 @@ public class AEEnchantments {
                                         new Homing(
                                                 AE.location("homing.living"),
                                                 Optional.empty(),
-                                                new EntityTypeCondition(EntityTypeCondition.Type.LIVING_ENTITY, LootContext.EntityTarget.THIS),
+                                                AllOfCondition.allOf(
+                                                        () -> new EntityTypeCondition(EntityTypeCondition.Type.LIVING_ENTITY, LootContext.EntityTarget.THIS),
+                                                        Conditions.thisEntity(EntityConditions.isType(EntityType.VILLAGER)).invert(),
+                                                        Conditions.thisEntity(EntityConditions.isType(EntityType.IRON_GOLEM)).invert(),
+                                                        Conditions.thisEntity(EntityConditions.isType(EntityType.ENDERMAN)).invert()
+                                                ).build(),
                                                 HomingRange.builder()
                                                         .all(LevelBasedValue.perLevel(10, 5))
                                                         .back(LevelBasedValue.perLevel(2, 1))
                                                         .build(),
                                                 LevelBasedValue.perLevel(0.95f, 0.01f),
-                                                0,
-                                                LevelBasedValue.perLevel(4, 3)
+                                                LevelBasedValue.perLevel(4, 3),
+                                                0
                                         ),
                                         new Homing(
                                                 AE.location("homing.animals"),
@@ -108,20 +113,23 @@ public class AEEnchantments {
                                                         .back(LevelBasedValue.perLevel(3, 1))
                                                         .build(),
                                                 LevelBasedValue.perLevel(0.95f, 0.01f),
-                                                1,
-                                                LevelBasedValue.perLevel(4, 3)
+                                                LevelBasedValue.perLevel(4, 3),
+                                                1
                                         ),
                                         new Homing(
                                                 AE.location("homing.enemies"),
                                                 Optional.empty(),
-                                                new EntityTypeCondition(EntityTypeCondition.Type.ENEMY, LootContext.EntityTarget.THIS),
+                                                AllOfCondition.allOf(
+                                                        () -> new EntityTypeCondition(EntityTypeCondition.Type.ENEMY, LootContext.EntityTarget.THIS),
+                                                        Conditions.thisEntity(EntityConditions.isType(EntityType.ENDERMAN)).invert()
+                                                ).build(),
                                                 HomingRange.builder()
                                                         .all(LevelBasedValue.perLevel(10, 5))
                                                         .back(LevelBasedValue.perLevel(3, 1))
                                                         .build(),
                                                 LevelBasedValue.perLevel(0.95f, 0.01f),
-                                                2,
-                                                LevelBasedValue.perLevel(4, 3)
+                                                LevelBasedValue.perLevel(4, 3),
+                                                2
                                         ),
                                         new Homing(
                                                 AE.location("homing.bosses"),
@@ -135,8 +143,8 @@ public class AEEnchantments {
                                                         .back(LevelBasedValue.perLevel(3, 1))
                                                         .build(),
                                                 LevelBasedValue.perLevel(0.95f, 0.01f),
-                                                3,
-                                                LevelBasedValue.perLevel(4, 3)
+                                                LevelBasedValue.perLevel(4, 3),
+                                                3
                                         )
                                 ), MinMaxBounds.Ints.atLeast(1))
                         )
