@@ -1,16 +1,14 @@
 package de.cadentem.additional_enchantments.attachments;
 
-import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.common.network.SyncClimbFlag;
 import de.cadentem.additional_enchantments.enchantments.climbing.Climbable;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.WorldGenLevel;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -19,7 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ClimbableData implements INBTSerializable<CompoundTag> {
+public class ClimbableData implements ValueIOSerializable {
     // The core problem as to why this whole client / server setup is needed:
     // - The client calculates and stores the horizontal collision
     // - On the client-side the "blocking sliding down on ladders" part is handled
@@ -50,7 +48,7 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
      */
     private SyncClimbFlag.ClimbingType climbingType = SyncClimbFlag.ClimbingType.NONE;
 
-    private final Map<ResourceLocation, Climbable> entries = new HashMap<>();
+    private final Map<Identifier, Climbable> entries = new HashMap<>();
 
     public boolean isApprovedClimbPosition(final BlockPos position) {
         return approvedClimbPositions != null && approvedClimbPositions.contains(position);
@@ -156,27 +154,18 @@ public class ClimbableData implements INBTSerializable<CompoundTag> {
         climbables.forEach(climbable -> this.entries.put(climbable.id(), climbable));
     }
 
-    public void removeClimbables(final Collection<ResourceLocation> ids) {
+    public void removeClimbables(final Collection<Identifier> ids) {
         ids.forEach(entries::remove);
     }
 
     @Override
-    public CompoundTag serializeNBT(@NotNull final HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-
-        Climbable.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), entries.values().stream().toList())
-                .resultOrPartial(AE.LOG::error)
-                .ifPresent(data -> tag.put("data", data));
-
-        return tag;
+    public void serialize(@NotNull final ValueOutput output) {
+        output.store("entries", Climbable.CODEC.listOf(), entries.values().stream().toList());
     }
 
     @Override
-    public void deserializeNBT(@NotNull final HolderLookup.Provider provider, @NotNull final CompoundTag tag) {
+    public void deserialize(@NotNull final ValueInput input) {
         entries.clear();
-
-        Climbable.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.get("data"))
-                .resultOrPartial(AE.LOG::error)
-                .ifPresent(entries -> entries.forEach(entry -> this.entries.put(entry.id(), entry)));
+        input.read("entries", Climbable.CODEC.listOf()).ifPresent(entries -> entries.forEach(entry -> this.entries.put(entry.id(), entry)));
     }
 }

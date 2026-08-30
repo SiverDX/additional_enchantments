@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(IBlockExtension.class)
 public interface IBlocksExtensionMixin {
     @ModifyReturnValue(method = "isLadder", at = @At("RETURN"))
-    default boolean additional_enchantments$isLadder(boolean original, @Local(argsOnly = true) final LivingEntity entity) {
+    default boolean additional_enchantments$isLadder(boolean original, @Local(argsOnly = true, name = "entity") final LivingEntity entity) {
         if (entity == null) {
             // MineColonies may cause this to be null
             return original;

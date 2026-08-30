@@ -19,7 +19,7 @@ public abstract class GameRendererMixin {
      */
     @Inject(method = "getNightVisionScale", at = @At(value = "HEAD"), cancellable = true)
     private static void additional_enchantments$modifyNightVisionScale(final LivingEntity entity, float nanoTime, final CallbackInfoReturnable<Float> callback) {
-        FluidType fluid = entity.getEyeInFluidType();
+        FluidType fluid = entity.getFirstEyeInFluidType();
 
         if (fluid != NeoForgeMod.WATER_TYPE.value()) {
             return;

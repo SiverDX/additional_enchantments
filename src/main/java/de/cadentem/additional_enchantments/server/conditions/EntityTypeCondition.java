@@ -14,7 +14,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import org.jetbrains.annotations.NotNull;
 
 public record EntityTypeCondition(Type type, LootContext.EntityTarget entityTarget) implements LootItemCondition {
@@ -25,7 +24,7 @@ public record EntityTypeCondition(Type type, LootContext.EntityTarget entityTarg
 
     @Override
     public boolean test(final LootContext context) {
-        Entity entity = context.getParamOrNull(entityTarget.getParam());
+        Entity entity = context.getOptionalParameter(entityTarget.contextParam());
 
         if (entity == null) {
             return false;
@@ -42,8 +41,8 @@ public record EntityTypeCondition(Type type, LootContext.EntityTarget entityTarg
     }
 
     @Override
-    public @NotNull LootItemConditionType getType() {
-        return AELootItemConditions.ENTITY_TYPE.value();
+    public @NotNull MapCodec<EntityTypeCondition> codec() {
+        return CODEC;
     }
 
     public enum Type implements StringRepresentable {

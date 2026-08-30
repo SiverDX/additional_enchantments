@@ -7,7 +7,7 @@ import de.cadentem.additional_enchantments.server.conditions.Conditions;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -17,9 +17,9 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 import java.util.Optional;
 
-public record Homing(ResourceLocation id, Optional<HolderSet<EntityType<?>>> projectiles, LootItemCondition targetCondition, HomingRange searchRange, LevelBasedValue velocityMultiplier, LevelBasedValue maxTurnPerTick, int priority) {
+public record Homing(Identifier id, Optional<HolderSet<EntityType<?>>> projectiles, LootItemCondition targetCondition, HomingRange searchRange, LevelBasedValue velocityMultiplier, LevelBasedValue maxTurnPerTick, int priority) {
     public static final Codec<Homing> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ResourceLocation.CODEC.fieldOf("id").forGetter(Homing::id),
+            Identifier.CODEC.fieldOf("id").forGetter(Homing::id),
             RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).optionalFieldOf("projectiles").forGetter(Homing::projectiles), // TODO :: check if it can be limited by item?
             LootItemCondition.DIRECT_CODEC.fieldOf("target_condition").forGetter(Homing::targetCondition),
             HomingRange.CODEC.fieldOf("search_range").forGetter(Homing::searchRange),
@@ -32,9 +32,9 @@ public record Homing(ResourceLocation id, Optional<HolderSet<EntityType<?>>> pro
         return new Mapped(id, projectiles, targetCondition, searchRange.map(enchantmentLevel), velocityMultiplier.calculate(enchantmentLevel), maxTurnPerTick.calculate(enchantmentLevel), priority);
     }
 
-    public record Mapped(ResourceLocation id, Optional<HolderSet<EntityType<?>>> projectiles, LootItemCondition targetCondition, HomingRange.Mapped searchRange, float velocityMultiplier, float maxTurnPerTick, int priority) {
+    public record Mapped(Identifier id, Optional<HolderSet<EntityType<?>>> projectiles, LootItemCondition targetCondition, HomingRange.Mapped searchRange, float velocityMultiplier, float maxTurnPerTick, int priority) {
         public static final Codec<Mapped> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                ResourceLocation.CODEC.fieldOf("id").forGetter(Mapped::id),
+                Identifier.CODEC.fieldOf("id").forGetter(Mapped::id),
                 RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).optionalFieldOf("projectiles").forGetter(Mapped::projectiles),
                 LootItemCondition.DIRECT_CODEC.fieldOf("target_condition").forGetter(Mapped::targetCondition),
                 HomingRange.Mapped.CODEC.fieldOf("search_range").forGetter(Mapped::searchRange),

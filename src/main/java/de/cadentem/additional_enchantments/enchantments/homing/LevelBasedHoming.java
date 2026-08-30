@@ -2,7 +2,7 @@ package de.cadentem.additional_enchantments.enchantments.homing;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.advancements.criterion.MinMaxBounds;
 
 import java.util.ArrayList;
 import java.util.List;

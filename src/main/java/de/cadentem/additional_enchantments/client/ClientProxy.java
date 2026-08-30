@@ -36,8 +36,8 @@ public class ClientProxy implements Proxy {
     }
 
     @Override
-    public int getPerceptionColor(final Entity entity) {
-        return entityPerceptionColors.getOrDefault(entity.getId(), ShiftingColor.Mapped.NONE).getColor();
+    public ShiftingColor.Mapped getPerceptionColor(final Entity entity) {
+        return entityPerceptionColors.getOrDefault(entity.getId(), ShiftingColor.Mapped.NONE);
     }
 
     @Override

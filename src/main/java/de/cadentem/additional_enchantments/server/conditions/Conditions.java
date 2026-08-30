@@ -1,13 +1,14 @@
 package de.cadentem.additional_enchantments.server.conditions;
 
-import net.minecraft.advancements.critereon.ContextAwarePredicate;
-import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.criterion.ContextAwarePredicate;
+import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
@@ -15,12 +16,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyC
 import java.util.Optional;
 
 public class Conditions {
-    private static final LootContextParamSet PERCEPTION_CONTEXT = new LootContextParamSet.Builder()
-            .required(LootContextParams.THIS_ENTITY)
-            .required(LootContextParams.ORIGIN)
-            .build();
-
-    private static final LootContextParamSet HOMING_CONTEXT = new LootContextParamSet.Builder()
+    private static final ContextKeySet HOMING_CONTEXT = new ContextKeySet.Builder()
             .optional(LootContextParams.ATTACKING_ENTITY)
             .required(LootContextParams.DIRECT_ATTACKING_ENTITY)
             .required(LootContextParams.THIS_ENTITY)
@@ -31,7 +27,7 @@ public class Conditions {
         LootParams parameters = new LootParams.Builder(level)
                 .withParameter(LootContextParams.THIS_ENTITY, target)
                 .withParameter(LootContextParams.ORIGIN, target.position())
-                .create(PERCEPTION_CONTEXT);
+                .create(LootContextParamSets.SELECTOR);
         return new LootContext.Builder(parameters).create(Optional.empty());
     }
 

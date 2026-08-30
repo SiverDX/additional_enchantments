@@ -79,7 +79,7 @@ public class AEEnchantmentRegistry {
             }
 
             enchantment.value().getEffects(AEEnchantmentRegistry.EQUIPMENT_CHANGE_TRIGGER.value()).forEach(effect -> {
-                effect.apply(player.serverLevel(), enchantmentLevel, newItem, event.getEntity(), event.getEntity().position());
+                effect.apply(player.level(), enchantmentLevel, newItem, event.getEntity(), event.getEntity().position());
             });
         });
     }

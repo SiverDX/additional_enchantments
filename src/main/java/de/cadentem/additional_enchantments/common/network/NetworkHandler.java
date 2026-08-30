@@ -4,8 +4,8 @@ import com.mojang.serialization.Codec;
 import net.minecraft.util.StringRepresentable;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,18 +17,34 @@ public class NetworkHandler {
     public static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
 
-        registrar.playToClient(SyncTreasureFinder.TYPE, SyncTreasureFinder.STREAM_CODEC, SyncTreasureFinder::handleClient);
-        registrar.playToClient(SyncClimbable.TYPE, SyncClimbable.STREAM_CODEC, SyncClimbable::handleClient);
-        registrar.playToClient(SyncPerception.TYPE, SyncPerception.STREAM_CODEC, SyncPerception::handleClient);
-        registrar.playToClient(SyncFluidVision.TYPE, SyncFluidVision.STREAM_CODEC, SyncFluidVision::handleClient);
-        registrar.playToClient(SyncHoming.TYPE, SyncHoming.STREAM_CODEC, SyncHoming::handleClient);
+        registrar.playToClient(SyncTreasureFinder.TYPE, SyncTreasureFinder.STREAM_CODEC);
+        registrar.playToClient(SyncClimbable.TYPE, SyncClimbable.STREAM_CODEC);
+        registrar.playToClient(SyncPerception.TYPE, SyncPerception.STREAM_CODEC);
+        registrar.playToClient(SyncFluidVision.TYPE, SyncFluidVision.STREAM_CODEC);
+        registrar.playToClient(SyncHoming.TYPE, SyncHoming.STREAM_CODEC);
 
-        registrar.playToClient(SyncLootTable.TYPE, SyncLootTable.STREAM_CODEC, SyncLootTable::handleClient);
-        registrar.playToClient(SyncPerceptionEntries.TYPE, SyncPerceptionEntries.STREAM_CODEC, SyncPerceptionEntries::handleClient);
-        registrar.playToClient(SyncClimbFlag.TYPE, SyncClimbFlag.STREAM_CODEC, SyncClimbFlag::handleClient);
-        registrar.playToClient(SyncHomingProjectileData.TYPE, SyncHomingProjectileData.STREAM_CODEC, SyncHomingProjectileData::handleClient);
+        registrar.playToClient(SyncLootTable.TYPE, SyncLootTable.STREAM_CODEC);
+        registrar.playToClient(SyncPerceptionEntries.TYPE, SyncPerceptionEntries.STREAM_CODEC);
+        registrar.playToClient(SyncClimbFlag.TYPE, SyncClimbFlag.STREAM_CODEC);
+        registrar.playToClient(SyncHomingProjectileData.TYPE, SyncHomingProjectileData.STREAM_CODEC);
 
-        registrar.playBidirectional(SyncClimbablePositions.TYPE, SyncClimbablePositions.STREAM_CODEC, new DirectionalPayloadHandler<>(SyncClimbablePositions::handleClient, SyncClimbablePositions::handleServer));
+        registrar.playBidirectional(SyncClimbablePositions.TYPE, SyncClimbablePositions.STREAM_CODEC, SyncClimbablePositions::handleServer);
+    }
+
+    @SubscribeEvent
+    public static void register(final RegisterClientPayloadHandlersEvent event) {
+        event.register(SyncTreasureFinder.TYPE, SyncTreasureFinder::handleClient);
+        event.register(SyncClimbable.TYPE, SyncClimbable::handleClient);
+        event.register(SyncPerception.TYPE, SyncPerception::handleClient);
+        event.register(SyncFluidVision.TYPE, SyncFluidVision::handleClient);
+        event.register(SyncHoming.TYPE, SyncHoming::handleClient);
+
+        event.register(SyncLootTable.TYPE, SyncLootTable::handleClient);
+        event.register(SyncPerceptionEntries.TYPE, SyncPerceptionEntries::handleClient);
+        event.register(SyncClimbFlag.TYPE, SyncClimbFlag::handleClient);
+        event.register(SyncHomingProjectileData.TYPE, SyncHomingProjectileData::handleClient);
+
+        event.register(SyncClimbablePositions.TYPE, SyncClimbablePositions::handleClient);
     }
 
     public enum SyncType implements StringRepresentable {

@@ -1,6 +1,5 @@
 package de.cadentem.additional_enchantments.attachments;
 
-import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.common.network.SyncHomingProjectileData;
 import de.cadentem.additional_enchantments.enchantments.homing.AimPoint;
 import de.cadentem.additional_enchantments.enchantments.homing.Homing;
@@ -8,10 +7,7 @@ import de.cadentem.additional_enchantments.enchantments.homing.HomingRange;
 import de.cadentem.additional_enchantments.mixin.AbstractArrowAccess;
 import de.cadentem.additional_enchantments.mixin.TridentAccess;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -19,11 +15,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 @EventBusSubscriber
-public class ProjectileHomingData implements INBTSerializable<CompoundTag> {
+public class ProjectileHomingData implements ValueIOSerializable {
     /** No limit to how much the projectile can turn for its target */
     public static final float NO_MAX_TURN = 180;
 
@@ -55,7 +53,7 @@ public class ProjectileHomingData implements INBTSerializable<CompoundTag> {
     private static final int MAX_BLOCKED_TICKS = 20;
 
     /** Only needed server-side to determine the target */
-    private final Map<ResourceLocation, Homing.Mapped> entries = new HashMap<>();
+    private final Map<Identifier, Homing.Mapped> entries = new HashMap<>();
     /** Only needed server-side to determine the target */
     private HomingRange.Mapped maxSearchRange = HomingRange.Mapped.NONE;
 
@@ -94,7 +92,7 @@ public class ProjectileHomingData implements INBTSerializable<CompoundTag> {
         });
     }
 
-    public void setEntries(final Map<ResourceLocation, Homing.Mapped> entries) {
+    public void setEntries(final Map<Identifier, Homing.Mapped> entries) {
         this.entries.clear();
         this.entries.putAll(entries);
 
@@ -287,7 +285,7 @@ public class ProjectileHomingData implements INBTSerializable<CompoundTag> {
             // The projectile flies (nearly) straight up or down
             // Therefor use the direction as reference (not always used in case it is a rotating projectile)
             Direction facing = projectile.getDirection();
-            Vec3 reference = Vec3.atLowerCornerOf(facing.getNormal());
+            Vec3 reference = Vec3.atLowerCornerOf(facing.getUnitVec3i());
             right = front.cross(reference);
         }
 
@@ -432,36 +430,21 @@ public class ProjectileHomingData implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public CompoundTag serializeNBT(@NotNull final HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-
-        Homing.Mapped.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), entries.values().stream().toList())
-                .resultOrPartial(AE.LOG::error)
-                .ifPresent(data -> tag.put("entries", data));
-
-        HomingRange.Mapped.CODEC.encodeStart(NbtOps.INSTANCE, maxSearchRange)
-                .resultOrPartial(AE.LOG::error)
-                .ifPresent(data -> tag.put("max_range", data));
-
-        tag.putInt("target_id", targetId);
-        tag.putFloat("velocity_multiplier", velocityMultiplier);
-        tag.putFloat("max_turn_per_tick", maxTurnPerTick);
-
-        return tag;
+    public void serialize(@NotNull final ValueOutput output) {
+        output.store("entries", Homing.Mapped.CODEC.listOf(), entries.values().stream().toList());
+        output.store("max_range", HomingRange.Mapped.CODEC, maxSearchRange);
+        output.putInt("target_id", targetId);
+        output.putFloat("velocity_multiplier", velocityMultiplier);
+        output.putFloat("max_turn_per_tick", maxTurnPerTick);
     }
 
     @Override
-    public void deserializeNBT(@NotNull final HolderLookup.Provider provider, @NotNull final CompoundTag tag) {
+    public void deserialize(@NotNull final ValueInput input) {
         entries.clear();
-
-        Homing.Mapped.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.get("entries"))
-                .resultOrPartial(AE.LOG::error)
-                .ifPresent(entries -> entries.forEach(entry -> this.entries.put(entry.id(), entry)));
-
-        maxSearchRange = tag.contains("max_range") ? HomingRange.Mapped.CODEC.parse(NbtOps.INSTANCE, tag.get("max_range")).resultOrPartial(AE.LOG::error).orElse(HomingRange.Mapped.NONE) : HomingRange.Mapped.NONE;
-
-        targetId = tag.contains("target_id") ? tag.getInt("target_id") : NO_TARGET;
-        velocityMultiplier = tag.contains("velocity_multiplier") ? tag.getFloat("velocity_multiplier") : NO_VELOCITY_MULTIPLIER;
-        maxTurnPerTick = tag.contains("max_turn_per_tick") ? tag.getFloat("max_turn_per_tick") : NO_MAX_TURN;
+        input.read("entries", Homing.Mapped.CODEC.listOf()).ifPresent(entries -> entries.forEach(entry -> this.entries.put(entry.id(), entry)));
+        maxSearchRange = input.read("max_range", HomingRange.Mapped.CODEC).orElse(HomingRange.Mapped.NONE);
+        targetId = input.getIntOr("target_id", NO_TARGET);
+        velocityMultiplier = input.getFloatOr("velocity_multiplier", NO_VELOCITY_MULTIPLIER);
+        maxTurnPerTick = input.getFloatOr("max_turn_per_tick", NO_MAX_TURN);
     }
 }

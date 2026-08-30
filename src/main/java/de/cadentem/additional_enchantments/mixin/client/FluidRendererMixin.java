@@ -2,19 +2,23 @@ package de.cadentem.additional_enchantments.mixin.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import de.cadentem.additional_enchantments.attachments.AEDataAttachments;
+import de.cadentem.additional_enchantments.util.Colors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.block.LiquidBlockRenderer;
+import net.minecraft.client.renderer.block.FluidRenderer;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.level.material.FluidState;
+import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-@Mixin(LiquidBlockRenderer.class)
-public abstract class LiquidBlockRendererMixin {
-    /** Make the lava / water layer (more) see-through */
-    @ModifyVariable(method = "tesselate", at = @At(value = "STORE"), name = "alpha")
-    private float additional_enchantments$handleFluidVision(float alpha, @Local(argsOnly = true) final FluidState fluid) {
+@Debug(export = true)
+@Mixin(FluidRenderer.class)
+public abstract class FluidRendererMixin {
+    /** Make fluids see-through */
+    @ModifyArg(method = "tesselate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/block/FluidRenderer;addFace(Lcom/mojang/blaze3d/vertex/VertexConsumer;FFFFFFFFFFFFFFFFFFFFIIZ)V"), index = 21)
+    private int additional_enchantments$adjustFluidAlpha(final int color, @Local(argsOnly = true, name = "fluidState") final FluidState fluid) {
         LocalPlayer player = Minecraft.getInstance().player;
 
         //noinspection DataFlowIssue -> player is not null
@@ -22,12 +26,12 @@ public abstract class LiquidBlockRendererMixin {
                 .map(vision -> vision.get(fluid.getFluidType(), player.registryAccess()).percentage())
                 .orElse(1f);
 
-        if (alpha == 0) {
+        if (ARGB.alpha(color) == 0) {
             // Create fluids are set up with an alpha value of 0 - by setting the 'RenderType' to 'translucent' they become invisible due to said value
             // Therefore, when a fluid is being rendered here (and it is invisible) just set it to the intended visibility
-            return percentage;
+            return Colors.overrideAlpha(color, percentage);
         }
 
-        return alpha * percentage;
+        return ARGB.multiplyAlpha(color, percentage);
     }
 }

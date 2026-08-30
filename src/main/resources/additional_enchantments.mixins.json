@@ -5,7 +5,7 @@
     "minVersion": "0.5.3"
   },
   "package": "de.cadentem.additional_enchantments.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "plugin": "de.cadentem.additional_enchantments.mixin.ApplyMixinPlugin",
   "mixins": [
     "AbstractArrowAccess",
@@ -19,17 +19,15 @@
   ],
   "client": [
     "client.ClientLevelMixin",
+    "client.EntityRendererMixin",
+    "client.FluidRendererMixin",
     "client.FrustumAccess",
-    "client.ItemBlockRenderTypesMixin",
-    "client.LevelRendererMixin",
     "client.LightTextureMixin",
-    "client.LiquidBlockRendererMixin",
     "client.LivingEntityRendererMixin",
     "client.LocalPlayerMixin",
     "client.MinecraftMixin",
     "iris.GameRendererMixin",
     "notenoughanimations.LadderAnimationMixin",
-    "resourcefullib.MixinResourcefulFluidType",
     "sodium.DefaultFluidRendererMixin"
   ],
   "injectors": {

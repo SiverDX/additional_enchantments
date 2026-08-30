@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.WorldGenLevel;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -33,6 +34,10 @@ public class ClimbingHandler {
             }
 
             return canClimb;
+        }
+
+        if (!entity.level().isClientSide()) {
+            return false;
         }
 
         return handleClient(entity, data);
@@ -162,7 +167,7 @@ public class ClimbingHandler {
 
         if (!climbablePositions.equals(Objects.requireNonNullElse(data.trackedClimbPositions, Set.of()))) {
             data.trackedClimbPositions = climbablePositions.isEmpty() ? null : climbablePositions;
-            PacketDistributor.sendToServer(new SyncClimbablePositions(climbablePositions));
+            ClientPacketDistributor.sendToServer(new SyncClimbablePositions(climbablePositions));
         }
 
         if (climbablePositions.isEmpty()) {

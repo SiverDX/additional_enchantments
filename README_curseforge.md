@@ -3,29 +3,27 @@
 # FAQ
 - 1.19.2 documentation can be found [here](https://github.com/SiverDX/additional_enchantments/blob/1.19.2/README.md)
 - 1.20.1 documentation can be found [here](https://github.com/SiverDX/additional_enchantments/blob/1.20.1/README.md)
- 
-Further enchantments are planned
-  - Hunter
-  - Confusion (maybe)
-  - Voiding (maybe)
-  - Straight Shot (maybe)
-  - ...?
+- The description below is for 1.21.1 and 26.1.2
 
-<div class="spoiler">
-<summary>General Technical Definitions</summary>
+Further enchantments are planned
+- Hunter
+- Confusion (maybe)
+- Voiding (maybe)
+- Straight Shot (maybe)
+- ...?
+
+# General Technical Definitions
 
 New trigger point for enchantment effects
 - `equipment_change_trigger`: When changing any equipped item
-  - Most enchantments in this mod apply data attachments to the target entity, which handle the logic
-  - Meaning it is unlikely that they work well with other trigger points for enchantments
+    - Most enchantments in this mod apply data attachments to the target entity, which handle the logic
+    - Meaning it is unlikely that they work well with other trigger points for enchantments
 
 New loot item conditions
 - `entity_type`
 - `match_item_entity`
 
-<div class="spoiler">
-<summary>Entity Type</summary>
-
+## Entity Type
 Allows broader checks for entities
 
 EntityType (LootItemCondition)
@@ -50,12 +48,8 @@ EntityTarget
 - `direct_attacker`
 - `attacking_player`
 
-</div>
-
-<div class="spoiler">
-<summary>Match Item Entity</summary>
-
-Allows using `ItemPredicates` to check the item of the `Item Entity` 
+## Match Item Entity
+Allows using `ItemPredicates` to check the item of the `Item Entity`
 
 ```js
 {
@@ -73,12 +67,7 @@ EntityTarget
 - `direct_attacker`
 - `attacking_player`
 
-</div>
-
-</div>
-
-# Enchantments
-## Fluid Vision
+# Fluid Vision
 - Improves visibility through fluids from above
 - Improves visibility while within the fluids
 
@@ -86,9 +75,7 @@ EntityTarget
 
 ![Lava example](https://raw.githubusercontent.com/SiverDX/additional_enchantments/refs/heads/1.21.1/images/fluid_vision/lava_example_resized.png)
 
-<div class="spoiler">
-<summary>Default Effects</summary>
-
+## Default Effects
 Level 1:
 - Improves visibility in water
 
@@ -106,11 +93,7 @@ Level 4:
 - Fluids from `Level 1` and `Level 2`
 - Better visibility
 
-</div>
-
-<div class="spoiler">
-<summary>Technical Definition</summary>
-
+## Technical Definition
 ```js
 {
   "vision": {                                     // [Mandatory] || 
@@ -138,25 +121,21 @@ Additional explanations
 - [HolderSet](https://developers.wiki.resourcefulbees.com/miscellaneous-data)
 - [LevelBasedValue](https://minecraft.wiki/w/Enchantment_definition#Level-based_value)
 
-</div>
-
-## Homing
+# Homing
 - Causes the projectile to home in on targets
 - Entities closest to the camera focus are prioritized (i.e., the entity you look at)
 - Friendly entities (your tamed animals, allies or their tamed animals, players if pvp is disabled) are ignored
 - The target definition with the highest priority is checked first
 
-<div class="spoiler">
-<summary>Default Effects</summary>
-
+## Default Effects
 All Levels:
 - Living entities (priority 0)
-  - Except `minecraft:villager`, `minecraft:iron_golem` and `minecraft:enderman`
+    - Except `minecraft:villager`, `minecraft:iron_golem` and `minecraft:enderman`
 - Animals (priority 1)
 - Enemies (priority 2)
-  - Except `minecraft:enderman`
+    - Except `minecraft:enderman`
 - Bosses (priority 3)
-  - `#c:bosses` and `minecraft:warden`
+    - `#c:bosses` and `minecraft:warden`
 
 Level 2
 - Improved search range, velocity and turn angle per tick
@@ -164,11 +143,7 @@ Level 2
 Level 3:
 - Improved search range, velocity and turn angle per tick
 
-</div>
-
-<div class="spoiler">
-<summary>Technical Definition</summary>
-
+## Technical Definition
 ```js
 {
   "homing": {                                       // [Mandatory] || 
@@ -206,22 +181,18 @@ Additional explanations
 - [ResourceLocation](https://minecraft.wiki/w/Identifier)
 - [HolderSet](https://developers.wiki.resourcefulbees.com/miscellaneous-data)
 - [LootItemCondition](https://docs.neoforged.net/docs/1.21.1/resources/server/loottables/lootconditions)
-  - `this` entity relates to the targeted entity
-  - `origin` relates to the position of the targeted entity
-  - `attacking_entity` relates to the owner of the projectile
-  - `direct_attacking_entity` relates to the actual projectile
+    - `this` entity relates to the targeted entity
+    - `origin` relates to the position of the targeted entity
+    - `attacking_entity` relates to the owner of the projectile
+    - `direct_attacking_entity` relates to the actual projectile
 - [LevelBasedValue](https://minecraft.wiki/w/Enchantment_definition#Level-based_value)
 
-</div>
-
-## Perception
+# Perception
 - Displays entities as glowing using custom colors, see below to which entities are affected by default
 
 ![Perception example](https://raw.githubusercontent.com/SiverDX/additional_enchantments/refs/heads/1.21.1/images/perception/example_resized.png)
 
-<div class="spoiler">
-<summary>Default Effects</summary>
-
+## Default Effects
 Level 1:
 - Highlights valuable items (`#additional_enchantments:valuables` item tag)
 - Highlights enchanted items
@@ -242,11 +213,7 @@ Level 3:
 - Highlights animals
 - Highlights bosses
 
-</div>
-
-<div class="spoiler">
-<summary>Technical Definition</summary>
-
+## Technical Definition
 ```js
 {
   "perception": {                           // [Mandatory] ||  
@@ -288,22 +255,18 @@ Additional explanations
 - TextColor: Either a named minecraft color or Hex codes
 - [ResourceLocation](https://minecraft.wiki/w/Identifier)
 - [LootItemCondition](https://docs.neoforged.net/docs/1.21.1/resources/server/loottables/lootconditions)
-  - `this` entity context relates to the targeted entity that would receive the glow effect
-  - `origin` relates to the position of the targeted entity
+    - `this` entity context relates to the targeted entity that would receive the glow effect
+    - `origin` relates to the position of the targeted entity
 - [LevelBasedValue](https://minecraft.wiki/w/Enchantment_definition#Level-based_value)
 
-</div>
-
-## Treasure Finder
+# Treasure Finder
 - Will highlight blocks using different ways, see below for more information
 
 ![Treasure Finder example](https://raw.githubusercontent.com/SiverDX/additional_enchantments/refs/heads/1.21.1/images/treasure_finder/example_resized.png)
 
 (Compression combined with a still image makes this look worse than it actually is)
 
-<div class="spoiler">
-<summary>Default Effects</summary>
-
+## Default Effects
 All levels:
 - `treasures`, using the `particles` display type
 
@@ -335,11 +298,7 @@ Level 4:
 - Diamond ore
 - Netherite ore
 
-</div>
-
-<div class="spoiler">
-<summary>Technical Definition</summary>
-
+## Technical Definition
 ```js
 {
   "vision": {                             // [Mandatory] || 
@@ -381,32 +340,28 @@ ShiftingColor
 
 Additional explanations
 - BlockDefinition allows either one of these two
-  - `treasures`: Unopened loot containers (included in `additional_enchantment:treasures` block tag)
-  - HolderSet of type `Block`
+    - `treasures`: Unopened loot containers (included in `additional_enchantment:treasures` block tag)
+    - HolderSet of type `Block`
 - DisplayType
-  - `outline`: Outline around the block, visible through walls
-  - `particles`: Spawns particles at the block position
-  - `simple_shader`: A glow effect around the block
-- TextColor: Either a named minecraft color or Hex codes 
+    - `outline`: Outline around the block, visible through walls
+    - `particles`: Spawns particles at the block position
+    - `simple_shader`: A glow effect around the block
+- TextColor: Either a named minecraft color or Hex codes
 - [ResourceLocation](https://minecraft.wiki/w/Identifier)
 - [HolderSet](https://developers.wiki.resourcefulbees.com/miscellaneous-data)
 - [LevelBasedValue](https://minecraft.wiki/w/Enchantment_definition#Level-based_value)
 
-</div>
-
-## Climbing
+# Climbing
 - Allows climbing on most blocks, no ladder required
 - At further levels also disables the automatic sliding down and even allows climbing on ceilings
 
-<div class="spoiler">
-<summary>Default Effects</summary>
-
+## Default Effects
 Level 1:
 - Allows climbing if the block matches:
-  - Is not air
-  - Is solid
-  - Is not a fluid
-  - Is not `#additional_enchantments:slippery` (ice / glass)
+    - Is not air
+    - Is solid
+    - Is not a fluid
+    - Is not `#additional_enchantments:slippery` (ice / glass)
 
 Level 2:
 - Enables sticking to walls
@@ -414,11 +369,7 @@ Level 2:
 Level 3:
 - Enables ceiling climbing
 
-</div>
-
-<div class="spoiler">
-<summary>Technical Definition</summary>
-
+## Technical Definition
 ```js
 {
   "climbable": {                            // [Mandatory] || 
@@ -446,15 +397,11 @@ Additional explanations
 - [ResourceLocation](https://minecraft.wiki/w/Identifier)
 - [BlockPredicate](https://minecraft.wiki/w/Block_predicate)
 
-</div>
-
-## Green Foot
+# Green Foot
 - Applies a bonemeal effect on the blocks you walk on and around you
 - For saplings and crops the effect will also damage the enchanted item per application
 
-<div class="spoiler">
-<summary>Default Effects</summary>
-
+## Default Effects
 Level 1:
 - Any block: Constant 1% chance
 - `#minecraft:saplings`: 10% chance, + 7.5% chance per level
@@ -468,11 +415,7 @@ Level 3:
 - Increased range
 - Increased probability
 
-</div>
-
-<div class="spoiler">
-<summary>Technical Definition</summary>
-
+## Technical Definition
 ```js
 {
   "growth_entries": [                 // [Mandatory] ||  
@@ -490,5 +433,3 @@ Level 3:
 Additional explanations
 - [BlockPredicate](https://minecraft.wiki/w/Block_predicate)
 - [LevelBasedValue](https://minecraft.wiki/w/Enchantment_definition#Level-based_value)
-
-</div>

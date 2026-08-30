@@ -8,13 +8,15 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Optional;
 
 @Mixin(RandomizableContainerBlockEntity.class)
 public abstract class RandomizableContainerBlockEntityMixin extends BaseContainerBlockEntity {
@@ -23,9 +25,9 @@ public abstract class RandomizableContainerBlockEntityMixin extends BaseContaine
     }
 
     @Inject(method = "setLootTable", at = @At("HEAD"))
-    private void additional_enchantments$notifyClient(final ResourceKey<LootTable> lootTable, final CallbackInfo callback) {
+    private void additional_enchantments$notifyClient(@Nullable final ResourceKey<LootTable> lootTable, final CallbackInfo callback) {
         if (level instanceof ServerLevel serverLevel) {
-            PacketDistributor.sendToPlayersInDimension(serverLevel, new SyncLootTable(lootTable == null ? BuiltInLootTables.EMPTY : lootTable, worldPosition));
+            PacketDistributor.sendToPlayersInDimension(serverLevel, new SyncLootTable(Optional.ofNullable(lootTable), worldPosition));
         }
     }
 }

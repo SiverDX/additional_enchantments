@@ -1,12 +1,19 @@
 package de.cadentem.additional_enchantments.util;
 
-import net.minecraft.util.FastColor;
-
 public class Colors {
     public static final int NONE = -1;
 
-    /** Returns a color in the format of {@link FastColor.ARGB32} */
     public static int withAlpha(int rgb, float alpha) {
-        return FastColor.ARGB32.color((int) (255 * alpha), rgb);
+        int a = (int) (255 * alpha);
+        return (a << 24) | (rgb & 0x00FFFFFF);
+    }
+
+    public static int overrideAlpha(int argb, int alpha) {
+        return (argb & 0x00FFFFFF) | (alpha << 24);
+    }
+
+    public static int overrideAlpha(int argb, float alpha) {
+        int a = (int) (255 * alpha);
+        return (argb & 0x00FFFFFF) | (a << 24);
     }
 }

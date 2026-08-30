@@ -30,13 +30,14 @@ import de.cadentem.additional_enchantments.server.conditions.MatchItemEntityCond
 import de.cadentem.additional_enchantments.util.Color;
 import de.cadentem.additional_enchantments.util.ShiftingColor;
 import net.minecraft.ChatFormatting;
-import net.minecraft.advancements.critereon.EnchantmentPredicate;
-import net.minecraft.advancements.critereon.ItemEnchantmentsPredicate;
-import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.ItemSubPredicates;
-import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.advancements.criterion.DataComponentMatchers;
+import net.minecraft.advancements.criterion.EnchantmentPredicate;
+import net.minecraft.advancements.criterion.ItemPredicate;
+import net.minecraft.advancements.criterion.MinMaxBounds;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.predicates.DataComponentPredicates;
+import net.minecraft.core.component.predicates.EnchantmentsPredicate;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
@@ -92,9 +93,9 @@ public class AEEnchantments {
                                                 Optional.empty(),
                                                 AllOfCondition.allOf(
                                                         () -> new EntityTypeCondition(EntityTypeCondition.Type.LIVING_ENTITY, LootContext.EntityTarget.THIS),
-                                                        Conditions.thisEntity(EntityConditions.isType(EntityType.VILLAGER)).invert(),
-                                                        Conditions.thisEntity(EntityConditions.isType(EntityType.IRON_GOLEM)).invert(),
-                                                        Conditions.thisEntity(EntityConditions.isType(EntityType.ENDERMAN)).invert()
+                                                        Conditions.thisEntity(EntityConditions.isType(context, EntityType.VILLAGER)).invert(),
+                                                        Conditions.thisEntity(EntityConditions.isType(context, EntityType.IRON_GOLEM)).invert(),
+                                                        Conditions.thisEntity(EntityConditions.isType(context, EntityType.ENDERMAN)).invert()
                                                 ).build(),
                                                 HomingRange.builder()
                                                         .all(LevelBasedValue.perLevel(10, 5))
@@ -121,7 +122,7 @@ public class AEEnchantments {
                                                 Optional.empty(),
                                                 AllOfCondition.allOf(
                                                         () -> new EntityTypeCondition(EntityTypeCondition.Type.ENEMY, LootContext.EntityTarget.THIS),
-                                                        Conditions.thisEntity(EntityConditions.isType(EntityType.ENDERMAN)).invert()
+                                                        Conditions.thisEntity(EntityConditions.isType(context, EntityType.ENDERMAN)).invert()
                                                 ).build(),
                                                 HomingRange.builder()
                                                         .all(LevelBasedValue.perLevel(10, 5))
@@ -135,8 +136,8 @@ public class AEEnchantments {
                                                 AE.location("homing.bosses"),
                                                 Optional.empty(),
                                                 AnyOfCondition.anyOf(
-                                                        Conditions.thisEntity(EntityConditions.isType(Tags.EntityTypes.BOSSES)),
-                                                        Conditions.thisEntity(EntityConditions.isType(EntityType.WARDEN))
+                                                        Conditions.thisEntity(EntityConditions.isType(context, Tags.EntityTypes.BOSSES)),
+                                                        Conditions.thisEntity(EntityConditions.isType(context, EntityType.WARDEN))
                                                 ).build(),
                                                 HomingRange.builder()
                                                         .all(LevelBasedValue.perLevel(10, 5))
@@ -184,7 +185,7 @@ public class AEEnchantments {
                         )
                 ), LevelBasedValue.perLevel(1, 1)
                 )
-        ).build(GREEN_FOOT.location()));
+        ).build(GREEN_FOOT.identifier()));
 
         context.register(FLUID_VISION, new Enchantment(
                 Component.translatable("enchantment.additional_enchantments.fluid_vision"),
@@ -250,10 +251,14 @@ public class AEEnchantments {
                                         new Perception(
                                                 AE.location("perception_enchantment.valuables"),
                                                 AnyOfCondition.anyOf(
-                                                        MatchItemEntityCondition.matches(ItemPredicate.Builder.item().of(AEItemTags.VALUABLES)),
-                                                        MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(
-                                                                ItemSubPredicates.ENCHANTMENTS,
-                                                                ItemEnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(Optional.empty(), MinMaxBounds.Ints.ANY)))
+                                                        MatchItemEntityCondition.matches(ItemPredicate.Builder.item().of(context.lookup(Registries.ITEM), AEItemTags.VALUABLES)),
+                                                        // TODO :: Causes data error in 26.1.2
+//                                                        MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withComponents(DataComponentMatchers.Builder.components().any(DataComponents.ENCHANTMENTS).build()))
+                                                        MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withComponents(
+                                                                DataComponentMatchers.Builder.components().partial(
+                                                                        DataComponentPredicates.ENCHANTMENTS,
+                                                                        EnchantmentsPredicate.enchantments(List.of())
+                                                                ).build()
                                                         ))
                                                 ).build(),
                                                 LevelBasedValue.perLevel(16, 8),
@@ -293,8 +298,8 @@ public class AEEnchantments {
                                         new Perception(
                                                 AE.location("perception_enchantment.bosses"),
                                                 AnyOfCondition.anyOf(
-                                                        Conditions.thisEntity(EntityConditions.isType(Tags.EntityTypes.BOSSES)),
-                                                        Conditions.thisEntity(EntityConditions.isType(EntityType.WARDEN))
+                                                        Conditions.thisEntity(EntityConditions.isType(context, Tags.EntityTypes.BOSSES)),
+                                                        Conditions.thisEntity(EntityConditions.isType(context, EntityType.WARDEN))
                                                 ).build(),
                                                 LevelBasedValue.perLevel(24, 8),
                                                 ShiftingColor.of(List.of(
@@ -308,7 +313,7 @@ public class AEEnchantments {
                                 new LevelBasedPerception.Entry(List.of(
                                         new Perception(
                                                 AE.location("perception_enchantment.limited_valuables"),
-                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().of(AEItemTags.LIMITED_VALUABLES)).build(),
+                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().of(context.lookup(Registries.ITEM), AEItemTags.LIMITED_VALUABLES)).build(),
                                                 LevelBasedValue.constant(32),
                                                 ShiftingColor.of(List.of(
                                                         Color.of("#55ffff"),
@@ -322,42 +327,72 @@ public class AEEnchantments {
                                         new Perception(
                                                 AE.location("perception_enchantment.enchanted_books"),
                                                 AllOfCondition.allOf(
-                                                        MatchItemEntityCondition.matches(ItemPredicate.Builder.item().of(Items.ENCHANTED_BOOK)),
+                                                        MatchItemEntityCondition.matches(ItemPredicate.Builder.item().of(context.lookup(Registries.ITEM), Items.ENCHANTED_BOOK)),
                                                         AnyOfCondition.anyOf(
                                                                 // General
-                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
-                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.UNBREAKING), MinMaxBounds.Ints.atLeast(2))))
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withComponents(
+                                                                        DataComponentMatchers.Builder.components().partial(
+                                                                                DataComponentPredicates.STORED_ENCHANTMENTS,
+                                                                                EnchantmentsPredicate.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.UNBREAKING), MinMaxBounds.Ints.atLeast(2))))
+                                                                        ).build()
                                                                 )),
-                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
-                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.MENDING), MinMaxBounds.Ints.ANY)))
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withComponents(
+                                                                        DataComponentMatchers.Builder.components().partial(
+                                                                                DataComponentPredicates.STORED_ENCHANTMENTS,
+                                                                                EnchantmentsPredicate.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.MENDING), MinMaxBounds.Ints.ANY)))
+                                                                        ).build()
                                                                 )),
                                                                 // Armor
-                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
-                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.PROTECTION), MinMaxBounds.Ints.atLeast(3))))
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withComponents(
+                                                                        DataComponentMatchers.Builder.components().partial(
+                                                                                DataComponentPredicates.STORED_ENCHANTMENTS,
+                                                                                EnchantmentsPredicate.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.PROTECTION), MinMaxBounds.Ints.atLeast(3))))
+                                                                        ).build()
                                                                 )),
                                                                 // Weapons
-                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
-                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.SHARPNESS), MinMaxBounds.Ints.atLeast(4))))
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withComponents(
+                                                                        DataComponentMatchers.Builder.components().partial(
+                                                                                DataComponentPredicates.STORED_ENCHANTMENTS,
+                                                                                EnchantmentsPredicate.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.SHARPNESS), MinMaxBounds.Ints.atLeast(4))))
+                                                                        ).build()
                                                                 )),
-                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
-                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.LOOTING), MinMaxBounds.Ints.atLeast(2))))
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withComponents(
+                                                                        DataComponentMatchers.Builder.components().partial(
+                                                                                DataComponentPredicates.STORED_ENCHANTMENTS,
+                                                                                EnchantmentsPredicate.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.LOOTING), MinMaxBounds.Ints.atLeast(2))))
+                                                                        ).build()
                                                                 )),
                                                                 // Tools
-                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
-                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.EFFICIENCY), MinMaxBounds.Ints.atLeast(4))))
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withComponents(
+                                                                        DataComponentMatchers.Builder.components().partial(
+                                                                                DataComponentPredicates.STORED_ENCHANTMENTS,
+                                                                                EnchantmentsPredicate.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.EFFICIENCY), MinMaxBounds.Ints.atLeast(4))))
+                                                                        ).build()
                                                                 )),
-                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
-                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE), MinMaxBounds.Ints.atLeast(2))))
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withComponents(
+                                                                        DataComponentMatchers.Builder.components().partial(
+                                                                                DataComponentPredicates.STORED_ENCHANTMENTS,
+                                                                                EnchantmentsPredicate.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE), MinMaxBounds.Ints.atLeast(2))))
+                                                                        ).build()
                                                                 )),
-                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
-                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH), MinMaxBounds.Ints.ANY)))
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withComponents(
+                                                                        DataComponentMatchers.Builder.components().partial(
+                                                                                DataComponentPredicates.STORED_ENCHANTMENTS,
+                                                                                EnchantmentsPredicate.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH), MinMaxBounds.Ints.ANY)))
+                                                                        ).build()
                                                                 )),
                                                                 // Bow
-                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
-                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.POWER), MinMaxBounds.Ints.atLeast(4))))
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withComponents(
+                                                                        DataComponentMatchers.Builder.components().partial(
+                                                                                DataComponentPredicates.STORED_ENCHANTMENTS,
+                                                                                EnchantmentsPredicate.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.POWER), MinMaxBounds.Ints.atLeast(4))))
+                                                                        ).build()
                                                                 )),
-                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
-                                                                        ItemEnchantmentsPredicate.StoredEnchantments.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.INFINITY), MinMaxBounds.Ints.ANY)))
+                                                                MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withComponents(
+                                                                        DataComponentMatchers.Builder.components().partial(
+                                                                                DataComponentPredicates.STORED_ENCHANTMENTS,
+                                                                                EnchantmentsPredicate.storedEnchantments(List.of(new EnchantmentPredicate(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.INFINITY), MinMaxBounds.Ints.ANY)))
+                                                                        ).build()
                                                                 ))
                                                         )
                                                 ).build(),

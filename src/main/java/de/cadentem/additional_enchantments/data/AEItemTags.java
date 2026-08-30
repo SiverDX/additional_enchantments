@@ -4,14 +4,12 @@ import de.cadentem.additional_enchantments.AE;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ItemTagsProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -21,8 +19,8 @@ public class AEItemTags extends ItemTagsProvider {
     public static final TagKey<Item> LIMITED_VALUABLES = TagKey.create(Registries.ITEM, AE.location("limited_valuables"));
     public static final TagKey<Item> HOMING_ENCHANTABLES = TagKey.create(Registries.ITEM, AE.location("homing_enchantables"));
 
-    public AEItemTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> provider, final CompletableFuture<TagLookup<Block>> lookup, final ExistingFileHelper helper) {
-        super(output, provider, lookup, AE.MODID, helper);
+    public AEItemTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> provider) {
+        super(output, provider, AE.MODID);
     }
 
     @Override
@@ -59,7 +57,7 @@ public class AEItemTags extends ItemTagsProvider {
 
         tag(VALUABLES)
                 // Misc.
-                .addTag(ItemTags.TRIM_TEMPLATES)
+                .addTag(ItemTags.TRIM_MATERIALS)
                 .addTag(Tags.Items.MUSIC_DISCS)
                 .addTag(Tags.Items.GEMS_DIAMOND)
                 .addTag(AEItemTags.LIMITED_VALUABLES)

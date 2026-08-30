@@ -1,15 +1,13 @@
 package de.cadentem.additional_enchantments.attachments;
 
-import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.enchantments.fluid_vision.FluidVision;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.NotNull;
@@ -19,11 +17,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FluidVisionData implements INBTSerializable<CompoundTag> {
+public class FluidVisionData implements ValueIOSerializable {
     public boolean pendingVisionUpdate;
 
     // TODO :: add cache for fluidtype : holder?
-    private final Map<ResourceLocation, FluidVision.Mapped> entries = new HashMap<>();
+    private final Map<Identifier, FluidVision.Mapped> entries = new HashMap<>();
 
     public FluidVision.Mapped get(final FluidType type, final RegistryAccess access) {
         Holder<FluidType> holder = holder(type, access);
@@ -63,7 +61,7 @@ public class FluidVisionData implements INBTSerializable<CompoundTag> {
         pendingVisionUpdate = true;
     }
 
-    public void removeVisions(final Collection<ResourceLocation> ids) {
+    public void removeVisions(final Collection<Identifier> ids) {
         ids.forEach(entries::remove);
         pendingVisionUpdate = true;
     }
@@ -79,22 +77,13 @@ public class FluidVisionData implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public CompoundTag serializeNBT(@NotNull final HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-
-        FluidVision.Mapped.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), entries.values().stream().toList())
-                .resultOrPartial(AE.LOG::error)
-                .ifPresent(data -> tag.put("data", data));
-
-        return tag;
+    public void serialize(@NotNull final ValueOutput output) {
+        output.store("entries", FluidVision.Mapped.CODEC.listOf(), entries.values().stream().toList());
     }
 
     @Override
-    public void deserializeNBT(@NotNull final HolderLookup.Provider provider, @NotNull final CompoundTag tag) {
+    public void deserialize(@NotNull final ValueInput input) {
         entries.clear();
-
-        FluidVision.Mapped.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.get("data"))
-                .resultOrPartial(AE.LOG::error)
-                .ifPresent(entries -> entries.forEach(entry -> this.entries.put(entry.id(), entry)));
+        input.read("entries", FluidVision.Mapped.CODEC.listOf()).ifPresent(entries -> entries.forEach(entry -> this.entries.put(entry.id(), entry)));
     }
 }

@@ -6,20 +6,22 @@ import de.cadentem.additional_enchantments.mixin.RandomizableContainerBlockEntit
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-public record SyncLootTable(ResourceKey<LootTable> lootTable, BlockPos position) implements CustomPacketPayload {
+import java.util.Optional;
+
+public record SyncLootTable(Optional<ResourceKey<LootTable>> lootTable, BlockPos position) implements CustomPacketPayload {
     public static final Type<SyncLootTable> TYPE = new Type<>(AE.location("sync_loot_table"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncLootTable> STREAM_CODEC = StreamCodec.composite(
-            ResourceKey.streamCodec(Registries.LOOT_TABLE), SyncLootTable::lootTable,
+            ByteBufCodecs.optional(ResourceKey.streamCodec(Registries.LOOT_TABLE)), SyncLootTable::lootTable,
             BlockPos.STREAM_CODEC, SyncLootTable::position,
             SyncLootTable::new
     );
@@ -29,9 +31,11 @@ public record SyncLootTable(ResourceKey<LootTable> lootTable, BlockPos position)
             BlockEntity blockEntity = context.player().level().getBlockEntity(packet.position());
 
             if (blockEntity instanceof RandomizableContainerBlockEntityAccess access) {
-                access.additional_enchantments$setLootTable(packet.lootTable());
+                ResourceKey<LootTable> lootTable = packet.lootTable().orElse(null);
 
-                if (packet.lootTable() == BuiltInLootTables.EMPTY) {
+                access.additional_enchantments$setLootTable(lootTable);
+
+                if (lootTable == null) {
                     TreasureFinderHandler.removeTreasure(packet.position());
                 } else {
                     TreasureFinderHandler.addTreasure(packet.position(), blockEntity.getBlockState());

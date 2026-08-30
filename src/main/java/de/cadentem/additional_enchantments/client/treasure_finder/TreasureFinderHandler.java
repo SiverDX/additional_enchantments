@@ -2,20 +2,17 @@ package de.cadentem.additional_enchantments.client.treasure_finder;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import de.cadentem.additional_enchantments.AE;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.cadentem.additional_enchantments.attachments.AEDataAttachments;
 import de.cadentem.additional_enchantments.attachments.TreasureFinderData;
 import de.cadentem.additional_enchantments.compat.Compat;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
 import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinder;
 import de.cadentem.additional_enchantments.mixin.RandomizableContainerBlockEntityAccess;
-import de.cadentem.additional_enchantments.mixin.client.FrustumAccess;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.entity.player.Player;
@@ -25,19 +22,17 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -56,7 +51,6 @@ public class TreasureFinderHandler {
     private static final List<BlockPos> REMOVAL = new ArrayList<>();
 
     private static Vec3 lastScanCenter;
-    private static ShaderInstance shader;
     private static TreasureFinderData vision;
     private static Cache<LevelChunkSection, Boolean[]> CHUNK_CACHE;
 
@@ -75,11 +69,7 @@ public class TreasureFinderHandler {
      * This allows for x-ray effects that do not render over the entity, since this tage occurs before entities are rendered
      */
     @SubscribeEvent
-    public static void handleCore(final RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS) {
-            return;
-        }
-
+    public static void handleCore(final RenderLevelStageEvent.AfterTranslucentParticles event) {
         if (Compat.isRenderingShadows()) {
             return;
         }
@@ -114,7 +104,8 @@ public class TreasureFinderHandler {
             lastScanCenter = player.position();
             isSearching = true;
 
-            Util.backgroundExecutor().submit(() -> {
+            // TODO :: check if this off thread block state access is safe
+            CompletableFuture.runAsync(() -> {
                 collect(player, vision.getRange(null) + EXTENDED_SEARCH_RANGE);
                 isSearching = false;
                 hasPendingUpdate = true;
@@ -125,14 +116,13 @@ public class TreasureFinderHandler {
             return;
         }
 
+        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+        VertexConsumer lineBuffer = bufferSource.getBuffer(TreasureFinderOutline.renderType());
         PoseStack pose = event.getPoseStack();
+
         pose.pushPose();
-
-        Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        pose.mulPose(event.getModelViewMatrix());
+        Vec3 camera = event.getLevelRenderState().cameraRenderState.pos;
         pose.translate(-camera.x(), -camera.y(), -camera.z());
-
-        TreasureFinderOutline.beginBatch();
 
         for (int index = 0; index < RENDER_DATA.size(); index++) {
             Data data = RENDER_DATA.get(index);
@@ -149,14 +139,10 @@ public class TreasureFinderHandler {
                 continue;
             }
 
-            if (((FrustumAccess) event.getFrustum()).additional_enchantments$cubeInFrustum(data.x(), data.y(), data.z(), data.x() + 1, data.y() + 1, data.z() + 1)) {
-                pose.pushPose();
-                pose.translate(data.x(), data.y(), data.z());
-
-                int colorARGB = vision.getColor(data.state().getBlock());
-
+            // TODO :: check if still needed
+//            if (((FrustumAccess) event.getFrustum()).additional_enchantments$cubeInFrustum(data.x(), data.y(), data.z(), data.x() + 1, data.y() + 1, data.z() + 1)) {
                 switch (data.displayType()) {
-                    case OUTLINE -> TreasureFinderOutline.render(pose, colorARGB);
+                    case OUTLINE -> TreasureFinderOutline.render(data, pose, lineBuffer, vision.getColor(data.state().getBlock()));
                     case PARTICLES -> TreasureFinderParticle.spawnParticle(data, player);
                     case SIMPLE_SHADER -> {
                         if (data.state().hasBlockEntity()) {
@@ -167,99 +153,26 @@ public class TreasureFinderHandler {
                         }
                     }
                 }
-
-                pose.popPose();
-            }
+//            }
         }
 
-        TreasureFinderOutline.endBatch();
-        pose.popPose();
-    }
-
-    /**
-     * Renders effects that rely on core shaders </br>
-     * When shaders from Iris are enabled, they won't appear on the {@link RenderLevelStageEvent.Stage#AFTER_CUTOUT_BLOCKS} stage </br>
-     * This also means we can't allow x-ray functionality for these because otherwise they'd render over entities
-     */
-    @SubscribeEvent
-    public static void handleShader(final RenderLevelStageEvent event) {
-        if (Compat.isRenderingShadows()) {
-            return;
-        }
-
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS && event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-            return;
-        }
-
-        if (SHADER_RENDER_DATA.isEmpty() && SHADER_RENDER_DATA_BLOCK_ENTITIES.isEmpty()) {
-            return;
-        }
-
-        // Iris does not really support core shaders
-        // The only stage they work at is after it has finished doing its rendering
-        boolean isUsingShader = Compat.isShaderActive();
-
-        PoseStack pose = event.getPoseStack();
-        pose.pushPose();
-
-        Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        pose.mulPose(event.getModelViewMatrix());
-        pose.translate(-camera.x(), -camera.y(), -camera.z());
-
-        if (!isUsingShader && event.getStage() == RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS) {
-            renderForBlocks(pose);
-        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-            renderForBlockEntities(pose);
-
-            if (isUsingShader) {
-                renderForBlocks(pose);
-            }
-        }
-
-        pose.popPose();
-    }
-
-    private static void renderForBlocks(PoseStack pose) {
-        ShaderSimple.beginBatch();
+        bufferSource.endBatch(TreasureFinderOutline.renderType());
+        VertexConsumer blockBuffer = bufferSource.getBuffer(TreasureFinderShaderSimple.renderType());
 
         for (Data data : SHADER_RENDER_DATA) {
-            pose.pushPose();
-            pose.translate(data.x(), data.y(), data.z());
-
-            int colorARGB = vision.getColor(data.state().getBlock());
-
-            //noinspection SwitchStatementWithTooFewBranches -> ignore for clarity
-            switch (data.displayType()) {
-                case SIMPLE_SHADER -> ShaderSimple.render(data, pose, colorARGB);
-            }
-
-            pose.popPose();
+            TreasureFinderShaderSimple.render(data, pose, blockBuffer, vision.getColor(data.state().getBlock()));
         }
 
-        ShaderSimple.endBatch();
         SHADER_RENDER_DATA.clear();
-    }
 
-    private static void renderForBlockEntities(PoseStack pose) {
-        ShaderSimpleBlockEntities.beginBatch();
-
-        // Block entities
         for (Data data : SHADER_RENDER_DATA_BLOCK_ENTITIES) {
-            pose.pushPose();
-            pose.translate(data.x(), data.y(), data.z());
-
-            int colorARGB = vision.getColor(data.state().getBlock());
-
-            //noinspection SwitchStatementWithTooFewBranches -> ignore for clarity
-            switch (data.displayType()) {
-                case SIMPLE_SHADER -> ShaderSimpleBlockEntities.render(data, pose, colorARGB);
-            }
-
-            pose.popPose();
+            TreasureFinderShaderSimple.render(data, pose, blockBuffer, vision.getColor(data.state().getBlock()));
         }
 
-        ShaderSimpleBlockEntities.endBatch();
         SHADER_RENDER_DATA_BLOCK_ENTITIES.clear();
+
+        bufferSource.endBatch(TreasureFinderShaderSimple.renderType());
+        pose.popPose();
     }
 
     @SubscribeEvent
@@ -267,11 +180,6 @@ public class TreasureFinderHandler {
         if (event.getEntity() == Minecraft.getInstance().player) {
             clear();
         }
-    }
-
-    @SubscribeEvent
-    public static void registerShaders(final RegisterShadersEvent event) throws IOException {
-        event.registerShader(new ShaderInstance(event.getResourceProvider(), AE.location("treasure_finder_simple"), DefaultVertexFormat.BLOCK), instance -> shader = instance);
     }
 
     public static void updateEntry(final BlockPos position, final BlockState oldState, final BlockState newState) {
@@ -337,20 +245,16 @@ public class TreasureFinderHandler {
         requestCacheClear = true;
     }
 
-    public static ShaderInstance getShader() {
-        return shader;
-    }
-
     /** The searching algorithm is referenced from <a href="https://github.com/TelepathicGrunt/Bumblezone/blob/d4b2a29d7075749e1f4e8289debbc4cef3fc74c4/common/src/main/java/com/telepathicgrunt/the_bumblezone/items/essence/LifeEssence.java#L127">TelepathicGrunt</a> */
     private static void collect(final Player player, int searchRange) {
         BlockPos startPosition = player.blockPosition();
-        ChunkPos currentChunkPosition = new ChunkPos(startPosition);
+        ChunkPos currentChunkPosition = new ChunkPos(SectionPos.blockToSectionCoord(startPosition.getX()), SectionPos.blockToSectionCoord(startPosition.getZ()));
         LevelChunk currentChunk = null;
 
         int minChunkX = startPosition.getX() - searchRange;
         int maxChunkX = startPosition.getX() + searchRange;
-        int minChunkY = Math.max(player.level().getMinBuildHeight(), startPosition.getY() - searchRange);
-        int maxChunkY = Math.min(player.level().getMaxBuildHeight(), startPosition.getY() + searchRange);
+        int minChunkY = startPosition.getY() - searchRange;
+        int maxChunkY = startPosition.getY() + searchRange;
         int minChunkZ = startPosition.getZ() - searchRange;
         int maxChunkZ = startPosition.getZ() + searchRange;
 
@@ -365,18 +269,22 @@ public class TreasureFinderHandler {
                 int sectionX = SectionPos.blockToSectionCoord(x);
                 int sectionZ = SectionPos.blockToSectionCoord(z);
 
-                if (currentChunk == null || currentChunkPosition.x != sectionX || currentChunkPosition.z != sectionZ) {
+                if (currentChunk == null || currentChunkPosition.x() != sectionX || currentChunkPosition.z() != sectionZ) {
                     currentChunkPosition = new ChunkPos(sectionX, sectionZ);
                     currentChunk = player.level().getChunk(sectionX, sectionZ);
                 }
 
                 for (int y = maxChunkY; y >= minChunkY; y--) {
                     int sectionIndex = currentChunk.getSectionIndex(y);
-                    LevelChunkSection section = currentChunk.getSection(sectionIndex);
 
+                    if (sectionIndex < 0 || sectionIndex >= currentChunk.getSections().length) {
+                        continue;
+                    }
+
+                    LevelChunkSection section = currentChunk.getSection(sectionIndex);
                     mutablePosition.set(x, y, z);
 
-                    if (foundXSection || foundZSection || containsOres(currentChunk, section, sectionIndex)) {
+                    if (foundXSection || foundZSection || containsTreasure(currentChunk, section, sectionIndex)) {
                         foundXSection = true;
                         foundZSection = true;
 
@@ -389,13 +297,15 @@ public class TreasureFinderHandler {
                         Block block = state.getBlock();
                         int range = vision.getRange(block);
 
-                        if (range != 0) {
-                            if (state.is(AEBlockTags.TREASURES) && !hasLoot(player.level(), mutablePosition)) {
-                                continue;
-                            }
-
-                            SEARCH_RESULT.add(new Data(state, range, vision.getDisplayType(block), vision.getParticleRate(block), x, y, z));
+                        if (range == 0) {
+                            continue;
                         }
+
+                        if (state.is(AEBlockTags.TREASURES) && !hasLoot(player.level(), mutablePosition)) {
+                            continue;
+                        }
+
+                        SEARCH_RESULT.add(new Data(state, range, vision.getDisplayType(block), vision.getParticleRate(block), x, y, z));
                     } else if (y != minChunkY) {
                         // Move to the next section (the bit shifting truncates the y value)
                         y = Math.max(minChunkY, SectionPos.sectionToBlockCoord(SectionPos.blockToSectionCoord(y)));
@@ -421,10 +331,10 @@ public class TreasureFinderHandler {
 
     private static boolean hasLoot(final Level level, final BlockPos position) {
         return level.getBlockEntity(position) instanceof RandomizableContainerBlockEntityAccess access &&
-                (access.additional_enchantments$getLootTable() != null && access.additional_enchantments$getLootTable() != BuiltInLootTables.EMPTY);
+                (access.additional_enchantments$getLootTable() != null && access.additional_enchantments$getLootTable() != null);
     }
 
-    private static boolean containsOres(final LevelChunk chunk, final LevelChunkSection section, int sectionIndex) {
+    private static boolean containsTreasure(final LevelChunk chunk, final LevelChunkSection section, int sectionIndex) {
         Boolean[] cachedSection = CHUNK_CACHE.getIfPresent(section);
 
         if (cachedSection == null || cachedSection[sectionIndex] == null) {
@@ -444,12 +354,11 @@ public class TreasureFinderHandler {
     private static BlockState getState(final LevelChunk chunk, final BlockPos position) {
         if (isWithin(position, chunk.getPos().getMinBlockX(), position.getY(), chunk.getPos().getMinBlockZ(), chunk.getPos().getMaxBlockX(), position.getY(), chunk.getPos().getMaxBlockZ())) {
             return chunk.getBlockState(position);
-        } else {
-            // Block is outside the current chunk
-            Player player = Minecraft.getInstance().player;
-            //noinspection DataFlowIssue -> player is present
-            return player.level().getBlockState(position);
         }
+
+        // Block is outside the current chunk
+        //noinspection DataFlowIssue -> player is present
+        return Minecraft.getInstance().player.level().getBlockState(position);
     }
 
     private static boolean wasRemoved(final Data data) {

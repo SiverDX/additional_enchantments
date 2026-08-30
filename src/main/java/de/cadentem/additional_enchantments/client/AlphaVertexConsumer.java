@@ -1,7 +1,9 @@
 package de.cadentem.additional_enchantments.client;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class AlphaVertexConsumer implements VertexConsumer {
     private final VertexConsumer parent;
@@ -21,6 +23,12 @@ public class AlphaVertexConsumer implements VertexConsumer {
     @Override
     public @NotNull VertexConsumer setColor(final int red, final int green, final int blue, final int originalAlpha) {
         parent.setColor(red, green, blue, (int) (originalAlpha * alphaPercent));
+        return this;
+    }
+
+    @Override
+    public @NonNull VertexConsumer setColor(final int color) {
+        parent.setColor(ARGB.multiplyAlpha(color, alphaPercent));
         return this;
     }
 
@@ -45,6 +53,12 @@ public class AlphaVertexConsumer implements VertexConsumer {
     @Override
     public @NotNull VertexConsumer setNormal(final float x, final float y, final float z) {
         parent.setNormal(x, y, z);
+        return this;
+    }
+
+    @Override
+    public @NonNull VertexConsumer setLineWidth(final float width) {
+        parent.setLineWidth(width);
         return this;
     }
 }

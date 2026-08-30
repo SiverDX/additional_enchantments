@@ -17,11 +17,6 @@ public class TreasureFinderParticle {
             return;
         }
 
-        if (data.particleRate() == -1) {
-            // It should not really be possible for this to occur with the particle display type
-            return;
-        }
-
         if (player.tickCount % data.particleRate() != 0) {
             return;
         }

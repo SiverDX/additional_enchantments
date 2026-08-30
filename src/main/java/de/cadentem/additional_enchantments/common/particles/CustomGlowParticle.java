@@ -13,8 +13,10 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -36,9 +38,9 @@ public class CustomGlowParticle extends GlowParticle {
         if (colors != null) {
             int argb = Colors.withAlpha(Functions.lerpColor(colors, 1, colorOffset), 1);
 
-            float red = FastColor.ARGB32.red(argb) / 255f;
-            float green = FastColor.ARGB32.green(argb) / 255f;
-            float blue = FastColor.ARGB32.blue(argb) / 255f;
+            float red = ARGB.red(argb) / 255f;
+            float green = ARGB.green(argb) / 255f;
+            float blue = ARGB.blue(argb) / 255f;
             setColor(red, green, blue);
         }
     }
@@ -54,7 +56,8 @@ public class CustomGlowParticle extends GlowParticle {
             this.sprites = sprites;
         }
 
-        public Particle createParticle(@NotNull final SimpleParticleType type, @NotNull final ClientLevel level, final double x, final double y, final double z, final double blockId, final double ySpeed, final double colorOffset) {
+        @Override
+        public Particle createParticle(@NotNull final SimpleParticleType type, @NotNull final ClientLevel level, final double x, final double y, final double z, final double blockId, final double ySpeed, final double colorOffset, @NonNull final RandomSource random) {
             CustomGlowParticle particle = new CustomGlowParticle(level, x, y, z, blockId, ySpeed, colorOffset, sprites);
 
             LocalPlayer player = Minecraft.getInstance().player;
@@ -68,9 +71,9 @@ public class CustomGlowParticle extends GlowParticle {
             }
 
             int argb = Functions.lerpColor(colors);
-            float red = FastColor.ARGB32.red(argb) / 255f;
-            float green = FastColor.ARGB32.green(argb) / 255f;
-            float blue = FastColor.ARGB32.blue(argb) / 255f;
+            float red = ARGB.red(argb) / 255f;
+            float green = ARGB.green(argb) / 255f;
+            float blue = ARGB.blue(argb) / 255f;
             particle.setColor(red, green, blue);
 
             particle.yd *= 0.2F;
@@ -78,7 +81,7 @@ public class CustomGlowParticle extends GlowParticle {
             particle.zd *= 0.1F;
 
             particle.setColors(colors);
-            particle.setLifetime((int) (8 / (level.getRandom().nextDouble() * 0.8 + 0.2)));
+            particle.setLifetime((int) (8 / (random.nextDouble() * 0.8 + 0.2)));
             return particle;
         }
     }

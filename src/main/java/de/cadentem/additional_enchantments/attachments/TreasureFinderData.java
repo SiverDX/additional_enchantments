@@ -3,12 +3,11 @@ package de.cadentem.additional_enchantments.attachments;
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinder;
 import de.cadentem.additional_enchantments.util.ShiftingColor;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,12 +17,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class TreasureFinderData implements INBTSerializable<CompoundTag> {
+public class TreasureFinderData implements ValueIOSerializable {
     // Concurrent because the worker thread (for searching) and the render thread modify it
     private final Map<Block, CacheEntry> cache = new ConcurrentHashMap<>();
     private int maximumRange = -1;
 
-    private final Map<ResourceLocation, TreasureFinder.Mapped> entries = new HashMap<>();
+    private final Map<Identifier, TreasureFinder.Mapped> entries = new HashMap<>();
 
     record CacheEntry(int range, ShiftingColor.Mapped mappedColors, TreasureFinder.DisplayType displayType, int particleRate) { }
 
@@ -134,7 +133,7 @@ public class TreasureFinderData implements INBTSerializable<CompoundTag> {
         invalidateCache();
     }
 
-    public void removeVisions(final Collection<ResourceLocation> ids) {
+    public void removeVisions(final Collection<Identifier> ids) {
         ids.forEach(entries::remove);
         invalidateCache();
     }
@@ -146,22 +145,13 @@ public class TreasureFinderData implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public CompoundTag serializeNBT(@NotNull final HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-
-        TreasureFinder.Mapped.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), entries.values().stream().toList())
-                .resultOrPartial(AE.LOG::error)
-                .ifPresent(data -> tag.put("data", data));
-
-        return tag;
+    public void serialize(@NotNull final ValueOutput output) {
+        output.store("entries", TreasureFinder.Mapped.CODEC.listOf(), entries.values().stream().toList());
     }
 
     @Override
-    public void deserializeNBT(@NotNull final HolderLookup.Provider provider, @NotNull final CompoundTag tag) {
+    public void deserialize(@NotNull final ValueInput input) {
         entries.clear();
-
-        TreasureFinder.Mapped.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.get("data"))
-                .resultOrPartial(AE.LOG::error)
-                .ifPresent(entries -> entries.forEach(entry -> this.entries.put(entry.id(), entry)));
+        input.read("entries", TreasureFinder.Mapped.CODEC.listOf()).ifPresent(entries -> entries.forEach(entry -> this.entries.put(entry.id(), entry)));
     }
 }

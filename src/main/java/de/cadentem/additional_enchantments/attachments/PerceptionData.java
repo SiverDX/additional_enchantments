@@ -1,22 +1,20 @@
 package de.cadentem.additional_enchantments.attachments;
 
-import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.common.network.SyncPerceptionEntries;
 import de.cadentem.additional_enchantments.enchantments.perception.Perception;
 import de.cadentem.additional_enchantments.util.ShiftingColor;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -26,8 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @EventBusSubscriber
-public class PerceptionData implements INBTSerializable<CompoundTag> {
-    private final Map<ResourceLocation, Perception.Mapped> entries = new HashMap<>();
+public class PerceptionData implements ValueIOSerializable {
+    private final Map<Identifier, Perception.Mapped> entries = new HashMap<>();
 
     private int maxRange;
 
@@ -83,7 +81,7 @@ public class PerceptionData implements INBTSerializable<CompoundTag> {
         updateMaxRange();
     }
 
-    public void removePerceptions(final Collection<ResourceLocation> ids) {
+    public void removePerceptions(final Collection<Identifier> ids) {
         ids.forEach(entries::remove);
         updateMaxRange();
     }
@@ -100,8 +98,8 @@ public class PerceptionData implements INBTSerializable<CompoundTag> {
             AABB range = AABB.ofSize(player.position(), data.getMaxRange(), data.getMaxRange(), data.getMaxRange());
             Map<Integer, ShiftingColor.Mapped> perceptionEntries = new HashMap<>();
 
-            serverPlayer.serverLevel().getEntities(player, range).forEach(entity -> {
-                ShiftingColor.Mapped color = data.getMappedColor(serverPlayer.serverLevel(), player, entity);
+            serverPlayer.level().getEntities(player, range).forEach(entity -> {
+                ShiftingColor.Mapped color = data.getMappedColor(serverPlayer.level(), player, entity);
 
                 if (color != ShiftingColor.Mapped.NONE) {
                     perceptionEntries.put(entity.getId(), color);
@@ -113,22 +111,13 @@ public class PerceptionData implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public CompoundTag serializeNBT(@NotNull final HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-
-        Perception.Mapped.CODEC.listOf().encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), entries.values().stream().toList())
-                .resultOrPartial(AE.LOG::error)
-                .ifPresent(data -> tag.put("data", data));
-
-        return tag;
+    public void serialize(@NotNull final ValueOutput output) {
+        output.store("entries", Perception.Mapped.CODEC.listOf(), entries.values().stream().toList());
     }
 
     @Override
-    public void deserializeNBT(@NotNull final HolderLookup.Provider provider, @NotNull final CompoundTag tag) {
+    public void deserialize(@NotNull final ValueInput input) {
         entries.clear();
-
-        Perception.Mapped.CODEC.listOf().parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.get("data"))
-                .resultOrPartial(AE.LOG::error)
-                .ifPresent(entries -> entries.forEach(entry -> this.entries.put(entry.id(), entry)));
+        input.read("entries", Perception.Mapped.CODEC.listOf()).ifPresent(entries -> entries.forEach(entry -> this.entries.put(entry.id(), entry)));
     }
 }

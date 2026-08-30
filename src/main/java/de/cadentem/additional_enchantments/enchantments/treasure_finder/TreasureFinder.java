@@ -9,7 +9,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.enchantment.LevelBasedValue;
 import net.minecraft.world.level.block.Block;
@@ -19,9 +19,9 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public record TreasureFinder(ResourceLocation id, Either<SpecialBlockType, HolderSet<Block>> blocks, LevelBasedValue range, DisplayType displayType, int particleRate, ShiftingColor color) {
+public record TreasureFinder(Identifier id, Either<SpecialBlockType, HolderSet<Block>> blocks, LevelBasedValue range, DisplayType displayType, int particleRate, ShiftingColor color) {
     public static final Codec<TreasureFinder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ResourceLocation.CODEC.fieldOf("id").forGetter(TreasureFinder::id),
+            Identifier.CODEC.fieldOf("id").forGetter(TreasureFinder::id),
             Codec.either(SpecialBlockType.CODEC, RegistryCodecs.homogeneousList(Registries.BLOCK)).fieldOf("blocks").forGetter(TreasureFinder::blocks),
             LevelBasedValue.CODEC.fieldOf("range").forGetter(TreasureFinder::range),
             DisplayType.CODEC.fieldOf("display_type").forGetter(TreasureFinder::displayType),
@@ -33,9 +33,9 @@ public record TreasureFinder(ResourceLocation id, Either<SpecialBlockType, Holde
         return new Mapped(id, blocks, (int) range.calculate(level), displayType, particleRate, color.map());
     }
 
-    public record Mapped(ResourceLocation id, Either<SpecialBlockType, HolderSet<Block>> blocks, int range, DisplayType displayType, int particleRate, ShiftingColor.Mapped color) {
+    public record Mapped(Identifier id, Either<SpecialBlockType, HolderSet<Block>> blocks, int range, DisplayType displayType, int particleRate, ShiftingColor.Mapped color) {
         public static final Codec<Mapped> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                ResourceLocation.CODEC.fieldOf("id").forGetter(Mapped::id),
+                Identifier.CODEC.fieldOf("id").forGetter(Mapped::id),
                 Codec.either(SpecialBlockType.CODEC, RegistryCodecs.homogeneousList(Registries.BLOCK)).fieldOf("blocks").forGetter(Mapped::blocks),
                 Codec.INT.fieldOf("range").forGetter(Mapped::range),
                 DisplayType.CODEC.fieldOf("display_type").forGetter(Mapped::displayType),

@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.compat;
 
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.loading.LoadingModList;
+import net.neoforged.fml.loading.FMLLoader;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,8 +39,6 @@ public class ModCheck {
             return true;
         }
 
-        return LoadingModList.get().getModFileById(modid) != null;
+        return FMLLoader.getCurrent().getLoadingModList().getModFileById(modid) != null;
     }
-
-
 }

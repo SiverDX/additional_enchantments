@@ -1,6 +1,8 @@
 package de.cadentem.additional_enchantments.client;
 
 import de.cadentem.additional_enchantments.AE;
+import de.cadentem.additional_enchantments.client.treasure_finder.TreasureFinderOutline;
+import de.cadentem.additional_enchantments.client.treasure_finder.TreasureFinderShaderSimple;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -16,6 +18,9 @@ public class AEClient {
 
     public AEClient(final IEventBus eventBus, final ModContainer container) {
         NeoForge.EVENT_BUS.addListener(this::incrementTimer);
+
+        eventBus.addListener(TreasureFinderOutline::registerRenderPipelines);
+        eventBus.addListener(TreasureFinderShaderSimple::registerRenderPipelines);
     }
 
     private void incrementTimer(final ClientTickEvent.Post event) {

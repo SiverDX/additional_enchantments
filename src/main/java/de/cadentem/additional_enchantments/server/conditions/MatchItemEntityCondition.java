@@ -2,11 +2,10 @@ package de.cadentem.additional_enchantments.server.conditions;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -19,7 +18,7 @@ public record MatchItemEntityCondition(Optional<ItemPredicate> predicate, LootCo
 
     @Override
     public boolean test(final LootContext context) {
-        if (!(context.getParamOrNull(target.getParam()) instanceof ItemEntity itemEntity)) {
+        if (!(context.getOptionalParameter(target.contextParam()) instanceof ItemEntity itemEntity)) {
             return false;
         }
 
@@ -27,8 +26,8 @@ public record MatchItemEntityCondition(Optional<ItemPredicate> predicate, LootCo
     }
 
     @Override
-    public @NotNull LootItemConditionType getType() {
-        return AELootItemConditions.MATCH_ITEM_ENTITY.value();
+    public @NotNull MapCodec<MatchItemEntityCondition> codec() {
+        return CODEC;
     }
 
     public static LootItemCondition.Builder matches(final ItemPredicate.Builder builder) {

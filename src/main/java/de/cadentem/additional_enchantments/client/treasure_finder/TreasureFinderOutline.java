@@ -1,72 +1,55 @@
 package de.cadentem.additional_enchantments.client.treasure_finder;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.MeshData;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.CompareOp;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.GameRenderer;
-import net.neoforged.neoforge.client.GlStateBackup;
+import de.cadentem.additional_enchantments.AE;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.ShapeRenderer;
+import net.minecraft.client.renderer.rendertype.LayeringTransform;
+import net.minecraft.client.renderer.rendertype.OutputTarget;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.util.ARGB;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
 public class TreasureFinderOutline {
-    private static BufferBuilder buffer;
-    private static GlStateBackup backup;
+    private static final RenderPipeline BLOCK_VISION_OUTLINE_PIPELINE = RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
+            .withLocation(AE.location("pipeline/treasure_finder_outline"))
+            .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
+            .build();
 
-    public static void render(final PoseStack pose, final int colorARGB) {
-        prepare();
+    private static final RenderType BLOCK_VISION_OUTLINE_TYPE = RenderType.create(
+            "treasure_finder_outline",
+            RenderSetup.builder(BLOCK_VISION_OUTLINE_PIPELINE)
+                    .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+                    .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
+                    .createRenderSetup()
+    );
+
+    public static void render(final TreasureFinderHandler.Data data, final PoseStack pose, final VertexConsumer buffer, final int colorARGB) {
         // TODO :: check if there are ways to fix lines not being x-ray behind block entities if the block entity is rendered
-        drawLines(buffer, pose.last(), 0, 0, 0, 1, 1, 1, colorARGB);
+        pose.pushPose();
+        pose.translate(data.x(), data.y(), data.z());
+
+        int alpha = Math.max(ARGB.alpha(colorARGB), 192);
+        int visibleColor = ARGB.color(alpha, ARGB.red(colorARGB), ARGB.green(colorARGB), ARGB.blue(colorARGB));
+        int shadowColor = ARGB.color(Math.max(alpha / 2, 96), 0, 0, 0);
+
+        ShapeRenderer.renderShape(pose, buffer, Shapes.create(new AABB(0, 0, 0, 1, 1, 1)), 0, 0, 0, shadowColor, 4);
+        ShapeRenderer.renderShape(pose, buffer, Shapes.create(new AABB(0, 0, 0, 1, 1, 1)), 0, 0, 0, visibleColor, 2);
+        pose.popPose();
     }
 
-    private static void drawLines(final VertexConsumer buffer, final PoseStack.Pose pose, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final int color) {
-        drawLine(buffer, pose, minX, minY, minZ, maxX, minY, minZ, 1, 0, 0, color);
-        drawLine(buffer, pose, minX, minY, minZ, minX, maxY, minZ, 0, 1, 0, color);
-        drawLine(buffer, pose, minX, minY, minZ, minX, minY, maxZ, 0, 0, 1, color);
-        drawLine(buffer, pose, maxX, minY, minZ, maxX, maxY, minZ, 0, 1, 0, color);
-        drawLine(buffer, pose, maxX, maxY, minZ, minX, maxY, minZ, -1, 0, 0, color);
-        drawLine(buffer, pose, minX, maxY, minZ, minX, maxY, maxZ, 0, 0, 1, color);
-        drawLine(buffer, pose, minX, maxY, maxZ, minX, minY, maxZ, 0, -1, 0, color);
-        drawLine(buffer, pose, minX, minY, maxZ, maxX, minY, maxZ, 1, 0, 0, color);
-        drawLine(buffer, pose, maxX, minY, maxZ, maxX, minY, minZ, 0, 0, -1, color);
-        drawLine(buffer, pose, minX, maxY, maxZ, maxX, maxY, maxZ, 1, 0, 0, color);
-        drawLine(buffer, pose, maxX, minY, maxZ, maxX, maxY, maxZ, 0, 1, 0, color);
-        drawLine(buffer, pose, maxX, maxY, minZ, maxX, maxY, maxZ, 0, 0, 1, color);
+    public static void registerRenderPipelines(final RegisterRenderPipelinesEvent event) {
+        event.registerPipeline(BLOCK_VISION_OUTLINE_PIPELINE);
     }
 
-    private static void drawLine(final VertexConsumer buffer, final PoseStack.Pose pose, float fromX, float fromY, float fromZ, float toX, float toY, float toZ, int normalX, int normalY, int normalZ, final int color) {
-        buffer.addVertex(pose, fromX, fromY, fromZ).setColor(color).setNormal(pose, normalX, normalY, normalZ);
-        buffer.addVertex(pose, toX, toY, toZ).setColor(color).setNormal(pose, normalX, normalY, normalZ);
-    }
-
-    public static void beginBatch() {
-        backup = new GlStateBackup();
-        RenderSystem.backupGlState(backup);
-        buffer = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
-    }
-
-    public static void endBatch() {
-        prepare();
-
-        if (buffer != null) {
-            MeshData meshData = buffer.build();
-
-            if (meshData != null) {
-                BufferUploader.drawWithShader(meshData);
-            }
-        }
-
-        RenderSystem.restoreGlState(backup);
-
-        backup = null;
-        buffer = null;
-    }
-
-    private static void prepare() {
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.disableDepthTest();
+    public static RenderType renderType() {
+        return BLOCK_VISION_OUTLINE_TYPE;
     }
 }

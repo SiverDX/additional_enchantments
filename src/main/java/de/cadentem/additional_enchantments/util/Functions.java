@@ -1,7 +1,7 @@
 package de.cadentem.additional_enchantments.util;
 
 import de.cadentem.additional_enchantments.AE;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 
 import java.util.List;
 
@@ -12,7 +12,6 @@ public class Functions {
     }
 
     /**
-     * Expects the colors in the format of {@link net.minecraft.util.FastColor.ARGB32}
      * @param speed Determines how quickly the colors are shifted through
      * @param offset Offsets the index of the color to be used (expected to be between 0 and 1)
      */
@@ -36,6 +35,6 @@ public class Functions {
         int currentIndex = (int) (Math.floor(sizeIndex) % colorsARGB.size());
         int nextIndex = (currentIndex + 1) % colorsARGB.size();
 
-        return FastColor.ARGB32.lerp(sizeIndex - currentIndex, colorsARGB.get(currentIndex), colorsARGB.get(nextIndex));
+        return ARGB.linearLerp(sizeIndex - currentIndex, colorsARGB.get(currentIndex), colorsARGB.get(nextIndex));
     }
 }

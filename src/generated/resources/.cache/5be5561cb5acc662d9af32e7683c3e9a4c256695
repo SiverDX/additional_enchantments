@@ -1,4 +1,6 @@
-// 1.21.1	2026-08-29T01:37:08.208	Tags for minecraft:block mod id additional_enchantments
+// 26.1.2	2026-08-30T17:48:03.5241304	Tags for minecraft:block mod id additional_enchantments
 b88925d1056f80a7870497fbf9dd3a201ef1caa9 data/additional_enchantments/tags/block/misc_ores.json
 7f708c1e4a4e74bb2e1423a04d7a367ede8bc58f data/additional_enchantments/tags/block/slippery.json
 bd0378a7da7d950deb186650aa1a813c1cedc916 data/additional_enchantments/tags/block/treasures.json
+35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/c/tags/block/ores/silver.json
+35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/c/tags/block/ores/zinc.json

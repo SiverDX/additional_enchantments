@@ -4,15 +4,13 @@ import de.cadentem.additional_enchantments.AE;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -22,11 +20,11 @@ public class AEBlockTags extends BlockTagsProvider {
     public static final TagKey<Block> MISC_ORES = TagKey.create(Registries.BLOCK, AE.location("misc_ores"));
 
     // Compatibility
-    public static final TagKey<Block> ZINC_ORES = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("c", "ores/zinc"));
-    public static final TagKey<Block> SILVER_ORES = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("c", "ores/silver"));
+    public static final TagKey<Block> ZINC_ORES = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("c", "ores/zinc"));
+    public static final TagKey<Block> SILVER_ORES = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("c", "ores/silver"));
 
-    public AEBlockTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> provider, @Nullable final ExistingFileHelper helper) {
-        super(output, provider, AE.MODID, helper);
+    public AEBlockTags(final PackOutput output, final CompletableFuture<HolderLookup.Provider> provider) {
+        super(output, provider, AE.MODID);
     }
 
     @Override
@@ -37,6 +35,10 @@ public class AEBlockTags extends BlockTagsProvider {
                 .addTag(BlockTags.ICE)
                 .addTag(Tags.Blocks.GLASS_BLOCKS)
                 .addTag(Tags.Blocks.GLASS_PANES);
+
+        // Needed since missing block tags in predicates cause data errors now
+        tag(ZINC_ORES);
+        tag(SILVER_ORES);
 
         tag(MISC_ORES)
                 .addTag(Tags.Blocks.ORES)

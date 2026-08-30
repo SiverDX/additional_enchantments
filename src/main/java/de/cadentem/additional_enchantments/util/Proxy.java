@@ -15,8 +15,8 @@ public interface Proxy {
 
     default void clearPerceptionEntries() { /* Nothing to do */ }
 
-    default int getPerceptionColor(final Entity entity) {
-        return Colors.NONE;
+    default ShiftingColor.Mapped getPerceptionColor(final Entity entity) {
+        return ShiftingColor.Mapped.NONE;
     }
 
     default @Nullable Player getLocalPlayer() {
