@@ -12,7 +12,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import de.cadentem.additional_enchantments.AE;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
@@ -51,22 +50,14 @@ public final class TreasureFinderShaderSimple {
                     .createRenderSetup()
     );
 
+    /** @return Whether any quad was added to the buffer (block entities usually have no quad data in their model) */
     public static void render(final TreasureFinderHandler.Data data, final PoseStack pose, final VertexConsumer buffer, final int colorARGB) {
-        ClientLevel level = Minecraft.getInstance().level;
-
-        if (level == null) {
-            return;
-        }
-
         BlockPos position = BlockPos.containing(data.x(), data.y(), data.z());
         BlockStateModel model = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(data.state());
 
         List<BlockStateModelPart> parts = new ArrayList<>();
-        model.collectParts(level, position, data.state(), RandomSource.create(data.state().getSeed(position)), parts);
-
-        if (parts.isEmpty()) {
-            return;
-        }
+        //noinspection DataFlowIssue -> level is present
+        model.collectParts(Minecraft.getInstance().level, position, data.state(), RandomSource.create(data.state().getSeed(position)), parts);
 
         pose.pushPose();
         pose.translate(data.x(), data.y(), data.z());
@@ -94,12 +85,16 @@ public final class TreasureFinderShaderSimple {
         pose.popPose();
     }
 
-    public static void registerRenderPipelines(final RegisterRenderPipelinesEvent event) {
-        event.registerPipeline(TREASURE_FINDER_SHADER_PIPELINE);
-    }
-
     public static RenderType renderType() {
         // TODO :: check if cutout blocks (e.g. plants) still need their own render type
         return TREASURE_FINDER_SHADER_TYPE;
+    }
+
+    public static RenderPipeline pipeline() {
+        return TREASURE_FINDER_SHADER_PIPELINE;
+    }
+
+    public static void registerRenderPipelines(final RegisterRenderPipelinesEvent event) {
+        event.registerPipeline(TREASURE_FINDER_SHADER_PIPELINE);
     }
 }

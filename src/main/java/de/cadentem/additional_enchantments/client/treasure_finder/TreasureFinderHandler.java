@@ -10,6 +10,7 @@ import de.cadentem.additional_enchantments.compat.Compat;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
 import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinder;
 import de.cadentem.additional_enchantments.mixin.RandomizableContainerAccess;
+import de.cadentem.additional_enchantments.mixin.client.FrustumAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -64,10 +65,6 @@ public class TreasureFinderHandler {
         }
     }
 
-    /**
-     * Handles normal effects </br>
-     * This allows for x-ray effects that do not render over the entity, since this tage occurs before entities are rendered
-     */
     @SubscribeEvent
     public static void handleCore(final RenderLevelStageEvent.AfterOpaqueBlocks event) {
         if (Compat.isRenderingShadows()) {
@@ -139,8 +136,11 @@ public class TreasureFinderHandler {
                 continue;
             }
 
-            // TODO :: check if still needed
-//            if (((FrustumAccess) event.getFrustum()).additional_enchantments$cubeInFrustum(data.x(), data.y(), data.z(), data.x() + 1, data.y() + 1, data.z() + 1)) {
+            // See 'Octree'
+            int result = ((FrustumAccess) event.getLevelRenderState().cameraRenderState.cullFrustum).additional_enchantments$cubeInFrustum(data.x(), data.y(), data.z(), data.x() + 1, data.y() + 1, data.z() + 1);
+            boolean isVisible = result == -2 || result == -1;
+
+            if (isVisible) {
                 switch (data.displayType()) {
                     case OUTLINE -> TreasureFinderOutline.render(data, pose, lineBuffer, vision.getColor(data.state().getBlock()));
                     case PARTICLES -> TreasureFinderParticle.spawnParticle(data, player);
@@ -153,26 +153,43 @@ public class TreasureFinderHandler {
                         }
                     }
                 }
-//            }
+            }
         }
 
         bufferSource.endBatch(TreasureFinderOutline.renderType());
-        VertexConsumer blockBuffer = bufferSource.getBuffer(TreasureFinderShaderSimple.renderType());
+        VertexConsumer shaderBuffer = bufferSource.getBuffer(TreasureFinderShaderSimple.renderType());
 
         for (Data data : SHADER_RENDER_DATA) {
-            TreasureFinderShaderSimple.render(data, pose, blockBuffer, vision.getColor(data.state().getBlock()));
+            TreasureFinderShaderSimple.render(data, pose, shaderBuffer, vision.getColor(data.state().getBlock()));
         }
 
         SHADER_RENDER_DATA.clear();
+        pose.popPose();
+    }
 
-        for (Data data : SHADER_RENDER_DATA_BLOCK_ENTITIES) {
-            TreasureFinderShaderSimple.render(data, pose, blockBuffer, vision.getColor(data.state().getBlock()));
+    @SubscribeEvent
+    public static void handleBlockEntities(final RenderLevelStageEvent.AfterTranslucentParticles event) {
+        if (SHADER_RENDER_DATA_BLOCK_ENTITIES.isEmpty() || Compat.isRenderingShadows()) {
+            return;
         }
 
-        SHADER_RENDER_DATA_BLOCK_ENTITIES.clear();
+        PoseStack pose = event.getPoseStack();
 
-        bufferSource.endBatch(TreasureFinderShaderSimple.renderType());
+        pose.pushPose();
+        Vec3 camera = event.getLevelRenderState().cameraRenderState.pos;
+        pose.translate(-camera.x(), -camera.y(), -camera.z());
+
+        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+        VertexConsumer shapeBuffer = bufferSource.getBuffer(TreasureFinderShaderSimpleBlockEntities.renderType());
+
+        for (Data data : SHADER_RENDER_DATA_BLOCK_ENTITIES) {
+            TreasureFinderShaderSimpleBlockEntities.render(data, pose, shapeBuffer, vision.getColor(data.state().getBlock()));
+        }
+
+        bufferSource.endBatch(TreasureFinderShaderSimpleBlockEntities.renderType());
+
         pose.popPose();
+        SHADER_RENDER_DATA_BLOCK_ENTITIES.clear();
     }
 
     @SubscribeEvent
@@ -398,6 +415,8 @@ public class TreasureFinderHandler {
         }
 
         RENDER_DATA.clear();
+        SHADER_RENDER_DATA.clear();
+        SHADER_RENDER_DATA_BLOCK_ENTITIES.clear();
         SEARCH_RESULT.clear();
         REMOVAL.clear();
 

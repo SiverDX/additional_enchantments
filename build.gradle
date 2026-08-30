@@ -86,7 +86,7 @@ dependencies {
 
     // Bumblezone
 //    compileOnly "curse.maven:the-bumblezone-forge-362479:8548224" // v7.15.3
-//    compileOnly "curse.maven:resourceful-lib-570073:5973188" // 3.0.12
+    compileOnly "maven.modrinth:resourceful-lib:4.0.1"
 
     // Create
 //    compileOnly "maven.modrinth:create:6.0.10+mc1.21.1"

@@ -33,6 +33,7 @@ public class TreasureFinderOutline {
 
     public static void render(final TreasureFinderHandler.Data data, final PoseStack pose, final VertexConsumer buffer, final int colorARGB) {
         // TODO :: check if there are ways to fix lines not being x-ray behind block entities if the block entity is rendered
+        //         currently there are rendered after entities, so x-ray outlines will be visible through the previously rendered entities
         pose.pushPose();
         pose.translate(data.x(), data.y(), data.z());
 
