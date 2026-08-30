@@ -9,7 +9,7 @@ import de.cadentem.additional_enchantments.attachments.TreasureFinderData;
 import de.cadentem.additional_enchantments.compat.Compat;
 import de.cadentem.additional_enchantments.data.AEBlockTags;
 import de.cadentem.additional_enchantments.enchantments.treasure_finder.TreasureFinder;
-import de.cadentem.additional_enchantments.mixin.RandomizableContainerBlockEntityAccess;
+import de.cadentem.additional_enchantments.mixin.RandomizableContainerAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -330,7 +330,7 @@ public class TreasureFinderHandler {
     }
 
     private static boolean hasLoot(final Level level, final BlockPos position) {
-        return level.getBlockEntity(position) instanceof RandomizableContainerBlockEntityAccess access &&
+        return level.getBlockEntity(position) instanceof RandomizableContainerAccess access &&
                 (access.additional_enchantments$getLootTable() != null && access.additional_enchantments$getLootTable() != null);
     }
 

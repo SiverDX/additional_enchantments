@@ -32,21 +32,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class TreasureFinderShaderSimple {
-    private static final Identifier BLOCK_VISION_SHADER = AE.location("core/treasure_finder_simple");
+    private static final Identifier TREASURE_FINDER_SHADER = AE.location("core/treasure_finder_simple");
 
-    private static final RenderPipeline BLOCK_VISION_SHADER_PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+    private static final RenderPipeline TREASURE_FINDER_SHADER_PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
             .withLocation(AE.location("pipeline/treasure_finder_shader"))
-            .withVertexShader(BLOCK_VISION_SHADER)
-            .withFragmentShader(BLOCK_VISION_SHADER)
+            .withVertexShader(TREASURE_FINDER_SHADER)
+            .withFragmentShader(TREASURE_FINDER_SHADER)
             .withSampler("Sampler0") // Block texture atlas
             .withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
             .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
             .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, /* It's an overlay */ false, /* Prevent z-fighting */ -1, -10))
             .build();
 
-    private static final RenderType BLOCK_VISION_SHADER_TYPE = RenderType.create(
+    private static final RenderType TREASURE_FINDER_SHADER_TYPE = RenderType.create(
             "treasure_finder_shader",
-            RenderSetup.builder(BLOCK_VISION_SHADER_PIPELINE)
+            RenderSetup.builder(TREASURE_FINDER_SHADER_PIPELINE)
                     .withTexture("Sampler0", TextureAtlas.LOCATION_BLOCKS)
                     .createRenderSetup()
     );
@@ -95,11 +95,11 @@ public final class TreasureFinderShaderSimple {
     }
 
     public static void registerRenderPipelines(final RegisterRenderPipelinesEvent event) {
-        event.registerPipeline(BLOCK_VISION_SHADER_PIPELINE);
+        event.registerPipeline(TREASURE_FINDER_SHADER_PIPELINE);
     }
 
     public static RenderType renderType() {
         // TODO :: check if cutout blocks (e.g. plants) still need their own render type
-        return BLOCK_VISION_SHADER_TYPE;
+        return TREASURE_FINDER_SHADER_TYPE;
     }
 }

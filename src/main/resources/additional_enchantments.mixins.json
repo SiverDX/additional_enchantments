@@ -13,8 +13,9 @@
     "EntityMixin",
     "IBlocksExtensionMixin",
     "LivingEntityMixin",
-    "RandomizableContainerBlockEntityAccess",
+    "RandomizableContainerAccess",
     "RandomizableContainerBlockEntityMixin",
+    "RandomizableContainerMixin",
     "TridentAccess"
   ],
   "client": [

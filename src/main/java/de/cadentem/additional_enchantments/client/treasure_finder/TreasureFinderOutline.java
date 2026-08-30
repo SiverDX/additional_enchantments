@@ -18,14 +18,14 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
 public class TreasureFinderOutline {
-    private static final RenderPipeline BLOCK_VISION_OUTLINE_PIPELINE = RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
+    private static final RenderPipeline TREASURE_FINDER_OUTLINE_PIPELINE = RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
             .withLocation(AE.location("pipeline/treasure_finder_outline"))
             .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
             .build();
 
-    private static final RenderType BLOCK_VISION_OUTLINE_TYPE = RenderType.create(
+    private static final RenderType TREASURE_FINDER_OUTLINE_TYPE = RenderType.create(
             "treasure_finder_outline",
-            RenderSetup.builder(BLOCK_VISION_OUTLINE_PIPELINE)
+            RenderSetup.builder(TREASURE_FINDER_OUTLINE_PIPELINE)
                     .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
                     .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
                     .createRenderSetup()
@@ -46,10 +46,10 @@ public class TreasureFinderOutline {
     }
 
     public static void registerRenderPipelines(final RegisterRenderPipelinesEvent event) {
-        event.registerPipeline(BLOCK_VISION_OUTLINE_PIPELINE);
+        event.registerPipeline(TREASURE_FINDER_OUTLINE_PIPELINE);
     }
 
     public static RenderType renderType() {
-        return BLOCK_VISION_OUTLINE_TYPE;
+        return TREASURE_FINDER_OUTLINE_TYPE;
     }
 }

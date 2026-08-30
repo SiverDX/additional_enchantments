@@ -2,7 +2,7 @@ package de.cadentem.additional_enchantments.common.network;
 
 import de.cadentem.additional_enchantments.AE;
 import de.cadentem.additional_enchantments.client.treasure_finder.TreasureFinderHandler;
-import de.cadentem.additional_enchantments.mixin.RandomizableContainerBlockEntityAccess;
+import de.cadentem.additional_enchantments.mixin.RandomizableContainerAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -30,7 +30,7 @@ public record SyncLootTable(Optional<ResourceKey<LootTable>> lootTable, BlockPos
         context.enqueueWork(() -> {
             BlockEntity blockEntity = context.player().level().getBlockEntity(packet.position());
 
-            if (blockEntity instanceof RandomizableContainerBlockEntityAccess access) {
+            if (blockEntity instanceof RandomizableContainerAccess access) {
                 ResourceKey<LootTable> lootTable = packet.lootTable().orElse(null);
 
                 access.additional_enchantments$setLootTable(lootTable);
