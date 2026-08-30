@@ -3,6 +3,7 @@
 # FAQ
 - 1.19.2 documentation can be found [here](https://github.com/SiverDX/additional_enchantments/blob/1.19.2/README.md)
 - 1.20.1 documentation can be found [here](https://github.com/SiverDX/additional_enchantments/blob/1.20.1/README.md)
+- 1.21.1 / 26.1.2 documentation with better formatting can be found [here](https://github.com/SiverDX/additional_enchantments/blob/1.21.1/README.md)
 - The description below is for 1.21.1 and 26.1.2
 
 Further enchantments are planned
