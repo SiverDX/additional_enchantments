@@ -20,6 +20,7 @@
   "client": [
     "client.ClientLevelMixin",
     "client.EntityRendererMixin",
+    "client.FluidModelMixin",
     "client.FluidRendererMixin",
     "client.FrustumAccess",
     "client.LightTextureMixin",

@@ -46,9 +46,27 @@ public class FluidVisionHandler {
                 .map(data -> data.get(fluid, player.registryAccess()).percentage())
                 .orElse(1f);
 
-        if (Float.compare(multiplier, 1) != 0) {
-            event.setNearPlaneDistance(event.getNearPlaneDistance() * multiplier);
-            event.setFarPlaneDistance(Minecraft.getInstance().options.getEffectiveRenderDistance() * (1 - multiplier));
+        if (Float.compare(multiplier, 1) == 0) {
+            return;
         }
+
+        float nearPlane = event.getNearPlaneDistance();
+
+        if (nearPlane < 0) {
+            nearPlane *= (1 + multiplier);
+        } else {
+            nearPlane *= multiplier;
+        }
+
+        event.setNearPlaneDistance(nearPlane);
+
+        float farPlane = event.getFarPlaneDistance();
+        float fluidVisibility = Minecraft.getInstance().options.renderDistance().get().floatValue() * multiplier;
+
+        if (farPlane > fluidVisibility) {
+            return;
+        }
+
+        event.setFarPlaneDistance(fluidVisibility);
     }
 }

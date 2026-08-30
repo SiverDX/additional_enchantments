@@ -207,24 +207,24 @@ public class AEEnchantments {
                                         new FluidVision(
                                                 AE.location("fluid_vision_enchantment.water"),
                                                 HolderSet.direct(NeoForgeMod.WATER_TYPE),
-                                                LevelBasedValue.perLevel(0.8f, -0.05f)
+                                                LevelBasedValue.perLevel(0.55f, -0.05f)
                                         )
                                 ), MinMaxBounds.Ints.atLeast(1)),
                                 new LevelBasedFluidVision.Entry(List.of(
                                         new FluidVision(
                                                 AE.location("fluid_vision_enchantment.lava"),
                                                 HolderSet.direct(NeoForgeMod.LAVA_TYPE),
-                                                LevelBasedValue.perLevel(0.75f, -0.05f)
+                                                LevelBasedValue.perLevel(0.5f, -0.05f)
                                         ),
                                         new FluidVision(
                                                 AE.location("fluid_vision_enchantment.bumblezone"),
                                                 context.lookup(NeoForgeRegistries.FLUID_TYPES.key()).getOrThrow(AEFluidTypesTags.BUMBLEZONE),
-                                                LevelBasedValue.perLevel(0.75f, -0.05f)
+                                                LevelBasedValue.perLevel(0.5f, -0.05f)
                                         ),
                                         new FluidVision(
                                                 AE.location("fluid_vision_enchantment.create"),
                                                 context.lookup(NeoForgeRegistries.FLUID_TYPES.key()).getOrThrow(AEFluidTypesTags.CREATE),
-                                                LevelBasedValue.perLevel(0.75f, -0.05f)
+                                                LevelBasedValue.perLevel(0.5f, -0.05f)
                                         )
                                 ), MinMaxBounds.Ints.atLeast(2))
                         )
