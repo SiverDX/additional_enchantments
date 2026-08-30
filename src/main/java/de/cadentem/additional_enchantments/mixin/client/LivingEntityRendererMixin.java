@@ -3,6 +3,7 @@ package de.cadentem.additional_enchantments.mixin.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import de.cadentem.additional_enchantments.client.AERenderData;
+import de.cadentem.additional_enchantments.common.network.SyncClimbFlag;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -25,7 +26,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
     private void additional_enchantments$hangOnCeiling(final S state, final PoseStack pose, final float rotation, final float scale, final CallbackInfo callback) {
         AERenderData.CeilingClimbingRenderData ceilingClimbing = state.getRenderDataOrDefault(AERenderData.CLIMBING, AERenderData.CeilingClimbingRenderData.NONE);
 
-        if (ceilingClimbing == AERenderData.CeilingClimbingRenderData.NONE) {
+        if (ceilingClimbing == AERenderData.CeilingClimbingRenderData.NONE || ceilingClimbing.climbingType() != SyncClimbFlag.ClimbingType.CEILING) {
             return;
         }
 

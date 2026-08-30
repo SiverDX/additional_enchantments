@@ -69,7 +69,7 @@ public class TreasureFinderHandler {
      * This allows for x-ray effects that do not render over the entity, since this tage occurs before entities are rendered
      */
     @SubscribeEvent
-    public static void handleCore(final RenderLevelStageEvent.AfterTranslucentParticles event) {
+    public static void handleCore(final RenderLevelStageEvent.AfterOpaqueBlocks event) {
         if (Compat.isRenderingShadows()) {
             return;
         }

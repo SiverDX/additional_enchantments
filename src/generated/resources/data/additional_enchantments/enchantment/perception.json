@@ -51,7 +51,9 @@
                         "condition": "additional_enchantments:match_item_entity",
                         "predicate": {
                           "predicates": {
-                            "minecraft:enchantments": []
+                            "minecraft:enchantments": [
+                              {}
+                            ]
                           }
                         }
                       }

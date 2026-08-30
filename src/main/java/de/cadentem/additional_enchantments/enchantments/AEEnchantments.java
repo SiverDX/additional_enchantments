@@ -257,7 +257,7 @@ public class AEEnchantments {
                                                         MatchItemEntityCondition.matches(ItemPredicate.Builder.item().withComponents(
                                                                 DataComponentMatchers.Builder.components().partial(
                                                                         DataComponentPredicates.ENCHANTMENTS,
-                                                                        EnchantmentsPredicate.enchantments(List.of())
+                                                                        EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(Optional.empty(), MinMaxBounds.Ints.ANY)))
                                                                 ).build()
                                                         ))
                                                 ).build(),
