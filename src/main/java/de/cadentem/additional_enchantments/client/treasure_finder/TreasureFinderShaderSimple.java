@@ -50,7 +50,6 @@ public final class TreasureFinderShaderSimple {
                     .createRenderSetup()
     );
 
-    /** @return Whether any quad was added to the buffer (block entities usually have no quad data in their model) */
     public static void render(final TreasureFinderHandler.Data data, final PoseStack pose, final VertexConsumer buffer, final int colorARGB) {
         BlockPos position = BlockPos.containing(data.x(), data.y(), data.z());
         BlockStateModel model = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(data.state());

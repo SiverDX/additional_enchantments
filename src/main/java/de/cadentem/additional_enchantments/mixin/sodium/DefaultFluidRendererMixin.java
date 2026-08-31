@@ -24,20 +24,18 @@ public abstract class DefaultFluidRendererMixin {
                 .map(vision -> vision.get(state.getFluidType(), player.registryAccess()).percentage())
                 .orElse(1f);
 
-        if (Float.compare(percentage, 1) == 0) {
-            return colorARGB;
-        }
-
         int alpha = ARGB.alpha(colorARGB);
 
         if (alpha == 0) {
             // Create fluids are set up with an alpha value of 0 - by setting the 'RenderType' to 'translucent' they become invisible due to said value
             // Therefore, when a fluid is being rendered here (and it is invisible) just set it to the intended visibility
-            alpha = (int) (255 * percentage);
-        } else {
-            alpha = (int) (alpha * percentage);
+            return Colors.overrideAlpha(colorARGB, percentage);
         }
 
-        return Colors.overrideAlpha(colorARGB, alpha);
+        if (Float.compare(percentage, 1) == 0) {
+            return colorARGB;
+        }
+
+        return Colors.overrideAlpha(colorARGB, (int) (alpha * percentage));
     }
 }

@@ -8,12 +8,10 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.block.FluidRenderer;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.level.material.FluidState;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-@Debug(export = true)
 @Mixin(FluidRenderer.class)
 public abstract class FluidRendererMixin {
     /** Make fluids see-through */
@@ -30,6 +28,10 @@ public abstract class FluidRendererMixin {
             // Create fluids are set up with an alpha value of 0 - by setting the 'RenderType' to 'translucent' they become invisible due to said value
             // Therefore, when a fluid is being rendered here (and it is invisible) just set it to the intended visibility
             return Colors.overrideAlpha(color, percentage);
+        }
+
+        if (Float.compare(percentage, 1) == 0) {
+            return color;
         }
 
         return ARGB.multiplyAlpha(color, percentage);
